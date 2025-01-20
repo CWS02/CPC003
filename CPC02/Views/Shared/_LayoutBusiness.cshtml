@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - cpc直得科技股份有限公司 CHIEFTEK PRECISION CO., LTD</title>
+
+    <script src="~/Scripts/vue3/vue.min.js"></script>
+    <script src="~/Scripts/jquery/jquery-3.7.1.js"></script>
+    <link rel="stylesheet" href="~/css/style2.css" />
+
+    <!-- DataTables 核心樣式與腳本 -->
+    <script src="~/Scripts/datatable/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="~/css/datatable/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/css/datatable/jquery.dataTables.min.css" />
+
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+
+@{
+    string currentLang = (string)Session["Culture"] ?? "zh-TW";
+    string MName = (string)Session["MName"] ?? "zh-TW";
+}
+
+<body>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+        <div class="container">
+            @Html.ActionLink(currentLang == "zh-TW" ? "業務" : "Business", "InterviewRecordList", "Business", new { area = "" }, new { @class = "navbar-brand" })
+            @*<button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="切換導覽" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>*@
+            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li>@Html.ActionLink(currentLang == "zh-TW" ? "業務銷售系統" : "Business Sales System", "InterviewRecordList", "Business", new { area = "" }, new { @class = "nav-link" })</li>
+                    @*<li>@Html.ActionLink("補卡系統", "MissedPunch", "Common", new { area = "" }, new { @class = "nav-link" })</li>*@
+
+                </ul>
+            </div>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+                <ul class="navbar-nav flex-grow-1">
+
+                    @if (currentLang == "zh-TW")
+                    {
+                        <li class="nav-link">@MName 登入中</li>
+                        <li>@Html.ActionLink("登出", "LoginOut", "Member", new { lang = "en-US" }, new { @class = "nav-link" })</li>
+
+                        <li>@Html.ActionLink("En", "ChangeLanguage", "Business", new { lang = "en-US" }, new { @class = "nav-link" })</li>
+                    }
+                    else
+                    {
+                        <li class="nav-link">@MName Login</li>
+                        <li>@Html.ActionLink("LoginOut", "LoginOut", "Member", new { lang = "en-US" }, new { @class = "nav-link" })</li>
+
+                        <li>@Html.ActionLink("中文", "ChangeLanguage", "Business", new { lang = "zh-TW" }, new { @class = "nav-link" })</li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    </nav>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year- cpc直得科技股份有限公司 CHIEFTEK PRECISION CO., LTD </p>
+        </footer>
+    </div>
+
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

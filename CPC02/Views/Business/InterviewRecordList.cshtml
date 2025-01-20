@@ -1,0 +1,132 @@
+﻿@model IEnumerable<CPC02.Models.INTRA>
+
+@{
+    ViewBag.Title = "業務銷售系統";
+    Layout = "~/Views/Shared/_LayoutBusiness.cshtml";
+    string currentLang = (string)Session["Culture"] ?? "zh-TW";
+    var members = ViewBag.Members as List<CPC02.Models.Member>;
+
+}
+<link rel="stylesheet" href="~/css/style2.css" />
+<style>
+    table#datatable th,
+    table#datatable td {
+        font-size: 12px;
+        padding: 4px;
+        white-space: nowrap;
+    }
+
+    .btn img {
+        width: 16px;
+        height: 16px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    table#datatable th {
+        font-size: 14px;
+    }
+
+    table {
+        table-layout: auto;
+    }
+
+        table#datatable td {
+            word-wrap: break-word;
+            max-width: 50px;
+            white-space: normal;
+        }
+
+    .clickable-td {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+        .clickable-td:hover {
+            color: inherit;
+            text-decoration: none;
+        }
+</style>
+<div class="title" style="color: blue;">@(currentLang=="zh-TW"? "直得科技" : "CHIEFTEK")</div>
+<div class="title">@(currentLang=="zh-TW"? "業務銷售系統" : "Business Sales System")</div>
+
+<div id="app" class="container">
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-3">
+                <a href="@Url.Action("InterviewRecordEdit")"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
+            </div>
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table id="datatable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>@(currentLang == "zh-TW" ? "序" : "No.")</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("負責<br>業務") :Html.Raw("Sales"))</th>
+                            <th>@(currentLang == "zh-TW" ? "國家別" : "Country")</th>
+                            <th>@(currentLang == "zh-TW" ? "地區別" : "Region")</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("客戶名稱") : Html.Raw("Customer<br>Name"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("電話") : Html.Raw("TEL"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("聯絡人") : Html.Raw("Contact<br>Person"))</th>
+                            <th>@(currentLang == "zh-TW" ? "職稱" : "Title")</th>
+                            <th>@(currentLang == "zh-TW" ? "聯絡電話" : "Phone")</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("事件/<br>訪談記錄") : Html.Raw("Event/<br>Interview Record"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("報價記錄") : Html.Raw("Quote<br>Record"))</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            var member = members.FirstOrDefault(m => m.Mem000 == item.Mid);
+
+                            <tr>
+                                <td>
+                                    <a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(Model.ToList().IndexOf(item) + 1)</a>
+                                </td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(member != null ? member.Mem001 : "未選擇會員")</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT006</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT007</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT001</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT004</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT008</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT009</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT010</a></td>
+                                <td>
+                                    <a href="@Url.Action("RecordList", new { INT000 = item.INT000 })" class="clickable-td">
+                                        @(item.LastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("QuoteList", new { INT000 = item.INT000 })" class="clickable-td">
+                                        @(item.QuoteLastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+      document.addEventListener('DOMContentLoaded', () => {
+     const successMessage = '@TempData["SuccessMessage"]';
+     if (successMessage) {
+         alert(successMessage);
+     }
+ });
+    $(document).ready(function () {
+        $('#datatable').DataTable({
+            ordering: true
+        });
+    });
+
+</script>

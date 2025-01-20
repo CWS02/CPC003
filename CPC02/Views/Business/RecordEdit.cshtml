@@ -1,0 +1,226 @@
+﻿@using Newtonsoft.Json
+
+@{
+    ViewBag.Title = "訪談記錄";
+    Layout = "~/Views/Shared/_LayoutBusiness.cshtml";
+    string currentLang = (string)Session["Culture"] ?? "zh-TW";
+}
+
+<style>
+    .form-label {
+        text-align: left;
+        margin-bottom: 5px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+    }
+
+    .form-check {
+        text-align: left;
+        margin-bottom: 5px;
+        width: 100%;
+        max-width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+    }
+
+    .col-md-4 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .red-text {
+        color: red;
+    }
+</style>
+
+<div id="app" class="container">
+
+    <div class="d-flex align-items-center">
+        <a href="@Url.Action("RecordList", "Business", new {INT000=ViewBag.INT000})" class="btn btn-secondary me-2">
+            <img src="~/image/icons/back.png" alt="返回" style="width: 20px; height: 20px;" />
+            @(currentLang == "zh-TW" ? "返回" : "Back")
+        </a>
+        <button v-bind:class="isEditing ? 'btn btn-outline-primary me-2' : 'btn btn-primary me-2'"
+                v-on:click="toggleEditMode">
+            {{ currentLanguage === 'zh-TW' ? (isEditing ? '取消編輯' : '編輯') : (isEditing ? 'Cancel' : 'Edit') }}
+        </button>
+        <div class="flex-grow-1 text-center title">
+            @(currentLang == "zh-TW"
+                ? $"客戶訪談記錄 - {ViewBag.INTRAModel}"
+                : $"Customer Interview Record - {ViewBag.INTRAModel}")
+        </div>
+    </div>
+
+    <form v-on:submit.prevent="submitForm" method="post" action="@Url.Action("RecordEdit", new { IsUpdate = ViewBag.IsUpdate })">
+        <input type="hidden" name="INT999" v-model="formData.INT999" />
+        <input type="hidden" name="INT000" v-model="formData.INT000" />
+
+        <div>
+            <label for="INT001" class="form-label">
+                @(currentLang == "zh-TW" ? "主題" : "Title")<span class="red-text">*</span>
+            </label>
+            <input type="text" class="form-control" name="INT001" v-model="formData.INT001" maxlength="250" v-bind:disabled="!isEditing" required />
+        </div>
+
+        <div>
+            <label for="INT007" class="form-label">
+                @(currentLang == "zh-TW" ? "專案名稱" : "Project Name")<span class="red-text">*</span>
+            </label>
+            <input type="text" class="form-control" name="INT007" v-model="formData.INT007" maxlength="250" v-bind:disabled="!isEditing" />
+        </div>
+
+
+        <div class="d-flex">
+            <label for="Level" class="mb-0 me-3">
+                @(currentLang == "zh-TW" ? "重要程度" : "Importance")<span class="red-text">*</span>
+            </label>
+            <div class="d-flex gap-2">
+                <div v-for="(level, key) in Level" :key="key" class="form-check">
+                    <input class="form-check-input"
+                           type="radio"
+                           :value="key"
+                           name="Level"
+                           v-model="formData.Level"
+                           v-bind:disabled="!isEditing"
+                           required />
+                    <label class="form-check-label">
+                        {{ currentLanguage === 'zh-TW' ? level.zh : level.en }}
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex">
+            <label for="INT002" class="mb-0 me-3">
+                @(currentLang == "zh-TW" ? "訪問方式" : "Type")<span class="red-text">*</span>
+            </label>
+            <div class="d-flex gap-2">
+                <div v-for="option in currentTypeOptions" :key="option.value" class="form-check">
+                    <input class="form-check-input"
+                           type="radio"
+                           :value="option.value"
+                           name="INT002"
+                           v-model="formData.INT002"
+                           v-bind:disabled="!isEditing"
+                           required />
+                    <label class="form-check-label">
+                        {{ option.label }}
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="row">
+            <div class="col-md-4">
+                <label for="INT005" class="form-label">
+                    @(currentLang == "zh-TW" ? "訪談日期" : "Interview Date")<span class="red-text">*</span>
+                </label>
+                <input type="date" class="form-control" name="INT005" v-model="formData.INT005" v-bind:disabled="!isEditing" required />
+            </div>
+            <div class="col-md-4">
+                <label for="INT011" class="form-label">
+                    @(currentLang == "zh-TW" ? "子公司客戶" : "Subsidiary")
+                </label>
+                <input type="text" class="form-control" name="INT011" v-model="formData.INT011" v-bind:disabled="!isEditing" />
+            </div>
+        </div>
+
+
+
+        <div>
+            <label for="INT008" class="form-label">
+                @(currentLang == "zh-TW" ? "拜訪目的" : "Visit purpose")
+            </label>
+            <textarea class="form-control" name="INT008" v-model="formData.INT008" v-bind:disabled="!isEditing" rows="5"></textarea>
+        </div>
+        <div>
+            <label for="INT004" class="form-label">
+                @(currentLang == "zh-TW" ? "內容" : "Content")
+            </label>
+            <textarea class="form-control" name="INT004" v-model="formData.INT004" v-bind:disabled="!isEditing" rows="10"></textarea>
+        </div>
+        <div>
+            <label for="INT009" class="form-label">
+                @(currentLang == "zh-TW" ? "後續步驟" : "Next steps")
+            </label>
+            <textarea class="form-control" name="INT009" v-model="formData.INT009" v-bind:disabled="!isEditing" rows="5"></textarea>
+        </div>
+        <div class="text-center" v-if="isEditing">
+            <button type="submit" class="btn btn-primary">
+                @(currentLang == "zh-TW" ? "存檔" : "Save")
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    isEditing: '@ViewBag.IsUpdate'!== 'True',
+
+                    currentLanguage: '@currentLang',
+                    formData: @Html.Raw(JsonConvert.SerializeObject(Model, new JsonSerializerSettings
+                                        {
+                                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                                        })),
+                    typeOptions: {
+                        1: { zh: "到訪記錄", en: "Visit Record" },
+                        2: { zh: "電話記錄", en: "Phone Record" },
+                        3: { zh: "Email", en: "via emails" },
+                        4: { zh: "線上會議", en: "On-line meeting" },
+                        5: { zh: "視訊", en: "Video Conference" },
+                        6: { zh: "來訪", en: "Visitor Record" }
+                    },
+                    Level: {
+                        1: { zh: "1(高)", en: "One(High)" },
+                        2: { zh: "2", en: "Two" },
+                        3: { zh: "3", en: "Three" },
+                        4: { zh: "4", en: "Four" },
+                        5: { zh: "5(低)", en: "Five(Low)" }
+                    },
+                    currentTypeOptions: []
+                };
+            },
+            created() {
+                this.updateTypeOptions();
+            },
+            watch: {
+                currentLanguage() {
+                    this.updateTypeOptions();
+                }
+            },
+            methods: {
+                toggleEditMode() {
+                    this.isEditing = !this.isEditing;
+                },
+                updateTypeOptions() {
+                    this.currentTypeOptions = Object.entries(this.typeOptions).map(([key, option]) => ({
+                        value: parseInt(key), // 保留鍵值
+                        label: this.currentLanguage === 'zh-TW' ? option.zh : option.en
+                    }));
+                },
+                submitForm() {
+                    const isConfirmed = window.confirm(this.currentLanguage === 'zh-TW' ? "資料是否無誤？" : "Is the data correct?");
+                    if (isConfirmed) {
+                        const form = document.querySelector('form');
+                        form.submit();
+                    }
+                }
+            }
+        });
+        app.mount('#app');
+    </script>
+}

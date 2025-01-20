@@ -1,0 +1,324 @@
+﻿@using Newtonsoft.Json
+@model CPC02.Models.INTRC
+
+@{
+    ViewBag.Title = "報價記錄";
+    Layout = "~/Views/Shared/_LayoutBusiness.cshtml";
+    string currentLang = (string)Session["Culture"] ?? "zh-TW";
+}
+
+<style>
+    .form-label {
+        text-align: left;
+        margin-bottom: 5px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+    }
+
+    .form-check {
+        text-align: left;
+        margin-bottom: 5px;
+        width: 100%;
+        max-width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+    }
+
+    .col-md-4 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .red-text {
+        color: red;
+    }
+
+    .form-table td, .form-table th {
+        padding: 10px;
+        text-align: center;
+    }
+
+    .form-table th {
+        background-color: #a700ff;
+    }
+
+
+    #saveButton {
+        display: block;
+        margin: 0 auto; 
+    }
+</style>
+
+<div class="container">
+    <div class="d-flex align-items-center">
+        <a href="@Url.Action("QuoteList", "Business", new { INT000 = ViewBag.INT000 })" class="btn btn-secondary me-2">
+            <img src="~/image/icons/back.png" alt="返回" style="width: 20px; height: 20px;" />
+            @(currentLang == "zh-TW" ? "返回" : "Back")
+        </a>
+        <button id="editToggleButton" class="btn btn-primary me-2" onclick="toggleEditMode()">@(currentLang == "zh-TW" ? "編輯" : "Edit")</button>
+
+        @if (ViewBag.IsUpdate == true)
+        {
+            <a href="@Url.Action("PrintQuote", new { INT000 =  Model.INT000,INT999=Model.INT999 })" target="_blank" class="btn btn-success me-2">
+                @(currentLang == "zh-TW" ? "PDF" : "PDF")
+            </a>
+        }
+
+        <div class="flex-grow-1 text-center title">
+            @(currentLang == "zh-TW"
+        ? $"報價記錄 - {ViewBag.INTRAModel}"
+        : $"Quotation Record - {ViewBag.INTRAModel}")
+        </div>
+    </div>
+
+    @using (Html.BeginForm("QuoteEdit", "Business", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        <input type="hidden" name="IsUpdate" value="@ViewBag.IsUpdate.ToString().ToLower()" />
+
+        @Html.HiddenFor(m => m.INT999)
+        @Html.HiddenFor(m => m.INT000)
+
+<div class="row">
+    <div class="col-md-4">
+        <label for="INT001" class="form-label">
+            @(currentLang == "zh-TW" ? "報價日期" : "Quotation Date")<span class="red-text">*</span>
+        </label>
+        @Html.TextBoxFor(m => m.INT001, new { @class = "form-control", type = "date", required = "required" })
+    </div>
+    <div class="col-md-4">
+        <label for="INT001" class="form-label">
+            @(currentLang == "zh-TW" ? "交期" : "Deadline")
+        </label>
+        @Html.TextBoxFor(m => m.INT004, new { @class = "form-control", type = "date" })
+    </div>
+
+    <div class="col-md-4">
+        <label for="INT005" class="form-label">
+            @(currentLang == "zh-TW" ? "稅額" : "Tax")
+        </label>
+        @Html.DropDownListFor(m => m.INT005,
+            new List<SelectListItem> {
+                new SelectListItem { Value = "true", Text = currentLang == "zh-TW" ? "是" : "Yes" },
+                new SelectListItem { Value = "false", Text = currentLang == "zh-TW" ? "否" : "No", Selected = true }
+            },
+            new { @class = "form-control" }
+        )
+    </div>
+
+</div>
+
+        <div class="col-12">
+            <label for="INT001" class="form-label">
+                @(currentLang == "zh-TW" ? "備註" : "Remark")
+            </label>
+            @Html.TextAreaFor(m => m.INT003, new { @class = "form-control", rows = 4, cols = 50 })
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table form-table" id="quotationDetails">
+                    <thead>
+                        <tr>
+                            <th style="width: 30%">@(currentLang == "zh-TW" ? "型號規格" : "Product Specifications")</th>
+                            <th style="width: 10%">@(currentLang == "zh-TW" ? "邊距" : "Margin")</th>
+                            <th style="width: 10%">@(currentLang == "zh-TW" ? "邊距" : "Margin")</th>
+                            <th>@(currentLang == "zh-TW" ? "單位" : "Unit")</th>
+                            <th>@(currentLang == "zh-TW" ? "數量" : "Quantity")</th>
+                            <th>@(currentLang == "zh-TW" ? "單價" : "Unit Price")</th>
+                            <th>@(currentLang == "zh-TW" ? "總價" : "Total Price")</th>
+                            <th>@(currentLang == "zh-TW" ? "刪除" : "Delete")</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quotationDetailsBody">
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-success" onclick="addDetail()" id="addDetailButton" style="display: none;" >@(currentLang=="zh-TW"?"新增":"Add Detail")</button>
+            </div>
+        </div>
+
+        <input type="hidden" id="INT002" name="INT002" />
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary" id="saveButton" style="display: none;">
+                @(currentLang == "zh-TW" ? "存檔" : "Save")
+            </button>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        const currentLang = '@currentLang';
+        let isEditing = false; // 編輯模式開關
+
+        // 頁面加載時，解析 JSON 資料並生成報價詳細項目
+        document.addEventListener('DOMContentLoaded', function () {
+    const jsonDetails = '@Html.Raw(Model.INT002 ?? "[]")';
+    const details = JSON.parse(jsonDetails);
+    const tableBody = document.getElementById('quotationDetailsBody');
+    details.forEach((detail, index) => {
+        const newRow = tableBody.insertRow(index);
+        newRow.innerHTML = `
+            <td><input type="text" class="form-control" name="QuotationDetails[${index}].Model" value="${detail.model}" /></td>
+            <td><input type="text" class="form-control" name="QuotationDetails[${index}].Margin1" value="${detail.margin1}" onchange="updateMargin(this)" step="0.01" oninput="validateMarginInput(this)" /></td>
+            <td><input type="text" class="form-control" name="QuotationDetails[${index}].Margin2" value="${detail.margin2}" onchange="updateMargin(this)" step="0.01" oninput="validateMarginInput(this)" /></td>
+            <td><input type="text" class="form-control" name="QuotationDetails[${index}].Unit" value="${detail.unit}" /></td>
+            <td><input type="text" class="form-control" name="QuotationDetails[${index}].Quantity" value="${detail.quantity}" onchange="updateTotalPrice(this)" /></td>
+            <td><input type="text" class="form-control" name="QuotationDetails[${index}].UnitPrice" value="${detail.unitPrice}" onchange="updateTotalPrice(this)" /></td>
+            <td><span class="total-price" id="totalPrice_${index}">${(detail.quantity * detail.unitPrice).toFixed(2)}</span></td>
+            <td>
+                <a onclick="removeDetail(this)">
+                    <img src="/image/icons/delete.png" alt="刪除" style="width: 20px; height: 20px;" />
+                </a>
+            </td>`;
+    });
+
+    // 根據 ViewBag.IsUpdate 判斷是否唯讀
+    const isUpdate = '@ViewBag.IsUpdate' === 'True';
+    const readOnlyFields = document.querySelectorAll(".form-control");
+    const addDetailButton = document.getElementById("addDetailButton");
+    const saveButton = document.getElementById("saveButton");
+    const editButton = document.getElementById("editToggleButton");
+    const dropdowns = document.querySelectorAll("select");
+    // 預設為唯讀
+    if (isUpdate) {
+        readOnlyFields.forEach(field => field.readOnly = true);
+        editButton.textContent = currentLang === "zh-TW" ? "編輯" : "Edit";
+        editButton.className = "btn btn-primary me-2";
+        addDetailButton.style.display = "none";
+        saveButton.style.display = "none";
+        dropdowns.forEach(dropdown => dropdown.disabled = true);
+    } else {
+        readOnlyFields.forEach(field => field.readOnly = false);
+        editButton.textContent = currentLang === "zh-TW" ? "取消編輯" : "Cancel";
+        editButton.className = "btn btn-outline-primary me-2";
+        addDetailButton.style.display = "block";
+        saveButton.style.display = "block";
+        dropdowns.forEach(dropdown => dropdown.disabled = false);
+    }
+});
+
+        // 切換編輯模式
+        function toggleEditMode() {
+            const isEditing = document.querySelector('.form-control[readonly]') === null;  // 檢查是否處於編輯模式
+            const readOnlyFields = document.querySelectorAll(".form-control");
+            const editButton = document.getElementById("editToggleButton");
+            const addDetailButton = document.getElementById("addDetailButton");
+            const saveButton = document.getElementById("saveButton");
+            const dropdowns = document.querySelectorAll("select");
+
+            if (isEditing) {
+                readOnlyFields.forEach(field => field.readOnly = true);
+                editButton.textContent = currentLang === "zh-TW" ? "編輯" : "Edit";
+                editButton.className = "btn btn-primary me-2";
+                addDetailButton.style.display = "none";
+                saveButton.style.display = "none";
+                dropdowns.forEach(dropdown => dropdown.disabled = true);
+            } else {
+                readOnlyFields.forEach(field => field.readOnly = false);
+                editButton.textContent = currentLang === "zh-TW" ? "取消編輯" : "Cancel";
+                editButton.className = "btn btn-outline-primary me-2";
+                addDetailButton.style.display = "block";
+                saveButton.style.display = "block";
+                dropdowns.forEach(dropdown => dropdown.disabled = false);
+            }
+        }
+
+        // 新增一行報價詳細資料
+        function addDetail() {
+            const tableBody = document.getElementById('quotationDetailsBody');
+            const index = tableBody.rows.length; // 計算目前的索引
+            const newRow = tableBody.insertRow(index);
+
+            newRow.innerHTML = `
+                <td><input type="text" class="form-control" name="QuotationDetails[${index}].Model" value="" /></td>
+                <td><input type="text" class="form-control" name="QuotationDetails[${index}].Margin1" onchange="updateMargin(this)" step="0.01" oninput="validateMarginInput(this)" /></td>
+                <td><input type="text" class="form-control" name="QuotationDetails[${index}].Margin2" onchange="updateMargin(this)" step="0.01" oninput="validateMarginInput(this)" /></td>
+                <td><input type="text" class="form-control" name="QuotationDetails[${index}].Unit" value="" /></td>
+                <td><input type="text" class="form-control" name="QuotationDetails[${index}].Quantity" onchange="updateTotalPrice(this)" /></td>
+                <td><input type="text" class="form-control" name="QuotationDetails[${index}].UnitPrice" onchange="updateTotalPrice(this)" /></td>
+                <td><span class="total-price" id="totalPrice_${index}">0.00</span></td>
+                <td>
+                    <a onclick="removeDetail(this)">
+                        <img src="/image/icons/delete.png" alt="刪除" style="width: 20px; height: 20px;" />
+                    </a>
+                </td>`;
+        }
+
+        // 更新報價詳細項目的邊距值
+        function updateMargin(input) {
+            let value = input.value.trim();
+            if (value === "") {
+                input.value = "";
+                return;
+            }
+            value = parseFloat(value) || 0;
+            value = value.toFixed(2);
+            input.value = value;
+
+            updateTotalPrice(input);
+        }
+
+        // 校驗邊距輸入值
+        function validateMarginInput(input) {
+            let value = input.value;
+
+            // 如果有小數點
+            if (value.includes('.')) {
+                let [integer, decimal] = value.split('.');
+                // 如果小數位數大於2，截斷超過的部分
+                if (decimal.length > 2) {
+                    value = `${integer}.${decimal.substring(0, 2)}`;
+                }
+            }
+
+            input.value = value;
+        }
+
+        // 刪除報價詳細項目
+        function removeDetail(button) {
+            const row = button.closest('tr');
+            row.parentNode.removeChild(row);
+        }
+
+        // 更新總價
+        function updateTotalPrice(input) {
+            const row = input.closest('tr');
+            const quantity = row.querySelector('[name*=".Quantity"]').value;
+            const unitPrice = parseFloat(row.querySelector('[name*=".UnitPrice"]').value) || 0;
+            const totalPrice = (quantity * unitPrice).toFixed(2);
+
+            const totalPriceElement = row.querySelector('.total-price');
+            totalPriceElement.textContent = totalPrice;
+        }
+
+        // 在表單提交時，將報價詳細資料以 JSON 格式傳送
+        document.querySelector('form').onsubmit = function () {
+            const details = [];
+            const rows = document.querySelectorAll('#quotationDetailsBody tr');
+            rows.forEach(function (row) {
+                const model = row.querySelector('[name*=".Model"]').value;
+                const margin1 = row.querySelector('[name*=".Margin1"]').value;
+                const margin2 = row.querySelector('[name*=".Margin2"]').value;
+                const unit = row.querySelector('[name*=".Unit"]').value;
+                const quantity = row.querySelector('[name*=".Quantity"]').value;
+                const unitPrice = row.querySelector('[name*=".UnitPrice"]').value;
+
+                details.push({ model, margin1, margin2, unit, quantity, unitPrice });
+            });
+
+            document.getElementById('INT002').value = JSON.stringify(details);
+        };
+    </script>
+}

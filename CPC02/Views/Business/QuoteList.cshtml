@@ -1,0 +1,193 @@
+﻿@model IEnumerable<CPC02.Models.INTRC>
+
+@{
+    ViewBag.Title = "報價系統";
+    Layout = "~/Views/Shared/_LayoutBusiness.cshtml";
+    string currentLang = (string)Session["Culture"] ?? "zh-TW";
+    var members = ViewBag.Members as List<CPC02.Models.Member>;
+}
+<style>
+    .btn {
+        font-size: 16px;
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+
+
+    table#datatable th,
+    table#datatable td {
+        font-size: 12px;
+        padding: 4px;
+        white-space: nowrap;
+    }
+
+    .btn img {
+        width: 16px;
+        height: 16px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    table#datatable th {
+        font-size: 14px;
+    }
+
+    table {
+        table-layout: auto;
+    }
+
+        table#datatable td {
+            word-wrap: break-word;
+            max-width: 50px;
+            white-space: normal;
+        }
+
+    .clickable-td {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+        .clickable-td:hover {
+            color: inherit;
+            text-decoration: none;
+        }
+</style>
+
+<link rel="stylesheet" href="~/css/style2.css" />
+
+<div class="d-flex align-items-center">
+    <a href="@Url.Action("InterviewRecordList", "Business")" class="btn btn-secondary">
+        <img src="~/image/icons/back.png" style="width: 20px; height: 20px;" /> @(currentLang=="zh-TW"? "返回" : "Back")
+    </a>
+    <div class="flex-grow-1 text-center title">
+        @(currentLang == "zh-TW"
+    ? $"報價系統 - {ViewBag.INTRAModel.INT001}"
+    : $"Quotation System - {ViewBag.INTRAModel.INT001}")
+    </div>
+</div>
+
+
+<div id="app" class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <p class="info-line">
+                @(currentLang == "zh-TW" ? "國家" : "Country"): @ViewBag.INTRAModel.INT006
+                | @(currentLang == "zh-TW" ? "區域" : "Region"): @ViewBag.INTRAModel.INT007
+                | @(currentLang == "zh-TW" ? "聯絡人" : "Contact Person"): @ViewBag.INTRAModel.INT008
+                | @(currentLang == "zh-TW" ? "電話" : "Phone"): @ViewBag.INTRAModel.INT004
+                | @(currentLang == "zh-TW" ? "分機" : "Fax"): @ViewBag.INTRAModel.INT005
+
+            </p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-3">
+                <a href="@Url.Action("QuoteEdit", new {INT999=ViewBag.INT000})"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
+            </div>
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table id="datatable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>@(currentLang == "zh-TW" ? "序" : "No.")</th>
+                            @if (Session["Per"] != null && (bool)Session["Per"])
+                            {
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("主管審核") : Html.Raw("Manager<br>Review"))</th>
+                                @*<th>@(currentLang == "zh-TW" ? Html.Raw("主管回覆") : Html.Raw("Manager<br>Reply"))</th>*@
+                            }
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("報價PDF") : Html.Raw("Quotation<br>PDF"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("報價日期") : Html.Raw("Quotation<br>Date"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("交期") : Html.Raw("Deadline"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("業務人員") : Html.Raw("Sales<br>Representative"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("圖面上傳") : Html.Raw("Image<br>Upload"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("圖面下載") : Html.Raw("Image<br>Download"))</th>
+                            <th>@(currentLang == "zh-TW" ? "狀態" : "Status")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var member = members.FirstOrDefault(m => m.Mem000 == item.Mid);
+
+                            <tr>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(Model.ToList().IndexOf(item) + 1) </a></td>
+                                @if (Session["Per"] != null && (bool)Session["Per"])
+                                {
+                                    <td>
+                                        @if (item.Status == 0)
+                                        {
+                                            <a href="@Url.Action("ChangeStatusForINTRC", new { id = item.INT000,id2=item.INT999,status=1 })">
+                                                <img src="~/image/icons/check.png" alt="主管審核" style="width: 20px; height: 20px;" />
+                                            </a>
+                                        }
+                                    </td>
+
+                                }
+                                <td>
+                                    <a href="@Url.Action("PrintQuote", new {  INT000 = item.INT000,INT999=ViewBag.INT000})" target="_blank">
+                                        <img src="~/image/icons/file_download.png" alt="下載" style="width: 20px; height: 20px;" />
+                                    </a>
+                                </td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@item.INT001</a></td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@item.INT004</a></td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(member != null ? member.Mem001 : "未選擇會員")</a></td>
+                                <td>
+                                    <form action="@Url.Action("UploadQuote", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
+                                        <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
+                                        <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
+                                            <img src="~/image/icons/file_upload.png" alt="附近上傳" style="width: 20px; height: 20px;" />
+                                        </a>
+                                        <input type="submit" value="上傳" style="display: none;" />
+                                    </form>
+                                </td>
+                                <td>
+                                    @if (item.INT006 != null)
+                                    {
+                                        <a href="@Url.Action("DownloadQuote", new {  INT000 = item.INT000, INT999 = item.INT999 })" target="_blank">
+                                            <img src="~/image/icons/file_download.png" alt="附件下載" style="width: 20px; height: 20px;" />
+                                        </a>
+                                    }
+                                </td>
+                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.Status == 0 ? "未審核" : (item.Status == 1 ? "已審核" : "已刪除"))</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+      document.addEventListener('DOMContentLoaded', () => {
+     const successMessage = '@TempData["SuccessMessage"]';
+     if (successMessage) {
+         alert(successMessage);
+     }
+ });
+    $(document).ready(function () {
+        $('#datatable').DataTable({
+            ordering: true
+        });
+    });
+
+document.querySelector('body').addEventListener('change', function(e) {
+    if (e.target && e.target.type === 'file') {
+        const fileInput = e.target;
+        if (fileInput.files.length > 0) {
+            fileInput.form.submit();  // 提交表單
+        }
+    }
+});
+</script>

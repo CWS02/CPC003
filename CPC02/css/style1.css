@@ -1,0 +1,77 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+.card {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    background-color: #ffffff;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    margin-bottom: 1rem;
+}
+
+.table {
+    width: 90%;
+    margin-bottom: 1rem;
+
+}
+
+    .table th,
+    .table td {
+        padding: 0.5rem;
+        vertical-align: middle;
+        border-top: 1px solid #dee2e6;
+        width: 150px; 
+        height: 50px; 
+        white-space: nowrap;
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        font-size:13.5px;
+    }
+
+.thead-dark th {
+    color: #fff;
+    background-color: #343a40;
+}
+
+.text-center {
+    text-align: center;
+}
+
+
+
+.table-hover tbody tr:hover {
+    background-color: #f2f2f2;
+}
+
+.table thead {
+    background: linear-gradient(to right, #007bff, #0056b3);
+}
+
+    .table thead th {
+        color: #ffffff !important; 
+        text-align: center;
+        font-weight: bold;
+        padding: 15px;
+        border-bottom: 2px solid #0056b3;
+
+    }
+
+/*btn*/
+.btn-spacing {
+    margin-right:10px;
+}
+
+.custom-container {
+    max-width: 98%;
+    margin: 0 auto;
+}
+
+table {
+    width: 100%; 
+    margin: 0 auto; 
+}
+

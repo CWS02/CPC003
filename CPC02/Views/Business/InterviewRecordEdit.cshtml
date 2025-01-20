@@ -1,0 +1,300 @@
+﻿@using Newtonsoft.Json
+@{
+    ViewBag.Title = "客戶基本資料";
+    Layout = "~/Views/Shared/_LayoutBusiness.cshtml";
+    string currentLang = (string)Session["Culture"] ?? "zh-TW";
+}
+
+<style>
+    .form-label {
+        text-align: left;
+        margin-bottom: 5px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+    }
+
+    .form-check {
+        text-align: left;
+        margin-bottom: 5px;
+        width: 100%;
+        max-width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+    }
+
+    .col-md-4 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .red-text {
+        color: red;
+    }
+</style>
+
+<div id="app" class="container">
+    <div class="d-flex align-items-center">
+        <a href="@Url.Action("InterviewRecordList", "Business")" class="btn btn-secondary me-2">
+            <img src="~/image/icons/back.png" alt="返回" style="width: 20px; height: 20px;" /> @(currentLang == "zh-TW" ? "返回" : "Back")
+        </a>
+        <button v-bind:class="isEditing ? 'btn btn-outline-primary me-2' : 'btn btn-primary me-2'"
+                v-on:click="toggleEditMode">
+            {{ currentLanguage === 'zh-TW' ? (isEditing ? '取消編輯' : '編輯') : (isEditing ? 'Cancel' : 'Edit') }}
+        </button>
+        <div class="flex-grow-1 text-center title">{{ currentLanguage === 'zh-TW' ? '客戶基本資料' : 'Basic Customer Information' }}</div>
+    </div>
+
+    <form v-on:submit.prevent="submitForm" method="post" action="@Url.Action("InterviewRecordEdit", new { IsUpdate = ViewBag.IsUpdate })" enctype="multipart/form-data">
+
+        <input type="hidden" name="INT000" v-model="formData.INT000" />
+
+        <div class="row">
+            <div class="col-12">
+                <label for="INT001" class="form-label">{{ currentLanguage === 'zh-TW' ? '客戶名稱' : 'Customer Name' }}<span class="red-text">*</span></label>
+                <input type="text" class="form-control" name="INT001" v-model="formData.INT001" v-bind:disabled="!isEditing" maxlength="30" required />
+            </div>
+            @*<a href="@Url.Action("")" class="btn btn-outline-secondary">{{currentLanguage==='zh-TW'?'複製前一筆':'Copy Last'}}</a>*@
+        </div>
+
+
+        <div class="row">
+            <div class="col-12">
+                <label for="INT003" class="form-label">{{ currentLanguage === 'zh-TW' ? '地址' : 'Address' }}</label>
+                <input type="text" class="form-control" name="INT003" v-model="formData.INT003" v-bind:disabled="!isEditing" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <label for="responsibleBusiness" class="form-label">負責業務 <span class="red-text">*</span></label>
+                <select id="responsibleBusiness" name="Mid" class="form-control" v-model="formData.Mid" v-bind:disabled="!isEditing" required>
+                    <option value="" disabled>請選擇</option>
+                    <option v-for="member in members" :key="member.Mem000" :value="member.Mem000" :selected="formData.Mid === member.Mem000">
+                        {{ currentLanguage === 'zh-TW' ? member.Mem001 : member.Mem001 }}
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="INT029" class="form-label">
+                    @(currentLang == "zh-TW" ? "部門" : "Department")<span class="red-text">*</span>
+                </label>
+                <select class="form-control" name="INT029" v-model="formData.INT029" v-bind:disabled="!isEditing" required>
+                    <option value="" disabled selected>@(currentLang == "zh-TW" ? "請選擇" : "Please select")</option>
+                    <option value="1">@(currentLang == "zh-TW" ? "國內" : "Domestic")</option>
+                    <option value="2">@(currentLang == "zh-TW" ? "國外" : "International")</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="row align-items-center">
+            <div class="col-md-1">
+                <label for="INT002" class="form-label">
+                    {{ currentLanguage === 'zh-TW' ? '型態別' : 'Type' }}
+                    <span class="red-text">*</span>
+                </label>
+            </div>
+            <div class="col-md-10 d-flex">
+                <div v-for="(label, value) in typeOptions" :key="value" class="form-check">
+                    <input class="form-check-input"
+                           type="radio"
+                           :value="value"
+                           name="INT002"
+                           v-model="formData.INT002"
+                           v-bind:disabled="!isEditing"
+                           required />
+                    <label class="form-check-label">
+                        {{ currentLanguage === 'zh-TW' ? label.zh : label.en }}
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <label for="INT004" class="form-label">{{ currentLanguage === 'zh-TW' ? '電話' : 'TEL' }}<span class="red-text">*</span></label>
+                <input type="text" class="form-control" name="INT004" v-model="formData.INT004" v-bind:disabled="!isEditing" required />
+            </div>
+            <div class="col-md-4">
+                <label for="INT005" class="form-label">{{ currentLanguage === 'zh-TW' ? '傳真' : 'FAX' }}</label>
+                <input type="text" class="form-control" name="INT005" v-model="formData.INT005" v-bind:disabled="!isEditing" />
+            </div>
+            <div class="col-md-4">
+                <label for="fileUpload" class="form-label">{{ currentLanguage === 'zh-TW' ? '上傳名片' : 'Upload Card' }}</label>
+                <input type="file" id="fileUpload" class="form-control" name="UploadedFile" v-bind:disabled="!isEditing" />
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <label for="INT006" class="form-label">{{ currentLanguage === 'zh-TW' ? '國家' : 'Country' }}<span class="red-text">*</span></label>
+                <input type="text" class="form-control" name="INT006" v-model="formData.INT006" v-bind:disabled="!isEditing" required />
+            </div>
+            <div class="col-md-4">
+                <label for="INT007" class="form-label">{{ currentLanguage === 'zh-TW' ? '區域' : 'Region' }}</label>
+                <input type="text" class="form-control" name="INT007" v-model="formData.INT007" v-bind:disabled="!isEditing" />
+            </div>
+            <div class="col-md-4">
+
+                <img v-if="formData.INT030" :src="formData.INT030" class="img-fluid img-small" style="width: 150px; height: 150px; object-fit: cover;">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <label for="INT018" class="form-label">{{ currentLanguage === 'zh-TW' ? '信用額度' : 'Credit Limit' }}</label>
+                <input type="text" class="form-control" name="INT018" v-model="formData.INT018" v-bind:disabled="!isEditing" />
+            </div>
+            <div class="col-md-4">
+                <label for="INT019" class="form-label">{{ currentLanguage === 'zh-TW' ? '成立時間' : 'Establishment Date' }}</label>
+                <input type="text" class="form-control" name="INT019" v-model="formData.INT019" v-bind:disabled="!isEditing" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label for="INT020" class="form-label">{{ currentLanguage === 'zh-TW' ? '公司網站' : 'Company Website' }}</label>
+                <input type="text" class="form-control" name="INT020" v-model="formData.INT020" v-bind:disabled="!isEditing" />
+            </div>
+            <div class="col-md-4">
+                <label for="INT020" class="form-label">{{ currentLanguage === 'zh-TW' ? 'Email' : 'Email' }}</label>
+                <input type="text" class="form-control" name="INT027" v-model="formData.INT027" v-bind:disabled="!isEditing" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label for="INT021" class="form-label">{{ currentLanguage === 'zh-TW' ? '公司營業額' : 'Company Revenue' }}</label>
+                <input type="text" class="form-control" name="INT021" v-model="formData.INT021" v-bind:disabled="!isEditing" />
+            </div>
+            <div class="col-md-4">
+                <label for="INT022" class="form-label">{{ currentLanguage === 'zh-TW' ? '年營業額' : ' Annual Revenue' }}</label>
+                <input type="text" class="form-control" name="INT022" v-model="formData.INT022" v-bind:disabled="!isEditing" />
+            </div>
+            <div class="col-md-4">
+                <label for="INT023" class="form-label">{{ currentLanguage === 'zh-TW' ? '員工人數' : 'Number of Employees' }}</label>
+                <input type="text" class="form-control" name="INT023" v-model="formData.INT023" v-bind:disabled="!isEditing" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label for="INT024" class="form-label">{{ currentLanguage === 'zh-TW' ? '統編' : 'Tax ID' }}</label>
+                <input type="text" class="form-control" name="INT024" v-model="formData.INT024" v-bind:disabled="!isEditing" />
+            </div>
+            <div class="col-md-4">
+                <label for="INT025" class="form-label">{{ currentLanguage === 'zh-TW' ? '公司負責人' : 'Company Director' }}</label>
+                <input type="text" class="form-control" name="INT025" v-model="formData.INT025" v-bind:disabled="!isEditing" />
+            </div>
+            <div class="col-md-4">
+                <label for="INT026" class="form-label">{{ currentLanguage === 'zh-TW' ? '付款條件' : 'Payment Terms' }}</label>
+                <input type="text" class="form-control" name="INT026" v-model="formData.INT026" v-bind:disabled="!isEditing" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4" v-for="(label, key) in contactFields" :key="key">
+                <label :for="key" class="form-label">{{ currentLanguage === 'zh-TW' ? label.zh : label.en }}</label>
+                <input type="text" class="form-control" :name="key" v-model="formData[key]" v-bind:disabled="!isEditing" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <label for="INT017" class="form-label">{{ currentLanguage === 'zh-TW' ? '業務範圍' : 'Business scope' }}</label>
+                <textarea class="form-control" name="INT017" v-model="formData.INT017" v-bind:disabled="!isEditing" rows="5"></textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <label for="INT028" class="form-label">{{ currentLanguage === 'zh-TW' ? 'cpc相關產品現況' : 'cpc-related Product Status' }}</label>
+                <textarea class="form-control" name="INT028" v-model="formData.INT028" v-bind:disabled="!isEditing" rows="5"></textarea>
+            </div>
+        </div>
+
+        <div class="row mt-4" v-if="isEditing">
+            <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-primary">{{ currentLanguage === 'zh-TW' ? '存檔' : 'Save' }}</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    isEditing: '@ViewBag.IsUpdate'!== 'True',
+                    currentLanguage: '@currentLang',
+                    formData: @Html.Raw(JsonConvert.SerializeObject(Model ?? new {}, new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    })),
+
+                    members: @Html.Raw(ViewBag.MemberList),
+                    typeOptions: {
+                        A: { zh: "設備製造業", en: "Equipment Manufacturing" },
+                        B: { zh: "設備代理業", en: "Equipment Agency" },
+                        C: { zh: "使用者", en: "User" },
+                        D: { zh: "使用者自製設備", en: "User-Made Equipment" },
+                        E: { zh: "其他", en: "Other" }
+                    },
+                    contactFields: {
+                        INT008: { zh: "接洽人", en: "Contact Person" },
+                        INT009: { zh: "職稱", en: "Title" },
+                        INT010: { zh: "電話分機", en: "Extension" },
+                        INT011: { zh: "接洽人2", en: "Contact Person 2" },
+                        INT012: { zh: "職稱2", en: "Title 2" },
+                        INT013: { zh: "電話分機2", en: "Extension 2" },
+                        INT014: { zh: "接洽人3", en: "Contact Person 3" },
+                        INT015: { zh: "職稱3", en: "Title 3" },
+                        INT016: { zh: "電話分機3", en: "Extension 3" }
+                    }, productOptions: [
+                        { value: 'P1', zh: "商品一", en: "Product One" },
+                        { value: 'P2', zh: "商品二", en: "Product Two" },
+                        { value: 'P3', zh: "商品三", en: "Product Three" }
+                    ],
+                };
+            },
+            methods: {
+                toggleEditMode() {
+                    this.isEditing = !this.isEditing;
+                },
+                handleFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        // 將檔案名稱存入 formData
+                        this.formData.INT030 = file.name;
+                        // 創建 FormData 實例，附加檔案
+                        const formData = new FormData();
+                        formData.append("file", file);
+
+                        // 儲存 formData 到 Vue 實例
+                        this.formData.fileData = formData;
+                    }
+                },
+                submitForm() {
+                    const isConfirmed = window.confirm(this.currentLanguage === 'zh-TW' ? "資料是否無誤？" : "Is the data correct?");
+                    if (isConfirmed) {
+
+                        const form = document.querySelector('form');
+                        form.submit();
+                    }
+                },
+
+            }
+        });
+        app.mount('#app');
+    </script>
+}
