@@ -8,6 +8,7 @@
 
 }
 <link rel="stylesheet" href="~/css/style2.css" />
+
 <style>
     table#datatable th,
     table#datatable td {
@@ -21,10 +22,7 @@
         height: 16px;
     }
 
-    .btn {
-        font-size: 12px;
-        padding: 5px 10px;
-    }
+
 
     table#datatable th {
         font-size: 14px;
@@ -52,8 +50,45 @@
             text-decoration: none;
         }
 </style>
+
 <div class="title" style="color: blue;">@(currentLang=="zh-TW"? "直得科技" : "CHIEFTEK")</div>
 <div class="title">@(currentLang=="zh-TW"? "業務銷售系統" : "Business Sales System")</div>
+
+<form method="get" class="form-inline justify-content-center mb-4">
+    <div class="input-group" style="margin-top:20px">
+        <label for="responsibleBusiness" class="form-label">
+            @(currentLang == "zh-TW" ? "負責業務" : "Responsible Business")
+        </label>
+        <select id="responsibleBusiness" name="Mid2" class="form-control">
+            <option value="" @(string.IsNullOrEmpty(Request.QueryString["Mid2"]) ? "selected" : "")>
+                @(currentLang == "zh-TW" ? "請選擇" : "Please Select")
+            </option>
+            @if (ViewBag.Members != null)
+            {
+                foreach (var member in ViewBag.Members)
+                {
+                    <option value="@member.Mem000" @(Request.QueryString["Mid2"] == member.Mem000.ToString() ? "selected" : "")>
+                        @member.Mem001
+                    </option>
+                }
+            }
+        </select>
+
+        <label for="INT001" class="mr-3" style="margin-left: 10px;">
+            @(currentLang == "zh-TW" ? "客戶名稱:" : "Customer Name:")
+        </label>
+        <input type="text" id="INT001" name="INT001" class="form-control"
+               value="@Request.QueryString["INT001"]" style="margin-right: 10px;" placeholder="
+               @(currentLang == "zh-TW" ? "請輸入關鍵字" : "Enter Keyword")" />
+
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="submit" style="margin-left: 10px;">
+                @(currentLang == "zh-TW" ? "搜索" : "Search")
+            </button>
+        </div>
+    </div>
+</form>
+
 
 <div id="app" class="container">
     <div class="card">

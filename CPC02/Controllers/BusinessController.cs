@@ -6,6 +6,7 @@ using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 using NPOI.HSSF.Record.Chart;
 using NPOI.OpenXml4Net.OPC.Internal;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -27,14 +28,36 @@ namespace CPC02.Controllers
 
         #region 客戶訪談記錄
         [HttpGet]
-        public ActionResult InterviewRecordList(bool? Per)
+        public ActionResult InterviewRecordList(bool? Per,int? Mid2, string INT001)
         {
             if (Session["Mid"] == null)
             {
                 return RedirectToAction("Login", "Member");
             }
 
-            var model = _db.INTRA.ToList();
+            var modelQuery = _db.INTRA.AsQueryable();
+
+            if (Mid2.HasValue)
+            {
+                Session["Mid2"] = Mid2;
+                modelQuery = modelQuery.Where(x => x.Mid == Mid2);
+            }
+            else
+            {
+                Session["Mid2"] = null;
+            }
+
+            if (!string.IsNullOrEmpty(INT001))
+            {
+                Session["INT001"] = INT001;
+                modelQuery = modelQuery.Where(x => x.INT001.Contains(INT001));
+            }
+            else
+            {
+                Session["INT001"] = null;
+            }
+            var model = modelQuery.ToList();
+
 
             foreach (var intra in model)
             {
@@ -74,9 +97,10 @@ namespace CPC02.Controllers
             {
                 Session["Per"] = true;
             }
-
+            
             model = model.OrderByDescending(intra => intra.LastDate).ToList();
 
+            
             var members = _db.Member.ToList();
             ViewBag.Members = members;
             return View(model);

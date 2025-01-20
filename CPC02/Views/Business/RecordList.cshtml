@@ -63,7 +63,7 @@
 <link rel="stylesheet" href="~/css/style2.css" />
 
 <div class="d-flex align-items-center">
-    <a href="@Url.Action("InterviewRecordList", "Business")" class="btn btn-secondary">
+    <a href="@Url.Action("InterviewRecordList", "Business", new { Mid2 = Session["Mid2"]?.ToString(), INT001 = Session["INT001"]?.ToString() })" class="btn btn-secondary">
         <img src="~/image/icons/back.png" style="width: 20px; height: 20px;" /> @(currentLang=="zh-TW"? "返回" : "Back")
     </a>
     <div class="flex-grow-1 text-center title">
