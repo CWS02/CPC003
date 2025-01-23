@@ -493,7 +493,12 @@ namespace CPC02.Controllers
             string margin2Lines = string.Join("\\n", items.Select(item => item.margin2?.ToString() ?? ""));
             string unitLines = string.Join("\\n", items.Select(item => item.unit?.ToString() ?? ""));
             string quantityLines = string.Join("\\n", items.Select(item => item.quantity?.ToString() ?? ""));
-            string unitPriceLines = string.Join("\\n", items.Select(item => item.unitPrice?.ToString() ?? ""));
+            string unitPriceLines = string.Join("\\n", items.Select(item =>
+            {
+                decimal unitPrice = decimal.TryParse(item.unitPrice?.ToString(), out decimal p) ? p : 0;
+
+                return (unitPrice).ToString("#,0");
+            }));
             string totalLines = string.Join("\\n", items.Select(item =>
             {
                 decimal quantity = decimal.TryParse(item.quantity?.ToString(), out decimal q) ? q : 0;
