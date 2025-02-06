@@ -1,0 +1,124 @@
+﻿@model IEnumerable<CPC02.Models.WLOGA>
+
+@{
+    ViewBag.Title = "個人工作記錄";
+    Layout = "~/Views/Shared/_LayoutCommon.cshtml";
+}
+<link rel="stylesheet" href="~/css/style2.css" />
+
+<style>
+    table#datatable th,
+    table#datatable td {
+        font-size: 12px;
+        padding: 4px;
+        white-space: nowrap;
+    }
+
+    .btn img {
+        width: 16px;
+        height: 16px;
+    }
+
+
+
+    table#datatable th {
+        font-size: 14px;
+    }
+
+    table {
+        table-layout: auto;
+    }
+
+        table#datatable td {
+            word-wrap: break-word;
+            max-width: 50px;
+            white-space: normal;
+        }
+
+    .clickable-td {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+        .clickable-td:hover {
+            color: inherit;
+            text-decoration: none;
+        }
+</style>
+
+
+<div id="app" class="container">
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-3">
+                <a href="@Url.Action("WorkLogEdit")"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
+            </div>
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table id="datatable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>序</th>   
+                            <th>日期</th>            
+                            <th>工作內容</th>            
+                            <th>工作問題</th>            
+                            <th>備註</th>            
+                            <th>明日工作計畫</th>            
+                            <th>共同完成人員</th>            
+                            <th>是否完成</th>                                        
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(Model.ToList().IndexOf(item) + 1)</a>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG001.ToString("yyyyMMdd")</a>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG002</a>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG003</a>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG004</a>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG005</a>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG006</a>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG007 ? "是" : "否")</a>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+      document.addEventListener('DOMContentLoaded', () => {
+     const successMessage = '@TempData["SuccessMessage"]';
+     if (successMessage) {
+         alert(successMessage);
+     }
+ });
+    $(document).ready(function () {
+        $('#datatable').DataTable({
+        });
+    });
+
+</script>

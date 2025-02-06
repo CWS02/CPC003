@@ -213,12 +213,19 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BusinessController.cs" />
+    <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\WordRender.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CPC2Context.cs" />
+    <Compile Include="Models\WLOGA.cs" />
+    <Compile Include="Models\CMSME.cs" />
+    <Compile Include="Models\CMSMJ.cs" />
+    <Compile Include="Models\CMSMV.cs" />
+    <Compile Include="Models\TWNCPCContext.cs" />
     <Compile Include="Models\CPCContext.cs" />
     <Compile Include="Models\DataAccess\CommonDAO.cs" />
     <Compile Include="Models\INTRA.cs" />
@@ -280,6 +287,7 @@
     <Content Include="file\Business\報價單-英%28稅%29.docx" />
     <Content Include="file\Business\客戶訪談記錄-英.docx" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
+    <Content Include="Scripts\bootstrap\bootstrap.bundle.min.js" />
     <Content Include="Scripts\datatable\buttons.html5.min.js" />
     <Content Include="Scripts\datatable\jszip.min.js" />
     <Content Include="Scripts\datatable\dataTables.buttons.min.js" />
@@ -318,6 +326,10 @@
     <Content Include="Views\Member\Login.cshtml" />
     <Content Include="Views\Business\QuoteList.cshtml" />
     <Content Include="Views\Business\QuoteEdit.cshtml" />
+    <Content Include="Views\Member\Loglogin.cshtml" />
+    <Content Include="Views\Common\WorkLogList.cshtml" />
+    <Content Include="Views\Shared\_LayoutCommon.cshtml" />
+    <Content Include="Views\Common\WorkLogEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

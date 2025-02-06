@@ -7,32 +7,19 @@ using CPC02.Models;
 
 namespace CPC02.Models
 {
-    public partial class CPCContext : DbContext
+    public partial class CPC2Context : DbContext
     {
-        public CPCContext()
-            : base("name=CPC2")
+        public CPC2Context()
+            : base("name=ERPCPC")
         {
             this.Configuration.LazyLoadingEnabled = true; 
             this.Configuration.ProxyCreationEnabled = true; 
         }
 
         /// <summary>
-        /// 客戶訪談記錄
+        /// 個人日誌
         /// </summary>
-        public virtual DbSet<INTRA> INTRA { get; set; }
-        /// <summary>
-        /// 訪談記錄
-        /// </summary>
-        public virtual DbSet<INTRB> INTRB { get; set; }
-        /// <summary>
-        /// 報價
-        /// </summary>
-        public virtual DbSet<INTRC> INTRC { get; set; }
-        /// <summary>
-        /// 業務會員
-        /// </summary>
-        public virtual DbSet<Member> Member { get; set; }
-
+        public virtual DbSet<WLOGA> WLOGA { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "Login";
+    }
+
+<h2 class="title">登入</h2>
+
+@using (Html.BeginForm("Loglogin", "Member", FormMethod.Post))
+{
+    <div class="form-group mb-3 mt-3">
+        <label for="username">帳號</label>
+        <input type="text" name="Mem002" class="form-control" required />
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="password">密碼</label>
+        <input type="password" name="Mem003" class="form-control" required />
+    </div>
+    if (TempData["Message"] != null)
+    {
+        <div class="alert alert-danger mt-3 mb-3">
+            @TempData["Message"]
+        </div>
+    }
+
+
+
+    <button type="submit" class="btn btn-primary">登入</button>
+
+}
