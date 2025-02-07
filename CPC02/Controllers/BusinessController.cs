@@ -28,7 +28,7 @@ namespace CPC02.Controllers
 
         #region 客戶訪談記錄
         [HttpGet]
-        public ActionResult InterviewRecordList(bool? Per,int? Mid2, string INT001)
+        public ActionResult InterviewRecordList(bool? Per,int? Mid2, string INT001,string INT006)
         {
             if (Session["Mid"] == null)
             {
@@ -55,6 +55,15 @@ namespace CPC02.Controllers
             else
             {
                 Session["INT001"] = null;
+            }
+            if (!string.IsNullOrEmpty(INT006))
+            {
+                Session["INT006"] = INT006;
+                modelQuery = modelQuery.Where(x => x.INT006.Contains(INT006));
+            }
+            else
+            {
+                Session["INT006"] = null;
             }
             var model = modelQuery.ToList();
 
@@ -101,7 +110,7 @@ namespace CPC02.Controllers
             model = model.OrderByDescending(intra => intra.LastDate).ToList();
 
             
-            var members = _db.Member.ToList();
+            var members = _db.Member.Where(x=>x.IsBusiness=="Y").ToList();
             ViewBag.Members = members;
             return View(model);
         }
@@ -122,6 +131,7 @@ namespace CPC02.Controllers
             }
 
             var members = _db.Member
+             .Where(m => m.IsBusiness == "Y")
             .Select(m => new
             {
                 Mem000 = m.Mem000,

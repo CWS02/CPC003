@@ -62,5 +62,9 @@ namespace CPC02.Models
         /// 會員建立時間，預設為資料庫自動填入的當前時間
         /// </summary>
         public DateTime CreateTime { get; set; }
+        /// <summary>
+        /// 是否為業務
+        /// </summary>
+        public string IsBusiness { get; set; }
     }
 }

@@ -74,12 +74,22 @@
             }
         </select>
 
+        <label for="INT006" class="mr-3" style="margin-left: 10px;">
+            @(currentLang == "zh-TW" ? "國家:" : "Country")
+        </label>
+        <input type="text" id="INT006" name="INT006" class="form-control"
+               value="@Request.QueryString["INT006"]" style="margin-right: 10px;" placeholder="
+@(currentLang == "zh-TW" ? "請輸入關鍵字" : "Enter Keyword")" />
+
+
         <label for="INT001" class="mr-3" style="margin-left: 10px;">
             @(currentLang == "zh-TW" ? "客戶名稱:" : "Customer Name:")
         </label>
         <input type="text" id="INT001" name="INT001" class="form-control"
                value="@Request.QueryString["INT001"]" style="margin-right: 10px;" placeholder="
                @(currentLang == "zh-TW" ? "請輸入關鍵字" : "Enter Keyword")" />
+
+
 
         <div class="input-group-append">
             <button class="btn btn-primary" type="submit" style="margin-left: 10px;">
