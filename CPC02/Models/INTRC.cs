@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Web.Mvc;
 
 namespace CPC02.Models
 {
@@ -27,6 +28,7 @@ namespace CPC02.Models
         /// <summary>
         /// ³Æµù
         /// </summary>
+        [AllowHtml]
         public string INT003 { get; set; }
         /// <summary>
         /// ¥æ´Á

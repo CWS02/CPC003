@@ -21,9 +21,9 @@
 
     table#datatable th,
     table#datatable td {
-        font-size: 12px; 
-        padding: 4px; 
-        white-space: nowrap; 
+        font-size: 12px;
+        padding: 4px;
+        white-space: nowrap;
     }
 
     .btn img {
@@ -32,29 +32,32 @@
     }
 
     .btn {
-        font-size: 12px; 
-        padding: 5px 10px; 
+        font-size: 12px;
+        padding: 5px 10px;
     }
 
     table#datatable th {
-        font-size: 14px; 
+        font-size: 14px;
     }
 
     table {
         table-layout: auto;
     }
+
         table#datatable td {
             word-wrap: break-word;
             max-width: 50px;
             white-space: normal;
         }
+
     .clickable-td {
         display: block;
         color: inherit;
         text-decoration: none;
         cursor: pointer;
     }
-     .clickable-td:hover {
+
+        .clickable-td:hover {
             color: inherit;
             text-decoration: none;
         }
@@ -68,22 +71,22 @@
     </a>
     <div class="flex-grow-1 text-center title">
         @(currentLang == "zh-TW"
-        ? $"客戶訪談記錄 - {ViewBag.INTRAModel.INT001}"
-        : $"Customer Interview Record - {ViewBag.INTRAModel.INT001}")
+        ? $"客戶訪談記錄  {ViewBag.INTRAModel?.INT001 ?? ""}"
+        : $"Customer Interview Record  {ViewBag.INTRAModel?.INT001 ?? ""}")
     </div>
 </div>
+
 
 
 <div id="app" class="container mt-5">
     <div class="row">
         <div class="col-md-12">
             <p class="info-line">
-                @(currentLang == "zh-TW" ? "國家" : "Country"): @ViewBag.INTRAModel.INT006
-                | @(currentLang == "zh-TW" ? "區域" : "Region"): @ViewBag.INTRAModel.INT007
-                | @(currentLang == "zh-TW" ? "聯絡人" : "Contact Person"): @ViewBag.INTRAModel.INT008
-                | @(currentLang == "zh-TW" ? "電話" : "Phone"): @ViewBag.INTRAModel.INT004
-                | @(currentLang == "zh-TW" ? "分機" : "Fax"): @ViewBag.INTRAModel.INT005
-
+                @(currentLang == "zh-TW" ? "國家" : "Country"): @(ViewBag.INTRAModel?.INT006 ?? "N/A")
+                | @(currentLang == "zh-TW" ? "區域" : "Region"): @(ViewBag.INTRAModel?.INT007 ?? "N/A")
+                | @(currentLang == "zh-TW" ? "聯絡人" : "Contact Person"): @(ViewBag.INTRAModel?.INT008 ?? "N/A")
+                | @(currentLang == "zh-TW" ? "電話" : "Phone"): @(ViewBag.INTRAModel?.INT004 ?? "N/A")
+                | @(currentLang == "zh-TW" ? "分機" : "Fax"): @(ViewBag.INTRAModel?.INT005 ?? "N/A")
             </p>
         </div>
     </div>

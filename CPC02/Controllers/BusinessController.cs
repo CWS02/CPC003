@@ -347,6 +347,23 @@ namespace CPC02.Controllers
             return RedirectToAction("RecordList", new { INT000 = model.INT999 });
         }
 
+        [HttpGet]
+        public ActionResult RecordAllList(INTRA model)
+        {
+            if (Session["Mid"] == null)
+            {
+                return RedirectToAction("Login", "Member");
+            }
+            var data = _db.INTRB.OrderBy(x => x.Status).ThenBy(x => x.Level).ToList();
+            //ViewBag.INT000 = model.INT000;
+
+            var members = _db.Member.ToList();
+            ViewBag.Members = members;
+
+            //model = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT000);
+            //ViewBag.INTRAModel = model;
+            return View("RecordList", data);
+        }
         #endregion
 
         #region 報價紀錄
@@ -457,6 +474,25 @@ namespace CPC02.Controllers
 
             return RedirectToAction("QuoteList", new { INT000 = model.INT999 });
         }
+
+        [HttpGet]
+        public ActionResult QuoteAllList(INTRA model)
+        {
+            if (Session["Mid"] == null)
+            {
+                return RedirectToAction("Login", "Member");
+            }
+
+            var data = _db.INTRC.ToList();
+            //ViewBag.INT000 = model.INT000;
+
+            //model = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT000);
+            //ViewBag.INTRAModel = model;
+            var members = _db.Member.ToList();
+            ViewBag.Members = members;
+
+            return View("QuoteList",data);
+        }
         #endregion
 
         #region 下載報價單
@@ -497,7 +533,7 @@ namespace CPC02.Controllers
             {
                 decimal unitPrice = decimal.TryParse(item.unitPrice?.ToString(), out decimal p) ? p : 0;
 
-                return (unitPrice).ToString("#,0");
+                return (unitPrice);
             }));
             string totalLines = string.Join("\\n", items.Select(item =>
             {

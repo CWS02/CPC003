@@ -71,8 +71,8 @@
     </a>
     <div class="flex-grow-1 text-center title">
         @(currentLang == "zh-TW"
-    ? $"報價系統 - {ViewBag.INTRAModel.INT001}"
-    : $"Quotation System - {ViewBag.INTRAModel.INT001}")
+    ? $"報價系統  {ViewBag.INTRAModel?.INT001??""}"
+    : $"Quotation System  {ViewBag.INTRAModel?.INT001 ?? ""}")
     </div>
 </div>
 
@@ -81,12 +81,11 @@
     <div class="row">
         <div class="col-md-12">
             <p class="info-line">
-                @(currentLang == "zh-TW" ? "國家" : "Country"): @ViewBag.INTRAModel.INT006
-                | @(currentLang == "zh-TW" ? "區域" : "Region"): @ViewBag.INTRAModel.INT007
-                | @(currentLang == "zh-TW" ? "聯絡人" : "Contact Person"): @ViewBag.INTRAModel.INT008
-                | @(currentLang == "zh-TW" ? "電話" : "Phone"): @ViewBag.INTRAModel.INT004
-                | @(currentLang == "zh-TW" ? "分機" : "Fax"): @ViewBag.INTRAModel.INT005
-
+                @(currentLang == "zh-TW" ? "國家" : "Country"): @(ViewBag.INTRAModel?.INT006 ?? "N/A")
+                | @(currentLang == "zh-TW" ? "區域" : "Region"): @(ViewBag.INTRAModel?.INT007 ?? "N/A")
+                | @(currentLang == "zh-TW" ? "聯絡人" : "Contact Person"): @(ViewBag.INTRAModel?.INT008 ?? "N/A")
+                | @(currentLang == "zh-TW" ? "電話" : "Phone"): @(ViewBag.INTRAModel?.INT004 ?? "N/A")
+                | @(currentLang == "zh-TW" ? "分機" : "Fax"): @(ViewBag.INTRAModel?.INT005 ?? "N/A")
             </p>
         </div>
     </div>

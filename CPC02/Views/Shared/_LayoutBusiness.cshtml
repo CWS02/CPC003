@@ -9,6 +9,7 @@
     <script src="~/Scripts/vue3/vue.min.js"></script>
     <script src="~/Scripts/jquery/jquery-3.7.1.js"></script>
     <link rel="stylesheet" href="~/css/style2.css" />
+    <script src="~/Scripts/bootstrap/bootstrap.bundle.min.js"></script>
 
     <!-- DataTables 核心樣式與腳本 -->
     <script src="~/Scripts/datatable/jquery.dataTables.min.js"></script>
@@ -26,17 +27,72 @@
 }
 
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+    <!--wsadd-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">@(currentLang == "zh-TW" ? "業務" : "Business")</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            @(currentLang == "zh-TW" ? "業務銷售系統" : "Business Sales System")
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="@Url.Action("InterviewRecordList", "Business")">  @(currentLang == "zh-TW" ? "業務銷售系統" : "Business Sales System")</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("RecordAllList", "Business")">  @(currentLang == "zh-TW" ? "訪談記錄總表" : "InterviewRecord Summary")</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("QuoteAllList", "Business")">  @(currentLang == "zh-TW" ? "報價銷售總表" : "QuoteRecord Summary")</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <form class="d-flex align-items-center">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
+                        <!-- 登入中的名稱與下拉選單 -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                @(currentLang == "zh-TW" ? $"{MName} 登入中" : $"{MName} Logged In")
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Login", "Member")">
+                                        @(currentLang == "zh-TW" ? "登出" : "Log Out")
+                                    </a>
+                                </li>
+                                @if (currentLang == "zh-TW")
+                                {
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("ChangeLanguage", "Business", new { lang = currentLang })">
+                                            En
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("ChangeLanguage", "Business", new { lang = "zh-TW" })">
+                                            中文
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    </ul>
+                </form>
+
+            </div>
+        </div>
+    </nav>
+    <!--wsadd-->
+    @*<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
         <div class="container">
             @Html.ActionLink(currentLang == "zh-TW" ? "業務" : "Business", "InterviewRecordList", "Business", new { area = "" }, new { @class = "navbar-brand" })
-            @*<button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="切換導覽" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>*@
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li>@Html.ActionLink(currentLang == "zh-TW" ? "業務銷售系統" : "Business Sales System", "InterviewRecordList", "Business", new { area = "" }, new { @class = "nav-link" })</li>
-                    @*<li>@Html.ActionLink("補卡系統", "MissedPunch", "Common", new { area = "" }, new { @class = "nav-link" })</li>*@
+                    <li>@Html.ActionLink(currentLang == "zh-TW" ? "訪談記錄總表" : "InterviewRecord Summary", "RecordAllList", "Business", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink(currentLang == "zh-TW" ? "報價記錄總表" : "QuoteRecord Summary", "QuoteAllList", "Business", new { area = "" }, new { @class = "nav-link" })</li>
 
                 </ul>
             </div>
@@ -60,12 +116,12 @@
                 </ul>
             </nav>
         </div>
-    </nav>
+    </nav>*@
     <div class="container body-content">
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year- cpc直得科技股份有限公司 CHIEFTEK PRECISION CO., LTD </p>
+            <p>&copy; @DateTime.Now.Year- cpc直得科技股份有限公司 CHIEFTEK PRECISION CO., LTD. </p>
         </footer>
     </div>
 
