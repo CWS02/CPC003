@@ -42,6 +42,9 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="@Url.Action("WorkLogList", "Common")">個人工作記錄</a></li>
+                            <!--需判斷主管權限 disabled-->
+                            <li><a class="dropdown-item " href="@Url.Action("ManageLogList", "Common")">管理部門記錄</a></li>
+
                         </ul>
                     </li>
                 </ul>
@@ -60,25 +63,7 @@
             </div>
         </div>
     </nav>
-    @*<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
-            <div class="container">
-                @Html.ActionLink("CPC System", "WorkLogList", "Common", new { area = "" }, new { @class = "navbar-brand" })
 
-                <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li>@Html.ActionLink("個人工作記錄", "WorkLogList", "Common", new { area = "" }, new { @class = "nav-link" })</li>
-
-                    </ul>
-                </div>
-                <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
-                    <ul class="navbar-nav flex-grow-1">
-
-                        <li class="nav-link">@MName 登入中</li>
-                        <li>@Html.ActionLink("登出", "LogloginOut", "Member", new { lang = "en-US" }, new { @class = "nav-link" })</li>
-                    </ul>
-                </nav>
-            </div>
-        </nav>*@
 
     <div class="container body-content">
         @RenderBody()

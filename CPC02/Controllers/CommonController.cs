@@ -26,6 +26,7 @@ namespace CPC02.Controllers
             var model = _erpcpc.WLOGA.Where(x => x.Mid == mid).OrderByDescending(x=>x.LOG001).ToList();
             return View(model);
         }
+
         [HttpGet]
         public ActionResult WorkLogEdit(WLOGA model)
         {
@@ -76,11 +77,11 @@ namespace CPC02.Controllers
                 model.LOG000 =  Guid.NewGuid();
                 model.CreaTime = DateTime.Now;
                 var mid = Session["Mid"]?.ToString();
-                var Department = Session["Department"]?.ToString();
+                var DepartmentP = Session["DepartmentP"]?.ToString();
                 var Permission = Session["Permission"];
                 model.LOG009 = Permission != null ? Convert.ToInt32(Permission) : (int?)null;
                 model.Mid = mid;
-                model.LOG008 = Department;
+                model.LOG008 = DepartmentP;
 
                 model.Status = 0;
                 _erpcpc.WLOGA.Add(model);  
@@ -98,8 +99,36 @@ namespace CPC02.Controllers
 
             return RedirectToAction("WorkLogList");
         }
+        #endregion
+
+        #region 管理部門記錄
+        [HttpGet]
+        public ActionResult ManageLogList()
+        {
+            if (Session["Mid"] == null)
+            {
+                return RedirectToAction("Login", "Member");
+            }
+
+            var departmentP = Session["DepartmentP"]?.ToString();
+
+            int permission = 0;
+            if (Session["Permission"] != null)
+            {
+                int.TryParse(Session["Permission"].ToString(), out permission);
+            }
+
+            var model = _erpcpc.WLOGA.AsQueryable();
+            model = model.Where(x => permission >= x.LOG009);
+
+            if (!string.IsNullOrEmpty(departmentP))
+            {
+                model = model.Where(x => departmentP.Contains(x.LOG008));
+            }
 
 
+            return View("WorkLogList", model.ToList()); 
+        }
         #endregion
     }
 }
