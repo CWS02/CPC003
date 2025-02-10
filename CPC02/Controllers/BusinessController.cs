@@ -497,18 +497,16 @@ namespace CPC02.Controllers
             }
 
             var data = _db.INTRC.AsQueryable();
-            var intraModels = _db.INTRA.AsQueryable();  // 改為 AsQueryable(), 避免提前加載
+            var intraModels = _db.INTRA.AsQueryable();  
 
-            ViewBag.INTRAModel = intraModels.ToList();  // 只在視圖中需要時才轉為 List
+            ViewBag.INTRAModel = intraModels.ToList();  
             var members = _db.Member.Where(x => x.IsBusiness == "Y").ToList();
 
-            // 篩選條件: Sales
             if (search.Sales.HasValue)
             {
                 data = data.Where(x => x.Mid == search.Sales);
             }
 
-            // 篩選條件: Name 與 Status
             if (!string.IsNullOrEmpty(search.Name))
             {
                 data = from item in data
@@ -522,9 +520,8 @@ namespace CPC02.Controllers
                 data = data.Where(x => x.Status == search.status);
             }
 
-            // 傳遞資料
             ViewBag.Members = members;
-            return View("QuoteList", data.ToList());  // 轉換為 List 再傳遞至 View
+            return View("QuoteList", data.ToList());  
         }
 
         #endregion
