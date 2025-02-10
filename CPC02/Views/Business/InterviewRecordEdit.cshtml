@@ -95,6 +95,15 @@
                     <option value="2">@(currentLang == "zh-TW" ? "國外" : "International")</option>
                 </select>
             </div>
+            <div class="col-md-4">
+                <label for="INTRD" class="form-label">客戶狀態/來源</label>
+                <select id="INTRD" name="INTRD" class="form-control" v-model="formData.INTRD" :disabled="!isEditing">
+                    <option value="" disabled>請選擇</option>
+                    <option v-for="INTRD in INTRDs" :key="INTRD.INT000" :value="INTRD.INT000">
+                        {{ INTRD.INT001 }} - {{ INTRD.INT002 }} - {{ INTRD.INT003 }}
+                    </option>
+                </select>
+            </div>
 
         </div>
 
@@ -243,6 +252,7 @@
                     })),
 
                     members: @Html.Raw(ViewBag.MemberList),
+                    INTRDs:@Html.Raw(ViewBag.INTRDs),
                     typeOptions: {
                         A: { zh: "設備製造業", en: "Equipment Manufacturing" },
                         B: { zh: "設備代理業", en: "Equipment Agency" },

@@ -16,12 +16,13 @@ namespace CPC02.Controllers
         [HttpGet]
         public ActionResult Login()
         {
+            ViewBag.Members =_db.Member.Where(x => x.Status == 0).ToList();
             return View();
         }
         [HttpPost]
         public ActionResult Login(Member model)
         {
-            model = _db.Member.FirstOrDefault(m => m.Mem002 == model.Mem002 && m.Mem003 == model.Mem003);
+            model = _db.Member.FirstOrDefault(m => m.Mem001==model.Mem001&&m.Mem002 == model.Mem002 && m.Mem003 == model.Mem003);
             if (model != null)
             {
                 Session.Timeout = 60;

@@ -1,5 +1,6 @@
 ﻿using CPC02.Function;
 using CPC02.Models;
+using CPC02.Parameters;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Ajax.Utilities;
@@ -140,6 +141,8 @@ namespace CPC02.Controllers
             .ToList();
 
             ViewBag.MemberList = JsonConvert.SerializeObject(members);
+            var INTRD = _db.INTRD.Where(m => m.status == 0).ToList();
+            ViewBag.INTRDs= JsonConvert.SerializeObject(INTRD);
             return View(model);
         }
 
@@ -197,6 +200,8 @@ namespace CPC02.Controllers
                     existingDevice.INT027 = model.INT027;
                     existingDevice.INT028 = model.INT028;
                     existingDevice.INT029 = model.INT029;
+                    existingDevice.INTRD = model.INTRD;
+
 
                     existingDevice.Mid = model.Mid;
                     existingDevice.IP = Request.UserHostAddress;
@@ -388,9 +393,7 @@ namespace CPC02.Controllers
             var data = _db.INTRC.Where(x => x.INT999 == model.INT000).OrderByDescending(x => x.INT001).ToList();
             ViewBag.INT000 = model.INT000;
 
-            model = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT000);
-            ViewBag.INTRAModel = model;
-
+            ViewBag.INTRAModel = _db.INTRA.ToList(); 
             var members = _db.Member.ToList();
             ViewBag.Members = members;
             return View(data);
@@ -486,23 +489,44 @@ namespace CPC02.Controllers
         }
 
         [HttpGet]
-        public ActionResult QuoteAllList(INTRA model)
+        public ActionResult QuoteAllList(INTRA model, QuoteListSearch search)
         {
             if (Session["Mid"] == null)
             {
                 return RedirectToAction("Login", "Member");
             }
 
-            var data = _db.INTRC.ToList();
-            //ViewBag.INT000 = model.INT000;
+            var data = _db.INTRC.AsQueryable();
+            var intraModels = _db.INTRA.AsQueryable();  // 改為 AsQueryable(), 避免提前加載
 
-            //model = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT000);
-            //ViewBag.INTRAModel = model;
-            var members = _db.Member.ToList();
+            ViewBag.INTRAModel = intraModels.ToList();  // 只在視圖中需要時才轉為 List
+            var members = _db.Member.Where(x => x.IsBusiness == "Y").ToList();
+
+            // 篩選條件: Sales
+            if (search.Sales.HasValue)
+            {
+                data = data.Where(x => x.Mid == search.Sales);
+            }
+
+            // 篩選條件: Name 與 Status
+            if (!string.IsNullOrEmpty(search.Name))
+            {
+                data = from item in data
+                       join intra in intraModels on item.INT999 equals intra.INT000
+                       where intra.INT001.Contains(search.Name)
+                       select item;
+            }
+
+            if (search.status.HasValue)
+            {
+                data = data.Where(x => x.Status == search.status);
+            }
+
+            // 傳遞資料
             ViewBag.Members = members;
-
-            return View("QuoteList",data);
+            return View("QuoteList", data.ToList());  // 轉換為 List 再傳遞至 View
         }
+
         #endregion
 
         #region 下載報價單

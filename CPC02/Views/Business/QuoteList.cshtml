@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/_LayoutBusiness.cshtml";
     string currentLang = (string)Session["Culture"] ?? "zh-TW";
     var members = ViewBag.Members as List<CPC02.Models.Member>;
+    var intraModels = (List<CPC02.Models.INTRA>)ViewBag.INTRAModel;
 }
 <style>
     .btn {
@@ -16,8 +17,6 @@
         cursor: pointer;
         transition: background-color 0.3s ease;
     }
-
-
 
     table#datatable th,
     table#datatable td {
@@ -70,29 +69,88 @@
         <img src="~/image/icons/back.png" style="width: 20px; height: 20px;" /> @(currentLang=="zh-TW"? "返回" : "Back")
     </a>
     <div class="flex-grow-1 text-center title">
-        @(currentLang == "zh-TW"
-    ? $"報價系統  {ViewBag.INTRAModel?.INT001??""}"
-    : $"Quotation System  {ViewBag.INTRAModel?.INT001 ?? ""}")
+        @(currentLang == "zh-TW"? $"報價系統": $"Quotation System")
     </div>
 </div>
+@if (ViewBag.INT000 == null)
+{
+    <form method="get" class="form-inline justify-content-center mb-4">
+        <div class="input-group" style="margin-top:20px">
+            <label for="Sales" class="form-label">
+                @(currentLang == "zh-TW" ? "業務人員" : "Sales Representative")
+            </label>
+            <select id="Sales" name="Sales" class="form-control">
+                <option value="" @(string.IsNullOrEmpty(Request.QueryString["Sales"]) ? "selected" : "")>
+                    @(currentLang == "zh-TW" ? "請選擇" : "Please Select")
+                </option>
+                @if (ViewBag.Members != null)
+                {
+                    foreach (var member in ViewBag.Members)
+                    {
+                        <option value="@member.Mem000" @(Request.QueryString["Sales"] == member.Mem000.ToString() ? "selected" : "")>
+                            @member.Mem001
+                        </option>
+                    }
+                }
+            </select>
+
+            <label for="Name" class="mr-3" style="margin-left: 10px;">
+                @(currentLang == "zh-TW" ? "客戶名稱" : "Customer Name")
+            </label>
+            <input type="text" id="Name" name="Name" class="form-control"
+                   value="@Request.QueryString["Name"]" style="margin-right: 10px;" placeholder="
+@(currentLang == "zh-TW" ? "請輸入關鍵字" : "Enter Keyword")" />
+
+
+            <label for="status" class="mr-3" style="margin-left: 10px;">
+                @(currentLang == "zh-TW" ? "訂單狀態:" : "Order Status")
+            </label>
+            <select id="status" name="status" class="form-control" style="margin-right: 10px;">
+                <option value="0" @(Request.QueryString["status"] == "0" ? "selected" : "")>
+                    @(currentLang == "zh-TW" ? "追蹤中" : "In Progress")
+                </option>
+                <option value="1" @(Request.QueryString["status"] == "1" ? "selected" : "")>
+                    @(currentLang == "zh-TW" ? "已結案" : "Closed")
+                </option>
+                <option value="2" @(Request.QueryString["status"] == "2" ? "selected" : "")>
+                    @(currentLang == "zh-TW" ? "正式訂單" : "Official Order")
+                </option>
+            </select>
+
+
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit" style="margin-left: 10px;">
+                    @(currentLang == "zh-TW" ? "搜索" : "Search")
+                </button>
+            </div>
+        </div>
+    </form>
+}
 
 
 <div id="app" class="container mt-5">
     <div class="row">
         <div class="col-md-12">
-            <p class="info-line">
-                @(currentLang == "zh-TW" ? "國家" : "Country"): @(ViewBag.INTRAModel?.INT006 ?? "N/A")
-                | @(currentLang == "zh-TW" ? "區域" : "Region"): @(ViewBag.INTRAModel?.INT007 ?? "N/A")
-                | @(currentLang == "zh-TW" ? "聯絡人" : "Contact Person"): @(ViewBag.INTRAModel?.INT008 ?? "N/A")
-                | @(currentLang == "zh-TW" ? "電話" : "Phone"): @(ViewBag.INTRAModel?.INT004 ?? "N/A")
-                | @(currentLang == "zh-TW" ? "分機" : "Fax"): @(ViewBag.INTRAModel?.INT005 ?? "N/A")
-            </p>
+            @if (ViewBag.INT000 != null)
+            {
+                var item = intraModels?.FirstOrDefault(x => x.INT000 == ViewBag.INT000);
+                <p class="info-line">
+                    @(currentLang == "zh-TW" ? "國家" : "Country"): @(item.INT006 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "區域" : "Region"): @(item.INT007 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "聯絡人" : "Contact Person"): @(item.INT008 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "電話" : "Phone"): @(item.INT004 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "分機" : "Fax"): @(item.INT005 ?? "N/A")
+                </p>
+            }
         </div>
     </div>
     <div class="card">
         <div class="card-body">
             <div class="mb-3">
-                <a href="@Url.Action("QuoteEdit", new {INT999=ViewBag.INT000})"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
+                @if (ViewBag.INT000 != null)
+                {
+                    <a href="@Url.Action("QuoteEdit", new { INT999 = ViewBag.INT000 })"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
+                }
             </div>
             <div class="table-responsive" style="overflow-x: auto;">
                 <table id="datatable" class="table table-striped">
@@ -108,15 +166,20 @@
                             <th>@(currentLang == "zh-TW" ? Html.Raw("報價日期") : Html.Raw("Quotation<br>Date"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("交期") : Html.Raw("Deadline"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("業務人員") : Html.Raw("Sales<br>Representative"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("客戶名稱") : Html.Raw("Customer<br>Name"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("國家") : Html.Raw("Country"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("地區") : Html.Raw("Region"))</th>
+
                             <th>@(currentLang == "zh-TW" ? Html.Raw("圖面上傳") : Html.Raw("Image<br>Upload"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("圖面下載") : Html.Raw("Image<br>Download"))</th>
-                            <th>@(currentLang == "zh-TW" ? "狀態" : "Status")</th>
+                            <th>@(currentLang == "zh-TW" ? "訂單狀態" : "Order Status")</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model)
                         {
                             var member = members.FirstOrDefault(m => m.Mem000 == item.Mid);
+                            var intra = intraModels.FirstOrDefault(m => m.INT000 == item.INT999);
 
                             <tr>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(Model.ToList().IndexOf(item) + 1) </a></td>
@@ -140,6 +203,9 @@
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@item.INT001</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@item.INT004</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(member != null ? member.Mem001 : "未選擇會員")</a></td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT001??"")</a></td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT006??"")</a></td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT007??"")</a></td>
                                 <td>
                                     <form action="@Url.Action("UploadQuote", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
                                         <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
@@ -157,7 +223,7 @@
                                         </a>
                                     }
                                 </td>
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.Status == 0 ? "未審核" : (item.Status == 1 ? "已審核" : "已刪除"))</a></td>
+                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.Status == 0 ? "追蹤中" : (item.Status == 1 ? "已結案" : "正式訂單"))</a></td>
                             </tr>
                         }
                     </tbody>

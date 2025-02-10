@@ -29,6 +29,10 @@ namespace CPC02.Models
         /// </summary>
         public virtual DbSet<INTRC> INTRC { get; set; }
         /// <summary>
+        /// 客戶狀態/來源
+        /// </summary>
+        public virtual DbSet<INTRD> INTRD { get; set; }
+        /// <summary>
         /// 業務會員
         /// </summary>
         public virtual DbSet<Member> Member { get; set; }

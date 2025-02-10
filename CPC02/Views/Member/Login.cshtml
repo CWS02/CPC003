@@ -7,6 +7,17 @@
 @using (Html.BeginForm("Login", "Member", FormMethod.Post))
 {
     <div class="form-group mb-3 mt-3">
+        <label for="Mem001" class="form-label">人員 </label>
+            <select id="Mem001" name="Mem001" class="form-control" required>
+                <option value="" disabled selected>請選擇</option>
+                @foreach (var member in ViewBag.Members)
+                {
+                    <option value="@member.Mem001">@member.Mem001</option>
+                }
+            </select>
+    </div>
+
+    <div class="form-group mb-3 mt-3">
         <label for="username">帳號</label>
         <input type="text" name="Mem002" class="form-control" required />
     </div>

@@ -81,19 +81,25 @@
 <div id="app" class="container mt-5">
     <div class="row">
         <div class="col-md-12">
-            <p class="info-line">
-                @(currentLang == "zh-TW" ? "國家" : "Country"): @(ViewBag.INTRAModel?.INT006 ?? "N/A")
-                | @(currentLang == "zh-TW" ? "區域" : "Region"): @(ViewBag.INTRAModel?.INT007 ?? "N/A")
-                | @(currentLang == "zh-TW" ? "聯絡人" : "Contact Person"): @(ViewBag.INTRAModel?.INT008 ?? "N/A")
-                | @(currentLang == "zh-TW" ? "電話" : "Phone"): @(ViewBag.INTRAModel?.INT004 ?? "N/A")
-                | @(currentLang == "zh-TW" ? "分機" : "Fax"): @(ViewBag.INTRAModel?.INT005 ?? "N/A")
-            </p>
-        </div>
+            @if (ViewBag.INT000 != null)
+            {
+                <p class="info-line">
+                    @(currentLang == "zh-TW" ? "國家" : "Country"): @(ViewBag.INTRAModel?.INT006 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "區域" : "Region"): @(ViewBag.INTRAModel?.INT007 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "聯絡人" : "Contact Person"): @(ViewBag.INTRAModel?.INT008 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "電話" : "Phone"): @(ViewBag.INTRAModel?.INT004 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "分機" : "Fax"): @(ViewBag.INTRAModel?.INT005 ?? "N/A")
+                </p>
+            }
+            </div>
     </div>
     <div class="card">
         <div class="card-body">
             <div class="mb-3">
-                <a href="@Url.Action("RecordEdit", new {INT999=ViewBag.INT000})"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
+                @if (ViewBag.INT000 != null)
+                {
+                    <a href="@Url.Action("RecordEdit", new {INT999=ViewBag.INT000})"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
+                }
             </div>
             <div class="table-responsive" style="overflow-x: auto;">
                 <table id="datatable" class="table table-striped">
@@ -108,7 +114,7 @@
                                 <th>@(currentLang == "zh-TW" ? Html.Raw("主管回覆") : Html.Raw("Manager<br>Reply"))</th>
                             }
                             <th>@(currentLang == "zh-TW" ? Html.Raw("訪談PDF") : Html.Raw("Interview<br>PDF"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談人員") : Html.Raw("Interviewer"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談/記錄人員") : Html.Raw("Interviewer"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("訪談日期") : Html.Raw("Interview<br>Date"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("訪談方式") : Html.Raw("Interview<br>Method"))</th>
                             <th>@(currentLang == "zh-TW" ? "主題" : "Subject")</th>
