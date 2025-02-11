@@ -176,6 +176,10 @@ namespace CPC02.Models
         /// </summary>
         public string INT030 { get; set; }
         /// <summary>
+        /// 幣別
+        /// </summary>
+        public string INT031 { get; set; }
+        /// <summary>
         /// 客戶狀態/來源 (與INTRD的INT000)關聯
         /// </summary>
         public string INTRD { get; set; }

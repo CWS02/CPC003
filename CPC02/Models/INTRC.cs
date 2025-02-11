@@ -44,6 +44,11 @@ namespace CPC02.Models
         [StringLength(150)]
         public string INT006 { get; set; }
         /// <summary>
+        /// 備註2
+        /// </summary>
+        [AllowHtml]
+        public string INT007 { get; set; }
+        /// <summary>
         /// 業務人員 ID。
         /// </summary>
         public int Mid { get; set; }

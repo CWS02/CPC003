@@ -113,6 +113,12 @@ namespace CPC02.Controllers
             
             var members = _db.Member.Where(x=>x.IsBusiness=="Y").ToList();
             ViewBag.Members = members;
+
+            ViewBag.INT006List = _db.INTRA
+                .GroupBy(x => x.INT006)
+                .Select(x => x.Key) 
+                .ToList();
+
             return View(model);
         }
 
@@ -141,7 +147,7 @@ namespace CPC02.Controllers
             .ToList();
 
             ViewBag.MemberList = JsonConvert.SerializeObject(members);
-            var INTRD = _db.INTRD.Where(m => m.status == 0).ToList();
+            var INTRD = _db.INTRD.Where(m => m.status == 0).OrderBy(m=>m.Sort).ThenByDescending(m=>m.CreateTime).ToList();
             ViewBag.INTRDs= JsonConvert.SerializeObject(INTRD);
             return View(model);
         }
@@ -200,6 +206,8 @@ namespace CPC02.Controllers
                     existingDevice.INT027 = model.INT027;
                     existingDevice.INT028 = model.INT028;
                     existingDevice.INT029 = model.INT029;
+                    existingDevice.INT031 = model.INT031;
+
                     existingDevice.INTRD = model.INTRD;
 
 
@@ -452,6 +460,8 @@ namespace CPC02.Controllers
                     existingDevice.INT003 = model.INT003;
                     existingDevice.INT004 = model.INT004;
                     existingDevice.INT005 = model.INT005;
+                    existingDevice.INT007 = model.INT007;
+
                     existingDevice.IP = Request.UserHostAddress;
 
                     try

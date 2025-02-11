@@ -200,12 +200,12 @@
                                         <img src="~/image/icons/file_download.png" alt="下載" style="width: 20px; height: 20px;" />
                                     </a>
                                 </td>
-                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@item.INT001</a></td>
-                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@item.INT004</a></td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.INT001?? "　")</a></td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.INT004?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(member != null ? member.Mem001 : "未選擇會員")</a></td>
-                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT001??"")</a></td>
-                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT006??"")</a></td>
-                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT007??"")</a></td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT001?? "　")</a></td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT006?? "　")</a></td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT007?? "　")</a></td>
                                 <td>
                                     <form action="@Url.Action("UploadQuote", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
                                         <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />

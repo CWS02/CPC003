@@ -187,16 +187,19 @@
                                     </a>
                                 </td>
                                 <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT001</a></td>
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT007</a></td>
+                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT007?? "　")</a></td>
                                 <td style="word-wrap: break-word; white-space: normal;">
                                     <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
                                         @if (!string.IsNullOrEmpty(item.INT004))
                                         {
                                             @(
-                                                    item.INT004.Length > 50
+                                                !string.IsNullOrEmpty(item.INT004)
+                                                    ? (item.INT004.Length > 50
                                                         ? item.INT004.Substring(0, 50) + "..."
-                                                        : item.INT004
-                                                )
+                                                        : item.INT004)
+                                                    : "　"
+                                            )
+
                                         }
                                     </a>
                                 </td>

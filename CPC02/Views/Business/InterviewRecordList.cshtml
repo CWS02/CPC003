@@ -77,9 +77,16 @@
         <label for="INT006" class="mr-3" style="margin-left: 10px;">
             @(currentLang == "zh-TW" ? "國家:" : "Country")
         </label>
-        <input type="text" id="INT006" name="INT006" class="form-control"
-               value="@Request.QueryString["INT006"]" style="margin-right: 10px;" placeholder="
-@(currentLang == "zh-TW" ? "請輸入關鍵字" : "Enter Keyword")" />
+        <select id="INT006" name="INT006" class="form-control" style="margin-right: 10px;">
+            <option value="">@(currentLang == "zh-TW" ? "請選擇" : "Please Select")</option>
+            @foreach (var item in ViewBag.INT006List)
+            {
+                <option value="@item" @(Request.QueryString["INT006"] == item ? "selected" : "")>
+                    @item
+                </option>
+            }
+        </select>
+
 
 
         <label for="INT001" class="mr-3" style="margin-left: 10px;">
@@ -134,13 +141,13 @@
                                     <a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(Model.ToList().IndexOf(item) + 1)</a>
                                 </td>
                                 <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(member != null ? member.Mem001 : "未選擇會員")</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT006</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT007</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT001</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT004</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT008</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT009</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT010</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT006 ?? "　")</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT007 ?? "　")</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT001 ?? "　")</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT004 ?? "　")</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT008 ?? "　")</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT009 ?? "　")</a></td>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT010??"　")</a></td>
                                 <td>
                                     <a href="@Url.Action("RecordList", new { INT000 = item.INT000 })" class="clickable-td">
                                         @(item.LastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")

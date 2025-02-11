@@ -170,6 +170,16 @@
                 <label for="INT019" class="form-label">{{ currentLanguage === 'zh-TW' ? '成立時間' : 'Establishment Date' }}</label>
                 <input type="text" class="form-control" name="INT019" v-model="formData.INT019" v-bind:disabled="!isEditing" />
             </div>
+            <div class="col-md-4">
+                <label for="INT031" class="form-label">{{ currentLanguage === 'zh-TW' ? '幣別' : 'Currency' }}</label>
+                <select class="form-control" name="INT031" v-model="formData.INT031" v-bind:disabled="!isEditing">
+                    <option value="TWD" selected>{{ currentLanguage === 'zh-TW' ? 'TWD' : 'TWD' }}</option>
+                    <option value="USD">{{ currentLanguage === 'zh-TW' ? 'USD' : 'USD' }}</option>
+                    <option value="JPY">{{ currentLanguage === 'zh-TW' ? 'JPY' : 'JPY' }}</option>
+                    <option value="EUR">{{ currentLanguage === 'zh-TW' ? 'EUR' : 'EUR' }}</option>
+                </select>
+            </div>
+
         </div>
         <div class="row">
             <div class="col-md-4">

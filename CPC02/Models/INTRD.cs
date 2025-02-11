@@ -37,7 +37,7 @@ namespace CPC02.Models
         public string INT003 { get; set; }
 
         /// <summary>
-        /// 
+        /// 0=顯示 1=不顯示
         /// </summary>
         public int status { get; set; }
 
@@ -46,5 +46,9 @@ namespace CPC02.Models
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreateTime { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int? Sort { get; set; }
     }
 }

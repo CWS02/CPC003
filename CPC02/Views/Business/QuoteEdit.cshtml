@@ -89,40 +89,46 @@
         @Html.HiddenFor(m => m.INT999)
         @Html.HiddenFor(m => m.INT000)
 
-<div class="row">
-    <div class="col-md-4">
-        <label for="INT001" class="form-label">
-            @(currentLang == "zh-TW" ? "報價日期" : "Quotation Date")<span class="red-text">*</span>
-        </label>
-        @Html.TextBoxFor(m => m.INT001, new { @class = "form-control", type = "date", required = "required" })
-    </div>
-    <div class="col-md-4">
-        <label for="INT001" class="form-label">
-            @(currentLang == "zh-TW" ? "交期" : "Deadline")
-        </label>
-        @Html.TextBoxFor(m => m.INT004, new { @class = "form-control", type = "date" })
-    </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label for="INT001" class="form-label">
+                    @(currentLang == "zh-TW" ? "報價日期" : "Quotation Date")<span class="red-text">*</span>
+                </label>
+                @Html.TextBoxFor(m => m.INT001, new { @class = "form-control", type = "date", required = "required" })
+            </div>
+            <div class="col-md-4">
+                <label for="INT001" class="form-label">
+                    @(currentLang == "zh-TW" ? "交期" : "Deadline")
+                </label>
+                @Html.TextBoxFor(m => m.INT004, new { @class = "form-control", type = "date" })
+            </div>
 
-    <div class="col-md-4">
-        <label for="INT005" class="form-label">
-            @(currentLang == "zh-TW" ? "稅額" : "Tax")
-        </label>
-        @Html.DropDownListFor(m => m.INT005,
-            new List<SelectListItem> {
-                new SelectListItem { Value = "true", Text = currentLang == "zh-TW" ? "是" : "Yes" },
-                new SelectListItem { Value = "false", Text = currentLang == "zh-TW" ? "否" : "No", Selected = true }
-            },
-            new { @class = "form-control" }
-        )
-    </div>
+            <div class="col-md-4">
+                <label for="INT005" class="form-label">
+                    @(currentLang == "zh-TW" ? "稅額" : "Tax")
+                </label>
+                @Html.DropDownListFor(m => m.INT005,
+                    new List<SelectListItem> {
+                        new SelectListItem { Value = "true", Text = currentLang == "zh-TW" ? "是" : "Yes" },
+                        new SelectListItem { Value = "false", Text = currentLang == "zh-TW" ? "否" : "No", Selected = true }
+                    },
+                    new { @class = "form-control" }
+                )
+            </div>
 
-</div>
+        </div>
 
         <div class="col-12">
             <label for="INT001" class="form-label">
                 @(currentLang == "zh-TW" ? "備註" : "Remark")
             </label>
             @Html.TextAreaFor(m => m.INT003, new { @class = "form-control", rows = 4, cols = 50 })
+        </div>
+        <div class="col-12">
+            <label for="INT001" class="form-label">
+                @(currentLang == "zh-TW" ? "備註2" : "Remark2")
+            </label>
+            @Html.TextAreaFor(m => m.INT007, new { @class = "form-control", rows = 4, cols = 50 })
         </div>
 
         <div class="row">
@@ -136,6 +142,8 @@
                             <th>@(currentLang == "zh-TW" ? "單位" : "Unit")</th>
                             <th>@(currentLang == "zh-TW" ? "數量" : "Quantity")</th>
                             <th>@(currentLang == "zh-TW" ? "單價" : "Unit Price")</th>
+                            <th>@(currentLang == "zh-TW" ? "折數" : "Discount")</th>
+
                             <th>@(currentLang == "zh-TW" ? "總價" : "Total Price")</th>
                             <th>@(currentLang == "zh-TW" ? "刪除" : "Delete")</th>
                         </tr>
@@ -143,7 +151,7 @@
                     <tbody id="quotationDetailsBody">
                     </tbody>
                 </table>
-                <button type="button" class="btn btn-success" onclick="addDetail()" id="addDetailButton" style="display: none;" >@(currentLang=="zh-TW"?"新增":"Add Detail")</button>
+                <button type="button" class="btn btn-success" onclick="addDetail()" id="addDetailButton" style="display: none;">@(currentLang=="zh-TW"?"新增":"Add Detail")</button>
             </div>
         </div>
 
@@ -176,6 +184,7 @@
             <td><input type="text" class="form-control" name="QuotationDetails[${index}].Unit" value="${detail.unit}" /></td>
             <td><input type="text" class="form-control" name="QuotationDetails[${index}].Quantity" value="${detail.quantity}" onchange="updateTotalPrice(this)" /></td>
             <td><input type="text" class="form-control" name="QuotationDetails[${index}].UnitPrice" value="${detail.unitPrice}" onchange="updateTotalPrice(this)" /></td>
+<td><input type="text" class="form-control" name="QuotationDetails[${index}].Discount" value="${detail.discount ?? ''}" onchange="updateTotalPrice(this)" /></td>
             <td><span class="total-price" id="totalPrice_${index}">${(detail.quantity * detail.unitPrice).toFixed(2)}</span></td>
             <td>
                 <a onclick="removeDetail(this)">
@@ -248,6 +257,7 @@
                 <td><input type="text" class="form-control" name="QuotationDetails[${index}].Unit" value="" /></td>
                 <td><input type="text" class="form-control" name="QuotationDetails[${index}].Quantity" onchange="updateTotalPrice(this)" /></td>
                 <td><input type="text" class="form-control" name="QuotationDetails[${index}].UnitPrice" onchange="updateTotalPrice(this)" /></td>
+                <td><input type="text" class="form-control" name="QuotationDetails[${index}].Discount" onchange="updateTotalPrice(this)" /></td>
                 <td><span class="total-price" id="totalPrice_${index}">0.00</span></td>
                 <td>
                     <a onclick="removeDetail(this)">
@@ -314,8 +324,10 @@
                 const unit = row.querySelector('[name*=".Unit"]').value;
                 const quantity = row.querySelector('[name*=".Quantity"]').value;
                 const unitPrice = row.querySelector('[name*=".UnitPrice"]').value;
+                const discount = row.querySelector('[name*=".Discount"]').value;
 
-                details.push({ model, margin1, margin2, unit, quantity, unitPrice });
+
+                details.push({ model, margin1, margin2, unit, quantity, unitPrice, discount });
             });
 
             document.getElementById('INT002').value = JSON.stringify(details);
