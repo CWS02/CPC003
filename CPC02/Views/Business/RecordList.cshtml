@@ -5,6 +5,8 @@
     Layout = "~/Views/Shared/_LayoutBusiness.cshtml";
     string currentLang = (string)Session["Culture"] ?? "zh-TW";
     var members = ViewBag.Members as List<CPC02.Models.Member>;
+    var headerText = (Session["Mid2"]?.ToString() == "27") ? (currentLang == "zh-TW" ? "公司" : "Company") : (currentLang == "zh-TW" ? "主題" : "Subject");
+    var headerText2 = (Session["Mid2"]?.ToString() == "27") ? (currentLang == "zh-TW" ? "展覽" : "Exhibition") : (currentLang == "zh-TW" ? "專案名稱" : "Project Name");
 }
 <style>
     .btn {
@@ -72,7 +74,7 @@
     <div class="flex-grow-1 text-center title">
         @(currentLang == "zh-TW"
         ? $"客戶訪談記錄  {ViewBag.INTRAModel?.INT001 ?? ""}"
-        : $"Customer Interview Record  {ViewBag.INTRAModel?.INT001 ?? ""}")
+        : $"Visiting Report  {ViewBag.INTRAModel?.INT001 ?? ""}")
     </div>
 </div>
 
@@ -91,7 +93,7 @@
                     | @(currentLang == "zh-TW" ? "分機" : "Fax"): @(ViewBag.INTRAModel?.INT005 ?? "N/A")
                 </p>
             }
-            </div>
+        </div>
     </div>
     <div class="card">
         <div class="card-body">
@@ -106,22 +108,22 @@
                     <thead>
                         <tr>
                             <th>@(currentLang == "zh-TW" ? "序" : "No.")</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("重要程度") : Html.Raw("Importance"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("重要性") : Html.Raw("Priority"))</th>
 
                             @if (Session["Per"] != null && (bool)Session["Per"])
                             {
                                 <th>@(currentLang == "zh-TW" ? Html.Raw("主管審核") : Html.Raw("Manager<br>Review"))</th>
                                 <th>@(currentLang == "zh-TW" ? Html.Raw("主管回覆") : Html.Raw("Manager<br>Reply"))</th>
                             }
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談PDF") : Html.Raw("Interview<br>PDF"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談PDF") : Html.Raw("Report"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("訪談/記錄人員") : Html.Raw("Interviewer"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談日期") : Html.Raw("Interview<br>Date"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談方式") : Html.Raw("Interview<br>Method"))</th>
-                            <th>@(currentLang == "zh-TW" ? "主題" : "Subject")</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("專案名稱") : Html.Raw("Project<br>Name"))</th>
-                            <th>@(currentLang == "zh-TW" ? "內容" : "Content")</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("附件上傳") : Html.Raw("Attach<br>Upload"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("附件下載") : Html.Raw("Attach<br>Download"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談日期") : Html.Raw("Date"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談方式") : Html.Raw("Method"))</th>
+                            <th>@headerText</th>
+                            <th>@headerText2</th>
+                            <th>@(currentLang == "zh-TW" ? "內容" : "Contents")</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("附件上傳") : Html.Raw("Upload"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("附件下載") : Html.Raw("Download"))</th>
                             <th>@(currentLang == "zh-TW" ? "狀態" : "Status")</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>
                         </tr>

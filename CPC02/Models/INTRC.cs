@@ -49,6 +49,10 @@ namespace CPC02.Models
         [AllowHtml]
         public string INT007 { get; set; }
         /// <summary>
+        /// 子公司客戶
+        /// </summary>
+        public string INT008 { get; set; }
+        /// <summary>
         /// 業務人員 ID。
         /// </summary>
         public int Mid { get; set; }

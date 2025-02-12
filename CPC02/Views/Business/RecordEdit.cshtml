@@ -202,9 +202,29 @@
                     this.updateTypeOptions();
                 }
             },
+            mounted() {
+                document.addEventListener("keydown", this.handleEnterAsTab);
+            },
+            beforeUnmount() {
+                document.removeEventListener("keydown", this.handleEnterAsTab);
+            },
             methods: {
                 toggleEditMode() {
                     this.isEditing = !this.isEditing;
+                },
+                    handleEnterAsTab(event) {
+                        if (event.key === "Enter") {
+                            event.preventDefault();
+                            const focusableElements = Array.from(
+                                document.querySelectorAll("input, textarea, select")
+                            ).filter(el => !el.disabled && !el.readOnly); // 過濾掉無法輸入的元素
+
+                            const index = focusableElements.indexOf(event.target);
+                            if (index >= 0 && index < focusableElements.length - 1) {
+                                focusableElements[index + 1].focus();
+                            }
+                        }
+                    
                 },
                 updateTypeOptions() {
                     this.currentTypeOptions = Object.entries(this.typeOptions).map(([key, option]) => ({

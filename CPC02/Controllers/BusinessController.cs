@@ -461,6 +461,8 @@ namespace CPC02.Controllers
                     existingDevice.INT004 = model.INT004;
                     existingDevice.INT005 = model.INT005;
                     existingDevice.INT007 = model.INT007;
+                    existingDevice.INT008 = model.INT008;
+
 
                     existingDevice.IP = Request.UserHostAddress;
 
