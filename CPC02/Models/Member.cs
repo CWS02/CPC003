@@ -66,5 +66,14 @@ namespace CPC02.Models
         /// 是否為業務
         /// </summary>
         public string IsBusiness { get; set; }
+         /// <summary>
+        /// 是否可看所有人資料
+        /// </summary>
+        public string IsCrossMember { get; set; }         
+        /// <summary>
+        /// 可看會員資料的Mem000
+        /// </summary>
+        public string AllowedMem000 { get; set; }
+
     }
 }

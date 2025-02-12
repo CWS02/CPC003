@@ -4,6 +4,7 @@ using CPC02.Parameters;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Ajax.Utilities;
+using Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
 using NPOI.HSSF.Record.Chart;
 using NPOI.OpenXml4Net.OPC.Internal;
@@ -37,7 +38,7 @@ namespace CPC02.Controllers
             }
 
             var modelQuery = _db.INTRA.AsQueryable();
-
+            
             if (Mid2.HasValue)
             {
                 Session["Mid2"] = Mid2;
@@ -66,6 +67,28 @@ namespace CPC02.Controllers
             {
                 Session["INT006"] = null;
             }
+
+            #region 登入權限
+            int mid = Convert.ToInt32(Session["Mid"]);
+            var member = _db.Member.FirstOrDefault(x => x.Mem000 == mid);
+            if (member.IsCrossMember == "N" && string.IsNullOrEmpty(member.AllowedMem000)) // 只能看自己
+            {
+                modelQuery = modelQuery.Where(x => x.Mid == mid);
+            }
+            else if (member.IsCrossMember == "N" && !string.IsNullOrEmpty(member.AllowedMem000)) // 可看部分人
+            {
+                var allowedIds = member.AllowedMem000
+                       .Split(',')
+                       .Select(id => id.Trim())
+                       .Where(id => int.TryParse(id, out _))
+                       .Select(int.Parse)
+                       .Cast<int?>() 
+                       .ToList();
+
+                modelQuery = modelQuery.Where(x => allowedIds.Contains(x.Mid));
+            }
+            #endregion
+
             var model = modelQuery.ToList();
 
 
@@ -377,15 +400,40 @@ namespace CPC02.Controllers
             {
                 return RedirectToAction("Login", "Member");
             }
-            var data = _db.INTRB.OrderBy(x => x.Status).ThenBy(x => x.Level).ToList();
-            //ViewBag.INT000 = model.INT000;
+            var data = _db.INTRB.OrderBy(x => x.Status).ThenBy(x => x.Level).AsQueryable();
 
             var members = _db.Member.ToList();
             ViewBag.Members = members;
 
-            //model = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT000);
-            //ViewBag.INTRAModel = model;
-            return View("RecordList", data);
+            #region 登入權限
+            int mid = Convert.ToInt32(Session["Mid"]);
+            var member = _db.Member.FirstOrDefault(x => x.Mem000 == mid);
+            var intraModels = _db.INTRA.AsQueryable();
+
+            if (member.IsCrossMember == "N" && string.IsNullOrEmpty(member.AllowedMem000)) // 只能看自己
+            {
+                data = from item in data
+                       join intra in intraModels on item.INT999 equals intra.INT000
+                       where intra.Mid == mid
+                       select item;
+            }
+            else if (member.IsCrossMember == "N" && !string.IsNullOrEmpty(member.AllowedMem000)) // 可看部分人
+            {
+                var allowedIds = member.AllowedMem000
+                       .Split(',')
+                       .Select(id => id.Trim())
+                       .Where(id => int.TryParse(id, out _))
+                       .Select(int.Parse)
+                       .Cast<int?>()
+                       .ToList();
+
+                data = from item in data
+                       join intra in intraModels on item.INT999 equals intra.INT000
+                       where allowedIds.Contains(intra.Mid)
+                       select item;
+            }
+            #endregion
+            return View("RecordList", data.ToList());
         }
         #endregion
 
@@ -533,6 +581,34 @@ namespace CPC02.Controllers
             }
 
             ViewBag.Members = members;
+
+            #region 登入權限
+            int mid = Convert.ToInt32(Session["Mid"]);
+            var member = _db.Member.FirstOrDefault(x => x.Mem000 == mid);
+
+            if (member.IsCrossMember == "N" && string.IsNullOrEmpty(member.AllowedMem000)) // 只能看自己
+            {
+                data = from item in data
+                       join intra in intraModels on item.INT999 equals intra.INT000
+                       where intra.Mid == mid
+                       select item;
+            }
+            else if (member.IsCrossMember == "N" && !string.IsNullOrEmpty(member.AllowedMem000)) // 可看部分人
+            {
+                var allowedIds = member.AllowedMem000
+                       .Split(',')
+                       .Select(id => id.Trim())
+                       .Where(id => int.TryParse(id, out _))
+                       .Select(int.Parse)
+                       .Cast<int?>()
+                       .ToList();
+
+                data = from item in data
+                       join intra in intraModels on item.INT999 equals intra.INT000
+                       where allowedIds.Contains(intra.Mid)
+                       select item;
+            }
+            #endregion
             return View("QuoteList", data.ToList());  
         }
 
