@@ -61,6 +61,16 @@
 </style>
 
 <div class="container">
+    <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+        @if (ViewBag.PreviousINT000 != null)
+        {
+            <a type="button" class="btn btn-outline-primary" href="@Url.Action("QuoteEdit", "Business", new { INT000 = ViewBag.PreviousINT000 })">上一筆</a>
+        }
+        @if (ViewBag.NextINT000 != null)
+        {
+            <a type="button" class="btn btn-outline-primary" href="@Url.Action("QuoteEdit", "Business", new { INT000 = ViewBag.NextINT000 })">下一筆</a>
+        }
+    </div>
     <div class="d-flex align-items-center">
         <a href="@Url.Action("QuoteList", "Business", new { INT000 = ViewBag.INT000 })" class="btn btn-secondary me-2">
             <img src="~/image/icons/back.png" alt="返回" style="width: 20px; height: 20px;" />
@@ -341,20 +351,6 @@
 
             document.getElementById('INT002').value = JSON.stringify(details);
         };
-
-        //Enter改tab
-        document.addEventListener("DOMContentLoaded", function () {
-            document.addEventListener("keydown", function (event) {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    const inputs = Array.from(document.querySelectorAll("input, textarea, select"));
-                    const index = inputs.indexOf(event.target);
-                    if (index >= 0 && index < inputs.length - 1) {
-                        inputs[index + 1].focus();
-                    }
-                }
-            });
-        });
 
     </script>
 

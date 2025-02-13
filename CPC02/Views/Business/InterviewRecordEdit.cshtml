@@ -96,8 +96,8 @@
                 </select>
             </div>
             <div class="col-md-4">
-                <label for="INTRD" class="form-label">客戶狀態/來源</label>
-                <select id="INTRD" name="INTRD" class="form-control" v-model="formData.INTRD" :disabled="!isEditing">
+                <label for="INTRD" class="form-label">客戶狀態/來源<span class="red-text">*</span></label>
+                <select id="INTRD" name="INTRD" class="form-control" v-model="formData.INTRD" :disabled="!isEditing" required>
                     <option value="" disabled>請選擇</option>
                     <option v-for="INTRD in INTRDs" :key="INTRD.INT000" :value="INTRD.INT000">
                         {{ INTRD.INT001 }} - {{ INTRD.INT002 }} - {{ INTRD.INT003 }}
@@ -287,27 +287,9 @@
                     ],
                 };
             },
-            mounted() {
-                document.addEventListener("keydown", this.handleEnterAsTab);
-            },
-            unmounted() {
-                document.removeEventListener("keydown", this.handleEnterAsTab);
-            },
+
             methods: {
-                handleEnterAsTab(event) {
-                    if (event.key === "Enter") {
-                        event.preventDefault();
-                        const focusableElements = Array.from(
-                            document.querySelectorAll("input, textarea, select")
-                        ).filter(el => !el.disabled && !el.readOnly); // 過濾掉無法輸入的元素
 
-                        const index = focusableElements.indexOf(event.target);
-                        if (index >= 0 && index < focusableElements.length - 1) {
-                            focusableElements[index + 1].focus();
-                        }
-                    }
-
-                },
                 toggleEditMode() {
                     this.isEditing = !this.isEditing;
                 },

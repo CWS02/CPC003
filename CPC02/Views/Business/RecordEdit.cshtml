@@ -44,8 +44,18 @@
     }
 </style>
 
-<div id="app" class="container">
 
+<div id="app" class="container">
+    <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+        @if (ViewBag.PreviousINT000 != null)
+        {
+            <a type="button" class="btn btn-outline-primary" href="@Url.Action("RecordEdit", "Business", new { INT000 = ViewBag.PreviousINT000 })">上一筆</a>
+        }
+        @if (ViewBag.NextINT000 != null)
+        {
+            <a type="button" class="btn btn-outline-primary" href="@Url.Action("RecordEdit", "Business", new { INT000 = ViewBag.NextINT000 })">下一筆</a>
+        }
+    </div>
     <div class="d-flex align-items-center">
         <a href="@Url.Action("RecordList", "Business", new {INT000=ViewBag.INT000})" class="btn btn-secondary me-2">
             <img src="~/image/icons/back.png" alt="返回" style="width: 20px; height: 20px;" />
@@ -119,7 +129,7 @@
                 </div>
             </div>
         </div>
-        
+
 
         <div class="row">
             <div class="col-md-4">
@@ -202,30 +212,11 @@
                     this.updateTypeOptions();
                 }
             },
-            mounted() {
-                document.addEventListener("keydown", this.handleEnterAsTab);
-            },
-            beforeUnmount() {
-                document.removeEventListener("keydown", this.handleEnterAsTab);
-            },
             methods: {
                 toggleEditMode() {
                     this.isEditing = !this.isEditing;
                 },
-                    handleEnterAsTab(event) {
-                        if (event.key === "Enter") {
-                            event.preventDefault();
-                            const focusableElements = Array.from(
-                                document.querySelectorAll("input, textarea, select")
-                            ).filter(el => !el.disabled && !el.readOnly); // 過濾掉無法輸入的元素
-
-                            const index = focusableElements.indexOf(event.target);
-                            if (index >= 0 && index < focusableElements.length - 1) {
-                                focusableElements[index + 1].focus();
-                            }
-                        }
                     
-                },
                 updateTypeOptions() {
                     this.currentTypeOptions = Object.entries(this.typeOptions).map(([key, option]) => ({
                         value: parseInt(key), // 保留鍵值

@@ -233,6 +233,7 @@
     <Compile Include="Models\INTRC.cs" />
     <Compile Include="Models\INTRB.cs" />
     <Compile Include="Models\Member.cs" />
+    <Compile Include="Parameters\RecordListSearch.cs" />
     <Compile Include="Parameters\QuoteListSearch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -291,14 +291,14 @@ namespace CPC02.Controllers
             {
                 return RedirectToAction("Login", "Member");
             }
-            var data = _db.INTRB.Where(x => x.INT999 == model.INT000).OrderBy(x => x.Status).ThenBy(x => x.Level).ToList();
+            var data = _db.INTRB.Where(x => x.INT999 == model.INT000).OrderBy(x => x.Status).ThenByDescending(x => x.CreateTime).ToList();
             ViewBag.INT000 = model.INT000;
 
             var members = _db.Member.ToList();
             ViewBag.Members = members;
 
             model = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT000);
-            ViewBag.INTRAModel = model;
+            ViewBag.INTRAModel = _db.INTRA.ToList();
             return View(data);
         }
 
@@ -314,6 +314,18 @@ namespace CPC02.Controllers
             {
                 model = _db.INTRB.Find(model.INT000);
                 ViewBag.IsUpdate = true;
+                //上下一筆
+                var int000List = _db.INTRB
+                .Where(x => x.INT999 == model.INT999)
+                .OrderBy(x => x.Status)
+                .ThenByDescending(x => x.CreateTime)
+                .Select(x => x.INT000)
+                .ToList();
+
+                int currentIndex = int000List.IndexOf(model.INT000);
+                ViewBag.PreviousINT000 = currentIndex > 0 ? int000List[currentIndex - 1] : null;
+                ViewBag.NextINT000 = currentIndex < int000List.Count - 1 ? int000List[currentIndex + 1] : null;
+
             }
             ViewBag.INT000 = model.INT999;
             ViewBag.INTRAModel = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT999)?.INT001;
@@ -394,7 +406,7 @@ namespace CPC02.Controllers
         }
 
         [HttpGet]
-        public ActionResult RecordAllList(INTRA model)
+        public ActionResult RecordAllList(INTRA model,RecordListSearch search)
         {
             if (Session["Mid"] == null)
             {
@@ -404,11 +416,24 @@ namespace CPC02.Controllers
 
             var members = _db.Member.ToList();
             ViewBag.Members = members;
+            ViewBag.INTRAModel = _db.INTRA.ToList();
 
+            var intraModels = _db.INTRA.AsQueryable();
+            if (search.Sales.HasValue)
+            {
+                data = data.Where(x => x.Mid == search.Sales);
+            }
+
+            if (!string.IsNullOrEmpty(search.Name))
+            {
+                data = from item in data
+                       join intra in intraModels on item.INT999 equals intra.INT000
+                       where intra.INT001.Contains(search.Name)
+                       select item;
+            }
             #region 登入權限
             int mid = Convert.ToInt32(Session["Mid"]);
             var member = _db.Member.FirstOrDefault(x => x.Mem000 == mid);
-            var intraModels = _db.INTRA.AsQueryable();
 
             if (member.IsCrossMember == "N" && string.IsNullOrEmpty(member.AllowedMem000)) // 只能看自己
             {
@@ -471,6 +496,16 @@ namespace CPC02.Controllers
             {
                 model = _db.INTRC.Find(model.INT000);
                 ViewBag.IsUpdate = true;
+                //上下一筆
+                var int000List = _db.INTRC
+                .Where(x => x.INT999 == model.INT999)
+                .OrderByDescending(x => x.INT001)
+                .Select(x => x.INT000)
+                .ToList();
+
+                int currentIndex = int000List.IndexOf(model.INT000);
+                ViewBag.PreviousINT000 = currentIndex > 0 ? int000List[currentIndex - 1] : null;
+                ViewBag.NextINT000 = currentIndex < int000List.Count - 1 ? int000List[currentIndex + 1] : null;
             }
             ViewBag.INT000 = model.INT999;
             ViewBag.member = _db.Member.FirstOrDefault(m => m.Mem000 == model.Mid)?.Mem001;
