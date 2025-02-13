@@ -150,8 +150,8 @@
                             <th>@(currentLang == "zh-TW" ? "內容" : "Contents")</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("附件上傳") : Html.Raw("Upload"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("附件下載") : Html.Raw("Download"))</th>
-                            <th>@(currentLang == "zh-TW" ? "狀態" : "Status")</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>
+                            @*<th>@(currentLang == "zh-TW" ? "狀態" : "Status")</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>*@
                         </tr>
                     </thead>
                     <tbody>
@@ -251,12 +251,12 @@
                                         </a>
                                     }
                                 </td>
-                                <td>
+                                @*<td>
                                     <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
                                         @(item.Status == 0 ? "未審核" : (item.Status == 1 ? "已審核" : "已刪除"))
                                     </a>
                                 </td>
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT006</a></td>
+                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT006</a></td>*@
                             </tr>
                         }
                     </tbody>

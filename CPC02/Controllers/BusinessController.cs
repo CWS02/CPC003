@@ -32,6 +32,7 @@ namespace CPC02.Controllers
         [HttpGet]
         public ActionResult InterviewRecordList(bool? Per,int? Mid2, string INT001,string INT006)
         {
+            Session["IsAll"] = false;
             if (Session["Mid"] == null)
             {
                 return RedirectToAction("Login", "Member");
@@ -408,6 +409,7 @@ namespace CPC02.Controllers
         [HttpGet]
         public ActionResult RecordAllList(INTRA model,RecordListSearch search)
         {
+            Session["IsAll"] = true;
             if (Session["Mid"] == null)
             {
                 return RedirectToAction("Login", "Member");
@@ -586,6 +588,7 @@ namespace CPC02.Controllers
         [HttpGet]
         public ActionResult QuoteAllList(INTRA model, QuoteListSearch search)
         {
+            Session["IsAll"] = true;
             if (Session["Mid"] == null)
             {
                 return RedirectToAction("Login", "Member");

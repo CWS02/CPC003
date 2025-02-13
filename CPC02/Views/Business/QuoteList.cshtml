@@ -218,12 +218,20 @@
                                 <td>
                                     @if (item.INT006 != null)
                                     {
-                                        <a href="@Url.Action("DownloadQuote", new {  INT000 = item.INT000, INT999 = item.INT999 })" target="_blank">
-                                            <img src="~/image/icons/file_download.png" alt="附件下載" style="width: 20px; height: 20px;" />
-                                        </a>
+                                    <a href="@Url.Action("DownloadQuote", new {  INT000 = item.INT000, INT999 = item.INT999 })" target="_blank">
+                                        <img src="~/image/icons/file_download.png" alt="附件下載" style="width: 20px; height: 20px;" />
+                                    </a>
                                     }
                                 </td>
-                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.Status == 0 ? "追蹤中" : (item.Status == 1 ? "已結案" : "正式訂單"))</a></td>
+                                <td>
+                                    <a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">
+                                        @(item.Status == 0
+                                        ? (currentLang == "zh-TW" ? "追蹤中" : "Tracking")
+                                        : (item.Status == 1
+                                            ? (currentLang == "zh-TW" ? "已結案" : "Closed")
+                                            : (currentLang == "zh-TW" ? "正式訂單" : "Official Order")))
+                                    </a>
+                                </td>
                             </tr>
                         }
                     </tbody>
