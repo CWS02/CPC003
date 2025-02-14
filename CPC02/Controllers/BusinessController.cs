@@ -1156,7 +1156,7 @@ namespace CPC02.Controllers
         [HttpPost]
         public JsonResult CheckOfficialOrder(INTRC model)
         {
-            var order = _erp.COPTC.FirstOrDefault(x => x.TC001 == model.INT009&&x.TC002==model.INT010&& x.TC027=="Y");
+            var order = _erp.COPTC.FirstOrDefault(x => x.TC001 == model.INT009&&x.TC002==model.INT010&& x.TC027!="V");
             string currentLang = (string)Session["Culture"] ?? "zh-TW";
 
             if (order == null)

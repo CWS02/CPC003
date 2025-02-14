@@ -115,6 +115,9 @@
                 <option value="2" @(Request.QueryString["status"] == "2" ? "selected" : "")>
                     @(currentLang == "zh-TW" ? "正式訂單" : "Official Order")
                 </option>
+                <option value="2" @(Request.QueryString["status"] == "3" ? "selected" : "")>
+                    @(currentLang == "zh-TW" ? "已銷貨" : "Sold Goods")
+                </option>
             </select>
 
 
@@ -226,13 +229,21 @@
                                     }
                                 </td>
                                 <td>
-                                    <a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">
-                                        @(item.Status == 0
-                                        ? (currentLang == "zh-TW" ? "追蹤中" : "Tracking")
-                                        : (item.Status == 1
-                                            ? (currentLang == "zh-TW" ? "已結案" : "Closed")
-                                            : (currentLang == "zh-TW" ? "正式訂單" : "Official Order")))
+                                                            <a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000, IsUpdate = true })" class="clickable-td">
+                                                                @(item.Status == 0
+                                ? (currentLang == "zh-TW" ? "追蹤中" : "Tracking")
+                                : (item.Status == 1
+                                    ? (currentLang == "zh-TW" ? "已結案" : "Closed")
+                                    : (item.Status == 2
+                                        ? (currentLang == "zh-TW" ? "正式訂單" : "Official Order")
+                                        : (item.Status == 3
+                                            ? (currentLang == "zh-TW" ? "已銷貨" : "Goods Sold")
+                                            : "")
+                                      )
+                                  )
+                              )
                                     </a>
+
                                 </td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.INT009?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.INT010?? "　")</a></td>
