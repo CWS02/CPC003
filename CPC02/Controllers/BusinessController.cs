@@ -1168,8 +1168,7 @@ namespace CPC02.Controllers
             data.INT010= model.INT010;
             data.Status = 2;
             _db.SaveChanges();
-
-            return Json(new { success = true, message= "Update successful", redirectUrl = Url.Action("QuoteEdit", "Business", new { INT000 = model.INT000 }) });
+            return Json(new { success = true, message = (currentLang == "zh-TW" ? "更新成功" : "Update successful"), redirectUrl = Url.Action("QuoteEdit", "Business", new { INT000 = model.INT000 }) });
         }
 
         #endregion
