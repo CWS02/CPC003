@@ -28,5 +28,9 @@ namespace CPC02.Models
         /// </summary>
         public virtual DbSet<CMSMJ> CMSMJ { get; set; }
 
+        /// <summary>
+        /// ­q³æ
+        /// </summary>
+        public virtual DbSet<COPTC> COPTC { get; set; }
     }
 }

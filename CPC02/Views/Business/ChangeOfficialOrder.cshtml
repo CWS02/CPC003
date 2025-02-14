@@ -1,0 +1,133 @@
+﻿@using Newtonsoft.Json
+
+@{
+    ViewBag.Title = "正式訂單";
+    Layout = "~/Views/Shared/_LayoutBusiness.cshtml";
+    string currentLang = (string)Session["Culture"] ?? "zh-TW";
+}
+
+<style>
+    .form-label {
+        text-align: left;
+        margin-bottom: 5px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+    }
+
+    .form-check {
+        text-align: left;
+        margin-bottom: 5px;
+        width: 100%;
+        max-width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+    }
+
+    .col-md-4 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .red-text {
+        color: red;
+    }
+</style>
+
+
+<div id="app" class="container">
+    <div class="d-flex align-items-center">
+        <a href="@Url.Action("QuoteEdit", "Business", new {INT000=ViewBag.INT000,IsUpdate=true})" class="btn btn-secondary me-2">
+            <img src="~/image/icons/back.png" alt="返回" style="width: 20px; height: 20px;" />
+            @(currentLang == "zh-TW" ? "返回" : "Back")
+        </a>
+        <button v-bind:class="isEditing ? 'btn btn-outline-primary me-2' : 'btn btn-primary me-2'"
+                v-on:click="toggleEditMode">
+            {{ currentLanguage === 'zh-TW' ? (isEditing ? '取消編輯' : '編輯') : (isEditing ? 'Cancel' : 'Edit') }}
+        </button>
+        <div class="flex-grow-1 text-center title">
+            @(currentLang == "zh-TW"
+                ? $"正式訂單 - {ViewBag.INTRAModel}"
+                : $"Official Order - {ViewBag.INTRAModel}")
+        </div>
+    </div>
+
+    <form v-on:submit.prevent="submitForm">
+        <input type="hidden" name="INT999" v-model="formData.INT999" />
+        <input type="hidden" name="INT000" v-model="formData.INT000" />
+
+        <div class="row">
+            <div class="col-md-4">
+                <label for="INT009" class="form-label">
+                    @(currentLang == "zh-TW" ? "單別" : "Order Type")<span class="red-text">*</span>
+                </label>
+                <input type="text" class="form-control" name="INT009" v-model="formData.INT009" v-bind:disabled="!isEditing" maxlength="4" required />
+            </div>
+            <div class="col-md-4">
+                <label for="INT010" class="form-label">
+                    @(currentLang == "zh-TW" ? "單號" : "Order Number")<span class="red-text">*</span>
+                </label>
+                <input type="text" class="form-control" name="INT010" v-model="formData.INT010" v-bind:disabled="!isEditing" maxlength="11" required />
+            </div>
+        </div>
+
+
+        <div class="text-center" v-if="isEditing">
+            <button type="submit" class="btn btn-primary">
+                @(currentLang == "zh-TW" ? "存檔" : "Save")
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    isEditing: '@ViewBag.IsUpdate' !== 'True',
+                    currentLanguage: '@currentLang',
+                    formData: @Html.Raw(JsonConvert.SerializeObject(Model, new JsonSerializerSettings
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    })),
+                }
+            },
+            methods: {
+                toggleEditMode() {
+                    this.isEditing = !this.isEditing;
+                },
+                submitForm() {
+                    const formData = new FormData(document.querySelector('form'));
+
+                    fetch('@Url.Action("CheckOfficialOrder", "Business")', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if (data.success) {
+                            window.location.href = data.redirectUrl;  // 導頁
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('發生錯誤，請稍後再試');
+                    });
+                }
+            }
+        });
+        app.mount('#app');
+    </script>
+}

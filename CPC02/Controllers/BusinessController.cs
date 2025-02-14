@@ -1,6 +1,7 @@
 ﻿using CPC02.Function;
 using CPC02.Models;
 using CPC02.Parameters;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Ajax.Utilities;
@@ -26,6 +27,7 @@ namespace CPC02.Controllers
     {
         // GET: Business
         CPCContext _db = new CPCContext();
+        TWNCPCContext _erp = new TWNCPCContext();
         MemberController _member = new MemberController();
 
         #region 客戶訪談記錄
@@ -1137,6 +1139,39 @@ namespace CPC02.Controllers
             }
             return fileName;
         }
+        #endregion
+
+        #region 正式訂單
+        public ActionResult ChangeOfficialOrder(INTRC model)
+        {
+            if (Session["Mid"] == null)
+            {
+                return RedirectToAction("Login", "Member");
+            }
+            ViewBag.INT000 = model.INT000;
+            ViewBag.INTRAModel = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT999)?.INT001;
+
+            return View(model);
+        }
+        [HttpPost]
+        public JsonResult CheckOfficialOrder(INTRC model)
+        {
+            var order = _erp.COPTC.FirstOrDefault(x => x.TC001 == model.INT009&&x.TC002==model.INT010&& x.TC027=="Y");
+            string currentLang = (string)Session["Culture"] ?? "zh-TW";
+
+            if (order == null)
+            {
+                return Json(new { success = false, message = (currentLang=="zh-TW"?"找無訂單":"Order not found") }, JsonRequestBehavior.AllowGet);
+            }
+            var data=_db.INTRC.Find(model.INT000);
+            data.INT009= model.INT009;
+            data.INT010= model.INT010;
+            data.Status = 2;
+            _db.SaveChanges();
+
+            return Json(new { success = true, message= "Update successful", redirectUrl = Url.Action("QuoteEdit", "Business", new { INT000 = model.INT000 }) });
+        }
+
         #endregion
     }
 }

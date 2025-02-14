@@ -53,6 +53,14 @@ namespace CPC02.Models
         /// </summary>
         public string INT008 { get; set; }
         /// <summary>
+        /// 單別(ERP)
+        /// </summary>
+        public string INT009 { get; set; }
+        /// <summary>
+        /// 單號(ERP)
+        /// </summary>
+        public string INT010 { get; set; }
+        /// <summary>
         /// 業務人員 ID。
         /// </summary>
         public int Mid { get; set; }

@@ -80,19 +80,25 @@
             <img src="~/image/icons/back.png" alt="返回" style="width: 20px; height: 20px;" />
             @(currentLang == "zh-TW" ? "返回" : "Back")
         </a>
-        <button id="editToggleButton" class="btn btn-primary me-2" onclick="toggleEditMode()">@(currentLang == "zh-TW" ? "編輯" : "Edit")</button>
+        @if (Model.Status == 0)
+        {
+            <button id="editToggleButton" class="btn btn-primary me-2" onclick="toggleEditMode()">@(currentLang == "zh-TW" ? "編輯" : "Edit")</button>
+        }
 
         @if (ViewBag.IsUpdate == true)
         {
             <a href="@Url.Action("PrintQuote", new { INT000 =  Model.INT000,INT999=Model.INT999 })" target="_blank" class="btn btn-success me-2">
                 @(currentLang == "zh-TW" ? "PDF" : "PDF")
             </a>
-            <a href="@Url.Action("ChangeStatusForINTRC", new { id = Model.INT000,id2=Model.INT999,status=1  })" class="btn btn-danger me-2" onclick="return confirm('@(currentLang == "zh-TW" ? "確定已結案嗎？" : "Are you sure it's closed?")');">
-                @(currentLang == "zh-TW" ? "已結案" : "Closed")
-            </a>
-            <a href="@Url.Action("PrintQuote", new { INT000 =  Model.INT000,INT999=Model.INT999 })" class="btn btn-danger me-2">
-                @(currentLang == "zh-TW" ? "正式訂單" : "Official Order")
-            </a>
+            if (Model.Status == 0)
+            {
+                <a href="@Url.Action("ChangeStatusForINTRC", new { id = Model.INT000,id2=Model.INT999,status=1  })" class="btn btn-danger me-2" onclick="return confirm('@(currentLang == "zh-TW" ? "確定已結案嗎？" : "Are you sure it's closed?")');">
+                    @(currentLang == "zh-TW" ? "已結案" : "Closed")
+                </a>
+                <a href="@Url.Action("ChangeOfficialOrder", new { INT000 =  Model.INT000,INT999=Model.INT999 })" class="btn btn-danger me-2">
+                    @(currentLang == "zh-TW" ? "正式訂單" : "Official Order")
+                </a>
+            }
         }
 
         <div class="flex-grow-1 text-center title">
@@ -120,7 +126,7 @@
                 <label for="INT001" class="form-label">
                     @(currentLang == "zh-TW" ? "交期" : "Deadline")
                 </label>
-                @Html.TextBoxFor(m => m.INT004, new { @class = "form-control", type = "date" })
+                @Html.TextBoxFor(m => m.INT004, new { @class = "form-control" })
             </div>
 
             <div class="col-md-4">
