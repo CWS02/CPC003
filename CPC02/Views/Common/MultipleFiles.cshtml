@@ -1,0 +1,107 @@
+﻿@model IEnumerable<CPC02.Models.Files>
+
+@{
+    ViewBag.Title = "多筆上傳";
+    Layout = ViewBag.Layout;
+}
+<link rel="stylesheet" href="~/css/style3.css" />
+
+<div class="d-flex align-items-center">
+    <div class="flex-grow-1 text-center title">
+        多筆上傳
+    </div>
+</div>
+
+<div id="app" class="container">
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-3 d-flex justify-content-between">
+                <form action="@Url.Action("MultipleFiles", new { SourceID = ViewBag.SourceID, layout = ViewBag.Layout })" method="post" enctype="multipart/form-data" class="d-flex">
+                    <input type="file" name="files" multiple class="form-control me-2" />
+                    <button type="submit" class="btn btn-secondary">上傳檔案</button>
+                </form>
+
+                <button id="downloadAllBtn" class="btn btn-success">下載所有檔案</button>
+
+            </div>
+            
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table id="datatable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>序</th>
+                            <th>檔案名稱</th>
+                            <th>建立時間</th>
+                            <th>下載</th>
+                            <th>刪除</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(Model.ToList().IndexOf(item) + 1)</td>
+                                <td>@item.FileName</td>
+                                <td>@item.CreateTime</td>
+                                <td>
+                                    <a href="@Url.Content(item.ServerPath)" download="@item.FileName">
+                                        <img src="~/image/icons/file_download.png" style="width: 20px; height: 20px;" />
+                                    </a>
+                                </td>
+                                <td>
+                                    <form action="@Url.Action("DeleteFile", new { id = item.ID,layout=ViewBag.layout })" method="post" style="display:inline;">
+                                        <button type="submit" style="background: none; border: none; padding: 0;">
+                                            <img src="~/image/icons/delete.png" style="width: 20px; height: 20px;" />
+                                        </button>
+                                    </form>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const referrer = document.referrer;
+    const message = '@ViewBag.Message';
+
+    if (message) {
+        alert(message);
+    }
+
+    if (referrer) {
+        window.history.replaceState({}, document.title, referrer);
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('downloadAllBtn').addEventListener('click', function () {
+        var files = [
+            @foreach (var item in Model)
+            {
+                @: { url: '@Url.Content(item.ServerPath)', fileName: '@item.FileName' },
+            }
+        ];
+
+        files.forEach(function (file) {
+            var a = document.createElement('a');
+            a.href = file.url;
+            a.download = file.fileName;  // 設定檔名
+            a.click();
+        });
+    });
+});
+
+$(document).ready(function () {
+    $('#datatable').DataTable({
+
+    });
+});
+
+</script>

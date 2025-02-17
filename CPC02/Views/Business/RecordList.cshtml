@@ -150,8 +150,10 @@
                             <th>@(currentLang == "zh-TW" ? "內容" : "Contents")</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("附件上傳") : Html.Raw("Upload"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("附件下載") : Html.Raw("Download"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("多筆上傳") : Html.Raw("MultipleFiles"))</th>
+
                             @*<th>@(currentLang == "zh-TW" ? "狀態" : "Status")</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>*@
+        <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>*@
                         </tr>
                     </thead>
                     <tbody>
@@ -257,6 +259,11 @@
                                     </a>
                                 </td>
                                 <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT006</a></td>*@
+                                <td>
+                                    <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000, layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
+                                        <img src="~/image/icons/folder.png" style="width: 20px; height: 20px;" />
+                                    </a>
+                                </td>
                             </tr>
                         }
                     </tbody>

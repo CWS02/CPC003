@@ -35,7 +35,11 @@ namespace CPC02.Models
         /// <summary>
         /// 業務會員
         /// </summary>
-        public virtual DbSet<Member> Member { get; set; }
+        public virtual DbSet<Member> Member { get; set; }        
+        /// <summary>
+        /// 多筆上傳
+        /// </summary>
+        public virtual DbSet<Files> Files { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

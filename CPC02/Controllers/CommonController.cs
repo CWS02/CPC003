@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -10,6 +11,7 @@ namespace CPC02.Controllers
 {
     public class CommonController : Controller
     {
+        CPCContext _db=new CPCContext();
         CPC2Context _erpcpc = new CPC2Context();
         //TWNCPCContext _erp = new TWNCPCContext();
 
@@ -126,9 +128,111 @@ namespace CPC02.Controllers
                 model = model.Where(x => departmentP.Contains(x.LOG008));
             }
 
-
             return View("WorkLogList", model.ToList()); 
         }
+        #endregion
+
+        #region  檔案多筆上傳
+        [HttpGet]
+        public ActionResult MultipleFiles(Files model, string layout = null)
+        {
+            var data=_db.Files.Where(x=>x.SourceID==model.SourceID).ToList();
+            ViewBag.SourceID = model.SourceID;
+            ViewBag.Layout = string.IsNullOrEmpty(layout) ? "~/Views/Shared/_LayoutCommon.cshtml" : layout;
+            return View(data);
+        }
+
+        [HttpPost]
+        public ActionResult MultipleFiles(IEnumerable<HttpPostedFileBase> files,Files model, string layout = null)
+        {
+            string[] allowedExtensions = { ".jpg", ".jpeg", ".JPG", ".png", ".gif", ".pdf",".doc",".docx",".xlsx" };
+
+            var data = _db.Files.Where(x => x.SourceID == model.SourceID).ToList();
+            ViewBag.SourceID = model.SourceID;
+            ViewBag.Layout = string.IsNullOrEmpty(layout) ? "~/Views/Shared/_LayoutCommon.cshtml" : layout;
+
+            if (files == null || !files.Any(f => f != null && f.ContentLength > 0))
+            {
+                ViewBag.Message = "未接收到任何檔案，請檢查上傳表單！";
+                return View(data);
+            }
+
+            string uploadFolder = Server.MapPath("~/image/upload");
+            if (!Directory.Exists(uploadFolder))
+            {
+                Directory.CreateDirectory(uploadFolder);
+            }
+
+            List<Files> fileList = new List<Files>();
+
+            if (files != null && files.Any())
+            {
+                foreach (var file in files)
+                {
+                    if (file != null && file.ContentLength > 0)
+                    {
+                        string fileName = Path.GetFileName(file.FileName);
+                        string extension = Path.GetExtension(file.FileName);
+                        string originalFileName = Path.GetFileNameWithoutExtension(file.FileName);
+                        string uniqueFileName = $"{originalFileName}_{Guid.NewGuid().ToString("N").Substring(0, 8)}{extension}";
+                        string filePath = Path.Combine(uploadFolder, uniqueFileName);
+
+                        if (!allowedExtensions.Contains(extension))
+                        {
+                            ViewBag.Message = $"檔案 {file.FileName} 格式不被允許，請上傳 {string.Join(", ", allowedExtensions)} 格式檔案。";
+                            return View(data);
+                        }
+
+                        file.SaveAs(filePath);
+
+                        var fileRecord = new Files
+                        {
+                            SourceID = model.SourceID,
+                            FileName = fileName,
+                            ServerPath = "/image/upload/" + uniqueFileName,
+                            FileSize = file.ContentLength,
+                            Extension = extension,
+                        };
+
+                        fileList.Add(fileRecord);
+                        _db.Files.Add(fileRecord);
+                    }
+                }
+
+                _db.SaveChanges();
+                ViewBag.Message = $"{fileList.Count} 個檔案上傳並儲存成功！";
+            }
+            data = _db.Files.Where(x => x.SourceID == model.SourceID).ToList();
+            return View(data);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteFile(Guid id, string layout = null)
+        {
+            var fileRecord = _db.Files.SingleOrDefault(f => f.ID == id);
+            if (fileRecord != null)
+            {
+                string filePath = Server.MapPath(fileRecord.ServerPath);
+
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+
+                _db.Files.Remove(fileRecord);
+                _db.SaveChanges();
+
+                TempData["Message"] = "檔案刪除成功！";
+            }
+            else
+            {
+                TempData["Message"] = "找不到該檔案！";
+            }
+
+            return RedirectToAction("MultipleFiles", new { SourceID = fileRecord.SourceID, layout = layout });
+        }
+
+
         #endregion
     }
 }
