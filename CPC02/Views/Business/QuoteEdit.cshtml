@@ -80,7 +80,7 @@
             <img src="~/image/icons/back.png" alt="返回" style="width: 20px; height: 20px;" />
             @(currentLang == "zh-TW" ? "返回" : "Back")
         </a>
-        @if (Model.Status == 0)
+        @if (Model.Status == 0 && Session["Perm_U"] != null && Session["Perm_U"].ToString()[2] == 'Y')
         {
             <button id="editToggleButton" class="btn btn-primary me-2" onclick="toggleEditMode()">@(currentLang == "zh-TW" ? "編輯" : "Edit")</button>
         }
@@ -90,7 +90,7 @@
             <a href="@Url.Action("PrintQuote", new { INT000 =  Model.INT000,INT999=Model.INT999 })" target="_blank" class="btn btn-success me-2">
                 @(currentLang == "zh-TW" ? "PDF" : "PDF")
             </a>
-            if (Model.Status == 0)
+            if (Model.Status == 0 && Session["Perm_U"] != null && Session["Perm_U"].ToString()[2] == 'Y')
             {
                 <a href="@Url.Action("ChangeStatusForINTRC", new { id = Model.INT000,id2=Model.INT999,status=1  })" class="btn btn-danger me-2" onclick="return confirm('@(currentLang == "zh-TW" ? "確定已結案嗎？" : "Are you sure it's closed?")');">
                     @(currentLang == "zh-TW" ? "已結案" : "Closed")

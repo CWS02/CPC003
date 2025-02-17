@@ -86,7 +86,7 @@ namespace CPC02.Models
 
         /// <summary>
         /// ª¬ºA
-        /// 0=¥¼¼f®Ö,1=¤w¼f®Ö 2=§R°£
+        /// -1=§R°£0=¥¼¼f®Ö,1=¤w¼f®Ö 
         /// </summary>
         public int Status { get; set; }
 

@@ -22,12 +22,17 @@ namespace CPC02.Controllers
         [HttpPost]
         public ActionResult Login(Member model)
         {
-            model = _db.Member.FirstOrDefault(m => m.Mem001==model.Mem001&&m.Mem002 == model.Mem002 && m.Mem003 == model.Mem003);
+            model = _db.Member.FirstOrDefault(m => m.Mem001==model.Mem001&&m.Mem002 == model.Mem002 && m.Mem003 == model.Mem003 && model.Status==0);
             if (model != null)
             {
                 Session.Timeout = 60;
                 Session["Mid"] = model.Mem000;
                 Session["MName"] = model.Mem001;
+
+                //權限
+                Session["Perm_C"] = model.Perm_C;
+                Session["Perm_U"] = model.Perm_U;
+                Session["Perm_D"] = model.Perm_D;
 
                 return RedirectToAction(model.Action, model.Controller);
             }

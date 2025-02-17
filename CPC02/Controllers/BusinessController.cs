@@ -134,7 +134,7 @@ namespace CPC02.Controllers
                 Session["Per"] = true;
             }
             
-            model = model.OrderByDescending(intra => intra.LastDate).ToList();
+            model = model.Where(intra=>intra.Status!=-1).OrderByDescending(intra => intra.LastDate).ToList();
 
             
             var members = _db.Member.Where(x=>x.IsBusiness=="Y").ToList();
@@ -294,7 +294,7 @@ namespace CPC02.Controllers
             {
                 return RedirectToAction("Login", "Member");
             }
-            var data = _db.INTRB.Where(x => x.INT999 == model.INT000).OrderBy(x => x.Status).ThenByDescending(x => x.CreateTime).ToList();
+            var data = _db.INTRB.Where(x => x.INT999 == model.INT000 && x.Status!=-1).OrderBy(x => x.Status).ThenByDescending(x => x.CreateTime).ToList();
             ViewBag.INT000 = model.INT000;
 
             var members = _db.Member.ToList();
@@ -416,7 +416,7 @@ namespace CPC02.Controllers
             {
                 return RedirectToAction("Login", "Member");
             }
-            var data = _db.INTRB.OrderBy(x => x.Status).ThenBy(x => x.Level).AsQueryable();
+            var data = _db.INTRB.Where(x=>x.Status!=-1).OrderBy(x => x.Status).ThenBy(x => x.Level).AsQueryable();
 
             var members = _db.Member.ToList();
             ViewBag.Members = members;
@@ -475,7 +475,7 @@ namespace CPC02.Controllers
                 return RedirectToAction("Login", "Member");
             }
 
-            var data = _db.INTRC.Where(x => x.INT999 == model.INT000).OrderByDescending(x => x.INT001).ToList();
+            var data = _db.INTRC.Where(x => x.INT999 == model.INT000 && x.Status!=-1).OrderByDescending(x => x.INT001).ToList();
             ViewBag.INT000 = model.INT000;
 
             ViewBag.INTRAModel = _db.INTRA.ToList(); 
@@ -596,7 +596,7 @@ namespace CPC02.Controllers
                 return RedirectToAction("Login", "Member");
             }
 
-            var data = _db.INTRC.AsQueryable();
+            var data = _db.INTRC.Where(x=>x.Status!=-1).AsQueryable();
             var intraModels = _db.INTRA.AsQueryable();  
 
             ViewBag.INTRAModel = intraModels.ToList();  

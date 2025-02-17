@@ -111,7 +111,10 @@
     <div class="card">
         <div class="card-body">
             <div class="mb-3">
-                <a href="@Url.Action("InterviewRecordEdit")"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
+                @if (Session["Perm_C"] != null && Session["Perm_C"].ToString()[0] == 'Y')
+                {
+                    <a href="@Url.Action("InterviewRecordEdit")"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
+                }
             </div>
             <div class="table-responsive" style="overflow-x: auto;">
                 <table id="datatable" class="table table-striped">

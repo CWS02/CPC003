@@ -54,7 +54,7 @@ namespace CPC02.Models
         /// <summary>
         /// 會員狀態
         /// 0 = 啟用
-        /// 1 = 刪除
+        /// -1 = 刪除
         /// </summary>
         public int Status { get; set; }
 
@@ -74,6 +74,26 @@ namespace CPC02.Models
         /// 可看會員資料的Mem000
         /// </summary>
         public string AllowedMem000 { get; set; }
-
+        /// <summary>
+        /// 是否新增客戶資料 Y/N        
+        /// 是否新增訪談記錄 Y/N        
+        /// 是否新增報價資料 Y/N
+        /// ex:YNY
+        /// </summary>
+        public string Perm_C { get; set; }
+        /// <summary>
+        /// 是否更新增客戶資料 Y/N        
+        /// 是否更新訪談記錄 Y/N        
+        /// 是否更新報價資料 Y/N
+        /// ex:YNY
+        /// </summary>
+        public string Perm_U { get; set; }
+        /// <summary>
+        /// 是否刪除客戶資料 Y/N        
+        /// 是否刪除訪談記錄 Y/N        
+        /// 是否刪除報價資料 Y/N
+        /// ex:YNY
+        /// </summary>
+        public string Perm_D { get; set; }
     }
 }

@@ -121,7 +121,7 @@
     <div class="card">
         <div class="card-body">
             <div class="mb-3">
-                @if (ViewBag.INT000 != null)
+                @if (ViewBag.INT000 != null && Session["Perm_C"] != null && Session["Perm_C"].ToString()[1] == 'Y')
                 {
                     <a href="@Url.Action("RecordEdit", new {INT999=ViewBag.INT000})"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
                 }

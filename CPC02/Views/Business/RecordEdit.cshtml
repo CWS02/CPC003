@@ -66,10 +66,13 @@
             <img src="~/image/icons/back.png" alt="返回" style="width: 20px; height: 20px;" />
             @(currentLang == "zh-TW" ? "返回" : "Back")
         </a>
-        <button v-bind:class="isEditing ? 'btn btn-outline-primary me-2' : 'btn btn-primary me-2'"
-                v-on:click="toggleEditMode">
-            {{ currentLanguage === 'zh-TW' ? (isEditing ? '取消編輯' : '編輯') : (isEditing ? 'Cancel' : 'Edit') }}
-        </button>
+        @if (Session["Perm_U"] != null && Session["Perm_U"].ToString()[1] == 'Y')
+        {
+            <button v-bind:class="isEditing ? 'btn btn-outline-primary me-2' : 'btn btn-primary me-2'"
+                    v-on:click="toggleEditMode">
+                {{ currentLanguage === 'zh-TW' ? (isEditing ? '取消編輯' : '編輯') : (isEditing ? 'Cancel' : 'Edit') }}
+            </button>
+        }
         <div class="flex-grow-1 text-center title">
             @(currentLang == "zh-TW"
                 ? $"客戶訪談記錄 - {ViewBag.INTRAModel}"

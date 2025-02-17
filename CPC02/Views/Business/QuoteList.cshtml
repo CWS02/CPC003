@@ -7,6 +7,7 @@
     var members = ViewBag.Members as List<CPC02.Models.Member>;
     var intraModels = (List<CPC02.Models.INTRA>)ViewBag.INTRAModel;
 }
+
 <style>
     .btn {
         font-size: 16px;
@@ -106,6 +107,9 @@
                 @(currentLang == "zh-TW" ? "訂單狀態:" : "Order Status")
             </label>
             <select id="status" name="status" class="form-control" style="margin-right: 10px;">
+                <option value="" @(string.IsNullOrEmpty(Request.QueryString["status"]) ? "selected" : "")>
+                    @(currentLang == "zh-TW" ? "請選擇" : "Please Select")
+                </option>
                 <option value="0" @(Request.QueryString["status"] == "0" ? "selected" : "")>
                     @(currentLang == "zh-TW" ? "追蹤中" : "In Progress")
                 </option>
@@ -115,7 +119,7 @@
                 <option value="2" @(Request.QueryString["status"] == "2" ? "selected" : "")>
                     @(currentLang == "zh-TW" ? "正式訂單" : "Official Order")
                 </option>
-                <option value="2" @(Request.QueryString["status"] == "3" ? "selected" : "")>
+                <option value="3" @(Request.QueryString["status"] == "3" ? "selected" : "")>
                     @(currentLang == "zh-TW" ? "已銷貨" : "Sold Goods")
                 </option>
             </select>
@@ -150,7 +154,7 @@
     <div class="card">
         <div class="card-body">
             <div class="mb-3">
-                @if (ViewBag.INT000 != null)
+                @if (ViewBag.INT000 != null && Session["Perm_C"] != null && Session["Perm_C"].ToString()[2] == 'Y')
                 {
                     <a href="@Url.Action("QuoteEdit", new { INT999 = ViewBag.INT000 })"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
                 }
