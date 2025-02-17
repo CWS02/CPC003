@@ -146,6 +146,7 @@ namespace CPC02.Controllers
         public ActionResult MultipleFiles(IEnumerable<HttpPostedFileBase> files,Files model, string layout = null)
         {
             string[] allowedExtensions = { ".jpg", ".jpeg", ".JPG", ".png", ".gif", ".pdf",".doc",".docx",".xlsx" };
+            string currentLang = (string)Session["Culture"] ?? "zh-TW";
 
             var data = _db.Files.Where(x => x.SourceID == model.SourceID).ToList();
             ViewBag.SourceID = model.SourceID;
@@ -153,7 +154,7 @@ namespace CPC02.Controllers
 
             if (files == null || !files.Any(f => f != null && f.ContentLength > 0))
             {
-                ViewBag.Message = "未接收到任何檔案，請檢查上傳表單！";
+                ViewBag.Message = currentLang == "zh-TW" ? "未接收到任何檔案" : "No files received.";
                 return View(data);
             }
 
@@ -179,8 +180,9 @@ namespace CPC02.Controllers
 
                         if (!allowedExtensions.Contains(extension))
                         {
-                            ViewBag.Message = $"檔案 {file.FileName} 格式不被允許，請上傳 {string.Join(", ", allowedExtensions)} 格式檔案。";
-                            return View(data);
+                            ViewBag.Message = currentLang == "zh-TW"
+                                                   ? $"檔案 {file.FileName} 格式不被允許，請上傳 {string.Join(", ", allowedExtensions)} 格式檔案。"
+                                                   : $"File {file.FileName} format is not allowed. Please upload files with the following formats: {string.Join(", ", allowedExtensions)}."; return View(data);
                         }
 
                         file.SaveAs(filePath);
@@ -200,7 +202,9 @@ namespace CPC02.Controllers
                 }
 
                 _db.SaveChanges();
-                ViewBag.Message = $"{fileList.Count} 個檔案上傳並儲存成功！";
+                ViewBag.Message = currentLang == "zh-TW"
+                            ? $"{fileList.Count} 個檔案上傳成功！"
+                            : $"{fileList.Count} files have been uploaded successfully!";
             }
             data = _db.Files.Where(x => x.SourceID == model.SourceID).ToList();
             return View(data);

@@ -1,14 +1,15 @@
 ﻿@model IEnumerable<CPC02.Models.Files>
 
 @{
-    ViewBag.Title = "多筆上傳";
     Layout = ViewBag.Layout;
+    string currentLang = (string)Session["Culture"] ?? "zh-TW";
+    ViewBag.Title = (currentLang == "zh-TW" ? " 多筆上傳" : "MultipleFiles");
 }
 <link rel="stylesheet" href="~/css/style3.css" />
 
 <div class="d-flex align-items-center">
     <div class="flex-grow-1 text-center title">
-        多筆上傳
+       @(currentLang=="zh-TW"?" 多筆上傳": "MultipleFiles")
     </div>
 </div>
 
@@ -18,10 +19,12 @@
             <div class="mb-3 d-flex justify-content-between">
                 <form action="@Url.Action("MultipleFiles", new { SourceID = ViewBag.SourceID, layout = ViewBag.Layout })" method="post" enctype="multipart/form-data" class="d-flex">
                     <input type="file" name="files" multiple class="form-control me-2" />
-                    <button type="submit" class="btn btn-secondary">上傳檔案</button>
+                    <button type="submit" class="btn btn-secondary">
+                        @(currentLang=="zh-TW"? " 上傳檔案" : "Upload Files")
+                    </button>
                 </form>
 
-                <button id="downloadAllBtn" class="btn btn-success">下載所有檔案</button>
+                <button id="downloadAllBtn" class="btn btn-success">@(currentLang=="zh-TW"? " 下載所有檔案" : "Download All Files")</button>
 
             </div>
             
@@ -29,11 +32,11 @@
                 <table id="datatable" class="table table-striped">
                     <thead>
                         <tr>
-                            <th>序</th>
-                            <th>檔案名稱</th>
-                            <th>建立時間</th>
-                            <th>下載</th>
-                            <th>刪除</th>
+                            <th>@(currentLang == "zh-TW" ? "序" : "No.")</th>
+                            <th>@(currentLang == "zh-TW" ? "檔案名稱" : "File Name")</th>
+                            <th>@(currentLang == "zh-TW" ? "建立時間" : "Created Time")</th>
+                            <th>@(currentLang == "zh-TW" ? "下載" : "Download")</th>
+                            <th>@(currentLang == "zh-TW" ? "刪除" : "Delete")</th>
                         </tr>
                     </thead>
                     <tbody>
