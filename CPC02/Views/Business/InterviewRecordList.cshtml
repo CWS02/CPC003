@@ -131,6 +131,10 @@
                             <th>@(currentLang == "zh-TW" ? "聯絡電話" : "Phone")</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("事件/<br>訪談記錄") : Html.Raw("Event/<br>Interview Record"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("報價記錄") : Html.Raw("Quote<br>Record"))</th>
+                            @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[0] == 'Y')
+                            {
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("刪除") : Html.Raw("Delete"))</th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -161,6 +165,15 @@
                                         @(item.QuoteLastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
                                     </a>
                                 </td>
+
+                                @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[0] == 'Y')
+                                {
+                                    <td>
+                                       <a href="@Url.Action("ChangeStatusForINTRA", new { id = item.INT000,status=-1 })">
+                                           <img src="~/image/icons/delete.png" style="width: 20px; height: 20px;" />
+                                       </a>
+                                    </td>
+                                }
                             </tr>
                         }
                     </tbody>

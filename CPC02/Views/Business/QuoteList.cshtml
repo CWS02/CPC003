@@ -177,12 +177,17 @@
                             <th>@(currentLang == "zh-TW" ? Html.Raw("國家") : Html.Raw("Country"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("地區") : Html.Raw("Region"))</th>
 
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("圖面上傳") : Html.Raw("Image<br>Upload"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("圖面下載") : Html.Raw("Image<br>Download"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("圖面上傳 (old)") : Html.Raw("Image<br>Upload (old)"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("圖面下載 (old)") : Html.Raw("Image<br>Download (old)"))</th>
+                            <th>@(currentLang == "zh-TW" ? "多筆上傳" : "MultipleFiles")</th>
+
                             <th>@(currentLang == "zh-TW" ? "訂單狀態" : "Order Status")</th>
                             <th>@(currentLang == "zh-TW" ? "單別" : "Order Type")</th>
                             <th>@(currentLang == "zh-TW" ? "單號" : "Order Number")</th>
-                            <th>@(currentLang == "zh-TW" ? "多筆上傳" : "MultipleFiles")</th>
+                            @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[2] == 'Y')
+                            {
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("刪除") : Html.Raw("Delete"))</th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -217,13 +222,13 @@
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT006?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT007?? "　")</a></td>
                                 <td>
-                                    <form action="@Url.Action("UploadQuote", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
-                                        <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
-                                        <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
-                                            <img src="~/image/icons/file_upload.png" alt="附近上傳" style="width: 20px; height: 20px;" />
-                                        </a>
-                                        <input type="submit" value="上傳" style="display: none;" />
-                                    </form>
+                                    @*<form action="@Url.Action("UploadQuote", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
+                <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
+                <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
+                    <img src="~/image/icons/file_upload.png" alt="附近上傳" style="width: 20px; height: 20px;" />
+                </a>
+                <input type="submit" value="上傳" style="display: none;" />
+            </form>*@
                                 </td>
                                 <td>
                                     @if (item.INT006 != null)
@@ -232,6 +237,11 @@
                                             <img src="~/image/icons/file_download.png" alt="附件下載" style="width: 20px; height: 20px;" />
                                         </a>
                                     }
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000, layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
+                                        <img src="~/image/icons/folder.png" style="width: 20px; height: 20px;" />
+                                    </a>
                                 </td>
                                 <td>
                                     <a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000, IsUpdate = true })" class="clickable-td">
@@ -252,11 +262,15 @@
                                 </td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.INT009?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.INT010?? "　")</a></td>
-                                <td>
-                                    <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000, layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
-                                        <img src="~/image/icons/folder.png" style="width: 20px; height: 20px;" />
-                                    </a>
-                                </td>
+
+                                @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[2] == 'Y')
+                                {
+                                    <td>
+                                        <a href="@Url.Action("ChangeStatusForINTRC", new { id = item.INT000,id2=item.INT999,status=-1 })">
+                                            <img src="~/image/icons/delete.png" style="width: 20px; height: 20px;" />
+                                        </a>
+                                    </td>
+                                }
                             </tr>
                         }
                     </tbody>

@@ -958,6 +958,11 @@ namespace CPC02.Controllers
         #endregion
 
         #region 主管審核 主管回覆
+        public ActionResult ChangeStatusForINTRA(string id, int status)
+        {
+            var result = ChangeStatus<INTRA>(id, status);
+            return RedirectToAction("InterviewRecordList", new { INT000 = id });
+        }
         public ActionResult ChangeStatusForINTRB(string id, string id2, int status)
         {
             var result = ChangeStatus<INTRB>(id, status);

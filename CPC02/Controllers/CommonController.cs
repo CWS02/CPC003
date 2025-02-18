@@ -182,7 +182,16 @@ namespace CPC02.Controllers
                         {
                             ViewBag.Message = currentLang == "zh-TW"
                                                    ? $"檔案 {file.FileName} 格式不被允許，請上傳 {string.Join(", ", allowedExtensions)} 格式檔案。"
-                                                   : $"File {file.FileName} format is not allowed. Please upload files with the following formats: {string.Join(", ", allowedExtensions)}."; return View(data);
+                                                   : $"File {file.FileName} format is not allowed. Please upload files with the following formats: {string.Join(", ", allowedExtensions)}."; 
+                            return View(data);
+                        }
+                        // 🚨 檔案大小檢查（限制 5MB）
+                        if (file.ContentLength > 5 * 1024 * 1024) // 5MB 限制
+                        {
+                            ViewBag.Message = currentLang == "zh-TW"
+                                ? $"檔案 {file.FileName} 大小超過 5MB，請上傳小於 5MB 的檔案。"
+                                : $"File {file.FileName} exceeds the size limit of 5MB. Please upload files smaller than 5MB.";
+                            return View(data);
                         }
 
                         file.SaveAs(filePath);

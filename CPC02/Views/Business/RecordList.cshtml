@@ -148,12 +148,17 @@
                             <th>@headerText</th>
                             <th>@headerText2</th>
                             <th>@(currentLang == "zh-TW" ? "內容" : "Contents")</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("附件上傳") : Html.Raw("Upload"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("附件下載") : Html.Raw("Download"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("附件上傳(old)") : Html.Raw("Upload (old)"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("附件下載(old)") : Html.Raw("Download (old)"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("多筆上傳") : Html.Raw("MultipleFiles"))</th>
 
                             @*<th>@(currentLang == "zh-TW" ? "狀態" : "Status")</th>
         <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>*@
+
+                            @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[1] == 'Y')
+                            {
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("刪除") : Html.Raw("Delete"))</th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -237,13 +242,13 @@
                                 </td>
 
                                 <td>
-                                    <form action="@Url.Action("UploadRecord", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
+                                    @*<form action="@Url.Action("UploadRecord", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
                                         <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
                                         <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
                                             <img src="~/image/icons/file_upload.png" alt="附近上傳" style="width: 20px; height: 20px;" />
                                         </a>
                                         <input type="submit" value="上傳" style="display: none;" />
-                                    </form>
+                                    </form>*@
                                 </td>
                                 <td>
                                     @if (item.INT003 != null)
@@ -254,16 +259,24 @@
                                     }
                                 </td>
                                 @*<td>
-                                    <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
-                                        @(item.Status == 0 ? "未審核" : (item.Status == 1 ? "已審核" : "已刪除"))
-                                    </a>
-                                </td>
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT006</a></td>*@
+            <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
+                @(item.Status == 0 ? "未審核" : (item.Status == 1 ? "已審核" : "已刪除"))
+            </a>
+        </td>
+        <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT006</a></td>*@
                                 <td>
                                     <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000, layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
                                         <img src="~/image/icons/folder.png" style="width: 20px; height: 20px;" />
                                     </a>
                                 </td>
+                                @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[1] == 'Y')
+                                {
+                                    <td>
+                                        <a href="@Url.Action("ChangeStatusForINTRB", new { id = item.INT000,id2=item.INT999,status=-1 })">
+                                            <img src="~/image/icons/delete.png" style="width: 20px; height: 20px;" />
+                                        </a>
+                                    </td>
+                                }
                             </tr>
                         }
                     </tbody>
