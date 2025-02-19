@@ -177,7 +177,7 @@
                             <th>@(currentLang == "zh-TW" ? Html.Raw("國家") : Html.Raw("Country"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("地區") : Html.Raw("Region"))</th>
 
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("圖面上傳 (old)") : Html.Raw("Image<br>Upload (old)"))</th>
+                            @*<th>@(currentLang == "zh-TW" ? Html.Raw("圖面上傳 (old)") : Html.Raw("Image<br>Upload (old)"))</th>*@
                             <th>@(currentLang == "zh-TW" ? Html.Raw("圖面下載 (old)") : Html.Raw("Image<br>Download (old)"))</th>
                             <th>@(currentLang == "zh-TW" ? "多筆上傳" : "MultipleFiles")</th>
 
@@ -221,16 +221,16 @@
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT001?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT006?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT007?? "　")</a></td>
-                                <td>
-                                    @*<form action="@Url.Action("UploadQuote", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
-                <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
-                <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
-                    <img src="~/image/icons/file_upload.png" alt="附近上傳" style="width: 20px; height: 20px;" />
-                </a>
-                <input type="submit" value="上傳" style="display: none;" />
-            </form>*@
-                                </td>
-                                <td>
+                               @* <td>
+                                   <form action="@Url.Action("UploadQuote", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
+            <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
+            <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
+                <img src="~/image/icons/file_upload.png" alt="附近上傳" style="width: 20px; height: 20px;" />
+            </a>
+            <input type="submit" value="上傳" style="display: none;" />
+        </form>
+                            </td>*@
+                                   <td>
                                     @if (item.INT006 != null)
                                     {
                                         <a href="@Url.Action("DownloadQuote", new {  INT000 = item.INT000, INT999 = item.INT999 })" target="_blank">
@@ -239,7 +239,7 @@
                                     }
                                 </td>
                                 <td>
-                                    <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000, layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
+                                    <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000,SourceDB="INTRC", layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
                                         <img src="~/image/icons/folder.png" style="width: 20px; height: 20px;" />
                                     </a>
                                 </td>

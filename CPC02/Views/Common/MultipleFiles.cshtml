@@ -8,16 +8,20 @@
 <link rel="stylesheet" href="~/css/style3.css" />
 
 <div class="d-flex align-items-center">
-    <div class="flex-grow-1 text-center title">
-       @(currentLang=="zh-TW"?" 多筆上傳": "MultipleFiles")
-    </div>
+    <a href="javascript:void(0);" onclick="goBack()" class="btn btn-secondary">
+        <img src="~/image/icons/back.png" style="width: 20px; height: 20px;" /> @(currentLang=="zh-TW"? "返回" : "Back")
+    </a>
+        <div class="flex-grow-1 text-center title">
+            @(currentLang == "zh-TW"? $"多筆上傳" : $"MultipleFiles")
+        </div>
 </div>
 
-<div id="app" class="container">
+
+<div id="app" class="container mt-5">
     <div class="card">
         <div class="card-body">
             <div class="mb-3 d-flex justify-content-between">
-                <form action="@Url.Action("MultipleFiles", new { SourceID = ViewBag.SourceID, layout = ViewBag.Layout })" method="post" enctype="multipart/form-data" class="d-flex">
+                <form action="@Url.Action("MultipleFiles", new { SourceID = ViewBag.SourceID,SourceDB=ViewBag.SourceDB, layout = ViewBag.Layout })" method="post" enctype="multipart/form-data" class="d-flex">
                     <input type="file" name="files" multiple class="form-control me-2" />
                     <button type="submit" class="btn btn-secondary">
                         @(currentLang=="zh-TW"? " 上傳檔案" : "Upload Files")
@@ -27,7 +31,7 @@
                 <button id="downloadAllBtn" class="btn btn-success">@(currentLang=="zh-TW"? " 下載所有檔案" : "Download All Files")</button>
 
             </div>
-            
+
             <div class="table-responsive" style="overflow-x: auto;">
                 <table id="datatable" class="table table-striped">
                     <thead>
@@ -52,12 +56,12 @@
                                     </a>
                                 </td>
                                 @*<td>
-                                    <form action="@Url.Action("DeleteFile", new { id = item.ID,layout=ViewBag.layout })" method="post" style="display:inline;">
-                                        <button type="submit" style="background: none; border: none; padding: 0;">
-                                            <img src="~/image/icons/delete.png" style="width: 20px; height: 20px;" />
-                                        </button>
-                                    </form>
-                                </td>*@
+                                        <form action="@Url.Action("DeleteFile", new { id = item.ID,layout=ViewBag.layout })" method="post" style="display:inline;">
+                                            <button type="submit" style="background: none; border: none; padding: 0;">
+                                                <img src="~/image/icons/delete.png" style="width: 20px; height: 20px;" />
+                                            </button>
+                                        </form>
+                                    </td>*@
 
                             </tr>
                         }
@@ -100,6 +104,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+    function goBack() {
+        if (document.referrer) {
+            window.location.href = document.referrer; // 直接回到來源頁面
+        } else {
+            history.back(); // 若無來源頁面則用 history.back
+        }
+    }
 
 $(document).ready(function () {
     $('#datatable').DataTable({

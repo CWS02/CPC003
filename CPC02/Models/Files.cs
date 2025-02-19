@@ -45,6 +45,15 @@ namespace CPC02.Models
         public string Extension { get; set; }
 
         /// <summary>
+        /// DB來源
+        /// </summary>
+        public string SourceDB { get; set; }        
+        /// <summary>
+        /// DB來源
+        /// </summary>
+        public string IP { get; set; }
+
+        /// <summary>
         /// 建立時間
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
