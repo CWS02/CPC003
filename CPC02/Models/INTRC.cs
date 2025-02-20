@@ -59,7 +59,11 @@ namespace CPC02.Models
         /// <summary>
         /// 單號(ERP)
         /// </summary>
-        public string INT010 { get; set; }
+        public string INT010 { get; set; }        
+        /// <summary>
+        /// 編號
+        /// </summary>
+        public string INT011 { get; set; }
         /// <summary>
         /// 業務人員 ID。
         /// </summary>

@@ -63,13 +63,24 @@
         <input type="hidden" name="INT000" v-model="formData.INT000" />
 
         <div class="row">
-            <div class="col-12">
-                <label for="INT001" class="form-label">{{ currentLanguage === 'zh-TW' ? '客戶名稱' : 'Customer Name' }}<span class="red-text">*</span></label>
-                <input type="text" class="form-control" name="INT001" v-model="formData.INT001" v-bind:disabled="!isEditing" maxlength="30" required />
+            <div class="col-md-4">
+                <label for="INT001" class="form-label">
+                    {{ currentLanguage === 'zh-TW' ? '客戶名稱' : 'Customer Name' }}
+                    <span class="red-text">*</span>
+                </label>
             </div>
-            @*<a href="@Url.Action("")" class="btn btn-outline-secondary">{{currentLanguage==='zh-TW'?'複製前一筆':'Copy Last'}}</a>*@
+            <div class="d-flex align-items-center">
+                <input type="text" class="form-control" name="INT001"
+                       v-model="formData.INT001" v-bind:disabled="!isEditing"
+                       maxlength="30" required />
+                @if (ViewBag.IsUpdate == false)
+                {
+                    <a href="#" v-on:click.prevent="copyLatestRecord" class="btn btn-outline-secondary ms-2">
+                        {{ currentLanguage === 'zh-TW' ? '複製最新一筆' : 'Copy Latest Record' }}
+                    </a>
+                }
+            </div>
         </div>
-
 
         <div class="row">
             <div class="col-12">
@@ -308,6 +319,15 @@
                         // 儲存 formData 到 Vue 實例
                         this.formData.fileData = formData;
                     }
+                },
+                copyLatestRecord() {
+                    if (this.formData.INT001 == null) {
+                        
+                        alert(this.currentLanguage === 'zh-TW' ? '請輸入客戶名稱' : 'Please enter customer name');
+                        return;
+                    }
+                    const url = `@Url.Action("InterviewRecordEdit")?INT001=${encodeURIComponent(this.formData.INT001)}`;
+                    window.location.href = url;
                 },
                 submitForm() {
                     const isConfirmed = window.confirm(this.currentLanguage === 'zh-TW' ? "資料是否無誤？" : "Is the data correct?");

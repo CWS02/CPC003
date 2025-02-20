@@ -70,7 +70,8 @@
         <img src="~/image/icons/back.png" style="width: 20px; height: 20px;" /> @(currentLang=="zh-TW"? "返回" : "Back")
     </a>
     <div class="flex-grow-1 text-center title">
-        @(currentLang == "zh-TW"? $"報價系統": $"Quotation System")
+        @(ViewBag.INTRA!=null?(currentLang=="zh-TW"? $"報價系統 - {ViewBag.INTRA.INT001}" : $"Quotation System - {ViewBag.INTRA.INT001}")
+        :(currentLang=="zh-TW" ? "報價系統" : "Quotation System"))
     </div>
 </div>
 @if (ViewBag.INT000 == null)
@@ -170,6 +171,7 @@
                                 @*<th>@(currentLang == "zh-TW" ? Html.Raw("主管回覆") : Html.Raw("Manager<br>Reply"))</th>*@
                             }
                             <th>@(currentLang == "zh-TW" ? Html.Raw("報價PDF") : Html.Raw("Quotation<br>PDF"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("報價Word") : Html.Raw("Quotation<br>Word"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("報價日期") : Html.Raw("Quotation<br>Date"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("交期") : Html.Raw("Deadline"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("業務人員") : Html.Raw("Sales<br>Representative"))</th>
@@ -179,7 +181,10 @@
 
                             @*<th>@(currentLang == "zh-TW" ? Html.Raw("圖面上傳 (old)") : Html.Raw("Image<br>Upload (old)"))</th>*@
                             <th>@(currentLang == "zh-TW" ? Html.Raw("圖面下載 (old)") : Html.Raw("Image<br>Download (old)"))</th>
+                            
                             <th>@(currentLang == "zh-TW" ? "多筆上傳" : "MultipleFiles")</th>
+                            
+
 
                             <th>@(currentLang == "zh-TW" ? "訂單狀態" : "Order Status")</th>
                             <th>@(currentLang == "zh-TW" ? "單別" : "Order Type")</th>
@@ -215,13 +220,18 @@
                                         <img src="~/image/icons/file_download.png" alt="下載" style="width: 20px; height: 20px;" />
                                     </a>
                                 </td>
+                                <td>
+                                    <a href="@Url.Action("PrintQuote", new {  INT000 = item.INT000,INT999=ViewBag.INT000,type="docx"})" target="_blank">
+                                        <img src="~/image/icons/file_download.png" alt="下載" style="width: 20px; height: 20px;" />
+                                    </a>
+                                </td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.INT001?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.INT004?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(member != null ? member.Mem001 : "未選擇會員")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT001?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT006?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT007?? "　")</a></td>
-                               @* <td>
+                                @* <td>
                                    <form action="@Url.Action("UploadQuote", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
             <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
             <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
@@ -230,7 +240,7 @@
             <input type="submit" value="上傳" style="display: none;" />
         </form>
                             </td>*@
-                                   <td>
+                                <td>
                                     @if (item.INT006 != null)
                                     {
                                         <a href="@Url.Action("DownloadQuote", new {  INT000 = item.INT000, INT999 = item.INT999 })" target="_blank">
@@ -238,11 +248,14 @@
                                         </a>
                                     }
                                 </td>
+
                                 <td>
-                                    <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000,SourceDB="INTRC", layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
+                                    <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000,SourceDB="INTRC",name=intra.INT001, layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
                                         <img src="~/image/icons/folder.png" style="width: 20px; height: 20px;" />
                                     </a>
                                 </td>
+
+
                                 <td>
                                     <a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000, IsUpdate = true })" class="clickable-td">
                                         @(item.Status == 0

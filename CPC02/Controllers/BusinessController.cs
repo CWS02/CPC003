@@ -19,6 +19,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.HtmlControls;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using static System.Data.Entity.Infrastructure.Design.Executor;
 
 namespace CPC02.Controllers
@@ -162,6 +163,22 @@ namespace CPC02.Controllers
                 model = _db.INTRA.Find(model.INT000);
                 ViewBag.IsUpdate = true;
             }
+            else
+            {
+                //複製最新一筆
+                if (model.INT001 != null)
+                {
+                    model = _db.INTRA
+                            .Where(x => x.INT001.Contains(model.INT001))
+                            .OrderByDescending(x => x.CreateTime)  
+                            .FirstOrDefault();
+
+                    if (model != null)
+                    {
+                        model.INT000 = null;
+                    }
+                }
+            }
 
             var members = _db.Member
              .Where(m => m.IsBusiness == "Y")
@@ -300,7 +317,7 @@ namespace CPC02.Controllers
             var members = _db.Member.ToList();
             ViewBag.Members = members;
 
-            model = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT000);
+            ViewBag.INTRA = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT000);
             ViewBag.INTRAModel = _db.INTRA.ToList();
             return View(data);
         }
@@ -477,7 +494,7 @@ namespace CPC02.Controllers
 
             var data = _db.INTRC.Where(x => x.INT999 == model.INT000 && x.Status!=-1).OrderByDescending(x => x.INT001).ToList();
             ViewBag.INT000 = model.INT000;
-
+            ViewBag.INTRA = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT000);
             ViewBag.INTRAModel = _db.INTRA.ToList(); 
             var members = _db.Member.ToList();
             ViewBag.Members = members;
@@ -540,6 +557,9 @@ namespace CPC02.Controllers
             if (IsUpdate)
             {
                 var existingDevice = _db.INTRC.Find(model.INT000);
+
+               
+
                 if (existingDevice != null)
                 {
                     existingDevice.INT001 = model.INT001;
@@ -570,6 +590,11 @@ namespace CPC02.Controllers
                 model.IP = Request.UserHostAddress;
                 model.Status = 0;
                 model.Mid = Convert.ToInt32(Session["Mid"]);
+
+                string today = DateTime.Now.ToString("yyyyMMdd");
+                int count = _db.INTRC.Where(e => e.INT011.StartsWith(today)).Count();
+                string sequence = (count + 1).ToString("D3");
+                model.INT011 = $"{today}{sequence}";
 
                 _db.INTRC.Add(model);
 
@@ -656,7 +681,7 @@ namespace CPC02.Controllers
 
         #region 下載報價單
         [HttpGet]
-        public ActionResult PrintQuote(INTRC model)
+        public ActionResult PrintQuote(INTRC model, string type = null)
         {
             model = _db.INTRC.Find(model.INT000);
             var INTRAdata = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT999);
@@ -740,6 +765,12 @@ namespace CPC02.Controllers
 
             byte[] template = System.IO.File.ReadAllBytes(filePath);
             byte[] resultFile = WordRender.GenerateDocx(template, data);
+
+            if (type == "docx")
+            {
+                return File(resultFile, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"報價單-{model.INT001}.docx");
+            }
+
             string path = Server.MapPath("~/file/Business");
             string outputFilePath = System.IO.Path.Combine(path, $"Business_{model.INT000}.docx");
 
@@ -898,7 +929,7 @@ namespace CPC02.Controllers
 
         #region 下載客戶訪談記錄
         [HttpGet]
-        public ActionResult PrintRecord(INTRA model, string intrb)
+        public ActionResult PrintRecord(INTRA model, string intrb, string type = null)
         {
             string currentLang = (string)Session["Culture"] ?? "zh-TW";
             string filePath = Server.MapPath(currentLang == "zh-TW" ? "~/file/Business/客戶訪談記錄.docx" : "~/file/Business/客戶訪談記錄-英.docx");
@@ -925,6 +956,10 @@ namespace CPC02.Controllers
             };
 
             byte[] resultFile = WordRender.GenerateDocx(template, data);
+            if(type== "docx")
+            {
+                return File(resultFile, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"訪談紀錄-{model.INT001}.docx");
+            }
             string path = Server.MapPath("~/file/Business");
             string outputFilePath = System.IO.Path.Combine(path, $"Business_{model.INT000}.docx");
 

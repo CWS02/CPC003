@@ -201,7 +201,7 @@ namespace CPC02.Models
         /// <summary>
         /// 建立時間 (自動帶入)
         /// </summary>
-        [NotMapped]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreateTime { get; set; }
         [JsonIgnore]
         public virtual ICollection<INTRB> INTRBs { get; set; }

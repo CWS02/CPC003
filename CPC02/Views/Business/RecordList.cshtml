@@ -74,9 +74,11 @@
         <img src="~/image/icons/back.png" style="width: 20px; height: 20px;" /> @(currentLang=="zh-TW"? "返回" : "Back")
     </a>
     <div class="flex-grow-1 text-center title">
-        @(currentLang == "zh-TW"
-        ? $"客戶訪談記錄"
-        : $"Visiting Report")
+        @(ViewBag.INTRA?.INT001 != null
+    ? (currentLang == "zh-TW"
+        ? $"客戶訪談記錄 - {ViewBag.INTRA.INT001}"
+        : $"Visiting Report - {ViewBag.INTRA.INT001}")
+    : (currentLang == "zh-TW" ? "客戶訪談記錄" : "Visiting Report"))
     </div>
 </div>
 
@@ -138,7 +140,9 @@
                                 <th>@(currentLang == "zh-TW" ? Html.Raw("主管審核") : Html.Raw("Manager<br>Review"))</th>
                                 <th>@(currentLang == "zh-TW" ? Html.Raw("主管回覆") : Html.Raw("Manager<br>Reply"))</th>
                             }
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談PDF") : Html.Raw("Report"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談PDF") : Html.Raw("Report<br>PDF"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談Word") : Html.Raw("Report<br>Word"))</th>
+
                             <th>@(currentLang == "zh-TW" ? Html.Raw("訪談/記錄人員") : Html.Raw("Interviewer"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("客戶名稱") : Html.Raw("Customer<br>Name"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("國家") : Html.Raw("Country"))</th>
@@ -150,7 +154,9 @@
                             <th>@(currentLang == "zh-TW" ? "內容" : "Contents")</th>
                             @*<th>@(currentLang == "zh-TW" ? Html.Raw("附件上傳(old)") : Html.Raw("Upload (old)"))</th>*@
                             <th>@(currentLang == "zh-TW" ? Html.Raw("附件下載(old)") : Html.Raw("Download (old)"))</th>
+
                             <th>@(currentLang == "zh-TW" ? Html.Raw("多筆上傳") : Html.Raw("MultipleFiles"))</th>
+
 
                             @*<th>@(currentLang == "zh-TW" ? "狀態" : "Status")</th>
         <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>*@
@@ -188,6 +194,11 @@
                                 }
                                 <td>
                                     <a href="@Url.Action("PrintRecord", new {  INT000 = item.INT999,intrb=item.INT000})" target="_blank">
+                                        <img src="~/image/icons/file_download.png" alt="下載" style="width: 20px; height: 20px;" />
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("PrintRecord", new {  INT000 = item.INT999,intrb=item.INT000,type="docx"})" target="_blank">
                                         <img src="~/image/icons/file_download.png" alt="下載" style="width: 20px; height: 20px;" />
                                     </a>
                                 </td>
@@ -242,15 +253,15 @@
                                 </td>
 
                                 @*
-                                <td>
-                                    <form action="@Url.Action("UploadRecord", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
-                                        <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
-                                        <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
-                                            <img src="~/image/icons/file_upload.png" alt="附近上傳" style="width: 20px; height: 20px;" />
-                                        </a>
-                                        <input type="submit" value="上傳" style="display: none;" />
-                                    </form>
-                                </td>*@
+        <td>
+            <form action="@Url.Action("UploadRecord", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
+                <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
+                <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
+                    <img src="~/image/icons/file_upload.png" alt="附近上傳" style="width: 20px; height: 20px;" />
+                </a>
+                <input type="submit" value="上傳" style="display: none;" />
+            </form>
+        </td>*@
                                 <td>
                                     @if (item.INT003 != null)
                                     {
@@ -259,17 +270,22 @@
                                         </a>
                                     }
                                 </td>
+
                                 @*<td>
             <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
                 @(item.Status == 0 ? "未審核" : (item.Status == 1 ? "已審核" : "已刪除"))
             </a>
         </td>
         <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT006</a></td>*@
+
                                 <td>
-                                    <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000,SourceDB="INTRB", layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
+                                    <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000,SourceDB="INTRB",name=intra.INT001, layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
                                         <img src="~/image/icons/folder.png" style="width: 20px; height: 20px;" />
                                     </a>
                                 </td>
+
+
+
                                 @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[1] == 'Y')
                                 {
                                     <td>

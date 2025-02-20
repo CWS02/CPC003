@@ -134,17 +134,18 @@ namespace CPC02.Controllers
 
         #region  檔案多筆上傳
         [HttpGet]
-        public ActionResult MultipleFiles(Files model, string layout = null,string db=null)
+        public ActionResult MultipleFiles(Files model,string name = null ,string layout = null)
         {
             var data=_db.Files.Where(x=>x.SourceID==model.SourceID).ToList();
             ViewBag.SourceID = model.SourceID;
             ViewBag.SourceDB = model.SourceDB;
+            ViewBag.name = name;
             ViewBag.Layout = string.IsNullOrEmpty(layout) ? "~/Views/Shared/_LayoutCommon.cshtml" : layout;
             return View(data);
         }
 
         [HttpPost]
-        public ActionResult MultipleFiles(IEnumerable<HttpPostedFileBase> files,Files model, string layout = null)
+        public ActionResult MultipleFiles(IEnumerable<HttpPostedFileBase> files,Files model, string name = null, string layout = null)
         {
             string[] allowedExtensions = { ".jpg", ".jpeg", ".JPG", ".png", ".gif", ".pdf",".doc",".docx",".xlsx" };
             string currentLang = (string)Session["Culture"] ?? "zh-TW";
@@ -152,6 +153,7 @@ namespace CPC02.Controllers
             var data = _db.Files.Where(x => x.SourceID == model.SourceID).ToList();
             ViewBag.SourceID = model.SourceID;
             ViewBag.SourceDB = model.SourceDB;
+            ViewBag.name = name;
             ViewBag.Layout = string.IsNullOrEmpty(layout) ? "~/Views/Shared/_LayoutCommon.cshtml" : layout;
 
             if (files == null || !files.Any(f => f != null && f.ContentLength > 0))
