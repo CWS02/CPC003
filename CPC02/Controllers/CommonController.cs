@@ -1,5 +1,6 @@
 ﻿using CPC02.Models;
 using Newtonsoft.Json;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,19 +14,21 @@ namespace CPC02.Controllers
     {
         CPCContext _db=new CPCContext();
         CPC2Context _erpcpc = new CPC2Context();
-        //TWNCPCContext _erp = new TWNCPCContext();
+        TWNCPCContext _erp = new TWNCPCContext();
 
-        #region 個人工作備忘錄
+        #region 個人工作記錄
         [HttpGet]
         public ActionResult WorkLogList()
         {
+            ViewBag.Title = "個人工作記錄";
+
             if (Session["Mid"] == null)
             {
                 return RedirectToAction("Login", "Member");
             }
 
             var mid = Session["Mid"]?.ToString();
-            var model = _erpcpc.WLOGA.Where(x => x.Mid == mid).OrderByDescending(x=>x.LOG001).ToList();
+            var model = _erpcpc.WLOGA.Where(x => x.Mid == mid && x.Status!=-1).OrderByDescending(x=>x.LOG001).ToList();
             return View(model);
         }
 
@@ -103,32 +106,61 @@ namespace CPC02.Controllers
         }
         #endregion
 
-        #region 管理部門記錄
+        #region 部門人員記錄
         [HttpGet]
         public ActionResult ManageLogList()
         {
+            ViewBag.Title = "部門人員記錄";
+
             if (Session["Mid"] == null)
             {
-                return RedirectToAction("Login", "Member");
+                return RedirectToAction("LogLogin", "Member");
             }
 
-            var departmentP = Session["DepartmentP"]?.ToString();
+            var model = _erpcpc.WLOGA.Where(x => x.Status != -1).OrderByDescending(x => x.LOG001).AsQueryable();
 
+            #region 權限
+            var department = Session["Department"]?.ToString();
             int permission = 0;
             if (Session["Permission"] != null)
             {
                 int.TryParse(Session["Permission"].ToString(), out permission);
+                model = model.Where(x => permission >= x.LOG009);
             }
-
-            var model = _erpcpc.WLOGA.AsQueryable();
-            model = model.Where(x => permission >= x.LOG009);
-
-            if (!string.IsNullOrEmpty(departmentP))
+            if (permission < 2)
             {
-                model = model.Where(x => departmentP.Contains(x.LOG008));
+                return RedirectToAction("WorkLogList");
             }
 
-            return View("WorkLogList", model.ToList()); 
+            if (!string.IsNullOrEmpty(department))
+            {
+                model = model.Where(x => department.Contains(x.LOG008));
+            }
+            #endregion
+
+            // 取得會員資料 (MV001: 會員 ID, MV002: 會員名稱, MV004: 職稱代號)
+            var members = _erp.CMSMV
+                .Select(v => new { v.MV001, v.MV002, v.MV004 })
+                .ToList();
+            // 取得所有會員對應的職稱資料
+            var positionIds = members.Select(m => m.MV004).Distinct().ToList();
+            var positions = _erp.CMSME
+             .Where(e => positionIds.Contains(e.ME001)) 
+             .Select(e => new { ME001=e.ME001.Trim(), e.ME002 })
+             .ToList();
+
+            var result = model.ToList().Select(log =>
+            {
+                var member = members.FirstOrDefault(m => m.MV001 == log.Mid);
+                log.MName = member?.MV002 ?? "未知"; 
+
+                var position = positions.FirstOrDefault(p => p.ME001 == member?.MV004);
+                log.MPosition = position?.ME002 ?? "未知";
+
+                return log;
+            }).ToList();
+
+            return View("WorkLogList", result); 
         }
         #endregion
 

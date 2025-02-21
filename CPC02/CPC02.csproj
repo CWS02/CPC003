@@ -258,6 +258,7 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="css\datatable\jquery.dataTables.min.css" />
     <Content Include="css\datatable\dataTables.bootstrap5.min.css" />
+    <Content Include="css\style4.css" />
     <Content Include="css\style3.css" />
     <Content Include="css\style2.css" />
     <Content Include="css\style1.css" />

@@ -21,25 +21,6 @@ namespace CPC02.Models
         /// </summary>
         public virtual DbSet<WLOGA> WLOGA { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<INTRA>()
-                .HasMany(intra => intra.INTRBs)
-                .WithRequired()                 
-                .HasForeignKey(intrb => intrb.INT999);
-
-            modelBuilder.Entity<INTRA>()
-                .HasMany(intra => intra.INTRCs)
-                .WithRequired()
-                .HasForeignKey(intrb => intrb.INT999);
-
-            modelBuilder.Entity<INTRB>()
-            .HasRequired(i => i.Member)  
-            .WithMany()  
-            .HasForeignKey(i => i.Mid);
-        }
 
     }
 }

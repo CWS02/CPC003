@@ -59,10 +59,13 @@ namespace CPC02.Controllers
                 Session.Timeout = 60;
                 Session["Mid"] = data.MV001;
                 Session["MName"] = data.MV002;
-                Session["DepartmentP"] =data.MV219;  //部門權限
+                Session["Department"] =data.MV219;  //部門權限
                 Session["Permission"] =data.MV220;  //權限
                 Session["DepartmentP"] = data.MV004; //所屬部門
-
+                if (data.MV220 > 98)
+                {
+                    return RedirectToAction("ManageLogList", "Common");
+                }
                 return RedirectToAction("WorkLogList","Common"); 
             }
             else

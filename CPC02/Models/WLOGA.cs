@@ -73,5 +73,11 @@ namespace CPC02.Models
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreaTime { get; set; }
+
+        [NotMapped]
+        public string MName { get; set; }
+
+        [NotMapped]
+        public string MPosition { get; set; }
     }
 }

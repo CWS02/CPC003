@@ -1,54 +1,11 @@
 ﻿@model IEnumerable<CPC02.Models.WLOGA>
 
 @{
-    ViewBag.Title = "個人工作記錄";
     Layout = "~/Views/Shared/_LayoutCommon.cshtml";
 }
-<link rel="stylesheet" href="~/css/style2.css" />
+<link rel="stylesheet" href="~/css/style3.css" />
 
-<style>
-    table#datatable th,
-    table#datatable td {
-        font-size: 12px;
-        padding: 4px;
-        white-space: nowrap;
-    }
-
-    .btn img {
-        width: 16px;
-        height: 16px;
-    }
-
-
-
-    table#datatable th {
-        font-size: 14px;
-    }
-
-    table {
-        table-layout: auto;
-    }
-
-        table#datatable td {
-            word-wrap: break-word;
-            max-width: 50px;
-            white-space: normal;
-        }
-
-    .clickable-td {
-        display: block;
-        color: inherit;
-        text-decoration: none;
-        cursor: pointer;
-    }
-
-        .clickable-td:hover {
-            color: inherit;
-            text-decoration: none;
-        }
-</style>
-
-
+<div class="title">@ViewBag.Title</div>
 <div id="app" class="container">
     <div class="card">
         <div class="card-body">
@@ -59,14 +16,20 @@
                 <table id="datatable" class="table table-striped">
                     <thead>
                         <tr>
-                            <th>序</th>   
-                            <th>日期</th>            
-                            <th>工作內容</th>            
-                            <th>工作問題</th>            
-                            <th>備註</th>            
-                            <th>明日工作計畫</th>            
-                            <th>共同完成人員</th>            
-                            <th>是否完成</th>                                        
+                            <th>序</th>
+                            @if (ViewBag.Title == "部門人員記錄")
+                            {
+                                <th>員工</th>
+                                <th>職稱</th>
+                            }
+
+                            <th>日期</th>
+                            <th>工作內容</th>
+                            <th>問題是否排除</th>
+                            <th>備註</th>
+                            <th>明日工作計畫</th>
+                            <th>共同完成人員</th>
+                            <th>是否完成</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -77,28 +40,33 @@
                                 <td>
                                     <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(Model.ToList().IndexOf(item) + 1)</a>
                                 </td>
+
+                                @if (ViewBag.Title == "部門人員記錄")
+                                {
+                                    <td><a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.MName</a></td>
+                                    <td><a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.MPosition</a></td>
+                                }
                                 <td>
                                     <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG001.ToString("yyyyMMdd")</a>
                                 </td>
                                 <td>
-                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG002</a>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG002??"　")</a>
                                 </td>
                                 <td>
-                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG003</a>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG003??"　")</a>
                                 </td>
                                 <td>
-                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG004</a>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG004??"　")</a>
                                 </td>
                                 <td>
-                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG005</a>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG005??"　")</a>
                                 </td>
                                 <td>
-                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG006</a>
+                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG006??"　")</a>
                                 </td>
                                 <td>
                                     <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG007 ? "是" : "否")</a>
                                 </td>
-
                             </tr>
                         }
                     </tbody>

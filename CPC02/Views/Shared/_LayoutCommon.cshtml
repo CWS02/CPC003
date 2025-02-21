@@ -4,11 +4,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - cpc直得科技股份有限公司 CHIEFTEK PRECISION CO., LTD</title>
+    <title>@ViewBag.Title</title>
 
     <script src="~/Scripts/vue3/vue.min.js"></script>
     <script src="~/Scripts/jquery/jquery-3.7.1.js"></script>
-    <link rel="stylesheet" href="~/css/style2.css" />
+    <link rel="stylesheet" href="~/css/style3.css" />
 
     <!-- DataTables 核心樣式與腳本 -->
     <script src="~/Scripts/datatable/jquery.dataTables.min.js"></script>
@@ -25,6 +25,11 @@
 @{
     string currentLang = (string)Session["Culture"] ?? "zh-TW";
     string MName = (string)Session["MName"] ?? "zh-TW";
+    int permission = 0;
+    if (Session["Permission"] != null)
+    {
+        int.TryParse(Session["Permission"].ToString(), out permission);
+    }
 }
 
 <body>
@@ -38,12 +43,11 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            個人工作記錄
+                            工作記錄
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="@Url.Action("WorkLogList", "Common")">個人工作記錄</a></li>
-                            <!--需判斷主管權限 disabled-->
-                            <li><a class="dropdown-item " href="@Url.Action("ManageLogList", "Common")">管理部門記錄</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("WorkLogList", "Common")">個人工作記錄</a></li>                            
+                            <li><a class="dropdown-item  @(permission<2?"disabled":"")"  href="@Url.Action("ManageLogList", "Common")">部門人員記錄</a></li>
 
                         </ul>
                     </li>
