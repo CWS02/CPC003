@@ -20,6 +20,7 @@ namespace CPC02.Models
         /// ­Ó¤H¤é»x
         /// </summary>
         public virtual DbSet<WLOGA> WLOGA { get; set; }
+        public virtual DbSet<WLOGB> WLOGB { get; set; }
 
 
     }

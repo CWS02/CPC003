@@ -1,5 +1,8 @@
 ﻿using CPC02.Models;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Newtonsoft.Json;
+using NPOI.HSSF.Record.Chart;
+using NPOI.SS.Formula;
 using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
@@ -24,7 +27,7 @@ namespace CPC02.Controllers
 
             if (Session["Mid"] == null)
             {
-                return RedirectToAction("Login", "Member");
+                return RedirectToAction("LogLogin", "Member");
             }
 
             var mid = Session["Mid"]?.ToString();
@@ -35,6 +38,8 @@ namespace CPC02.Controllers
         [HttpGet]
         public ActionResult WorkLogEdit(WLOGA model)
         {
+            ViewBag.Title = "個人工作記錄";
+
             if (Session["Mid"] == null)
             {
                 return RedirectToAction("LogLogin", "Member");
@@ -48,6 +53,13 @@ namespace CPC02.Controllers
 
                 ViewBag.IsUpdate = true;
             }
+
+            var DepartmentP = Session["DepartmentP"]?.ToString();
+
+            ViewBag.wlogb = _erpcpc.WLOGB
+                .Where(x => x.Status != -1&& x.LOG002== DepartmentP) 
+                .Select(x => new { x.LOG000, x.LOG001 }) 
+                .ToList();  
 
             return View(model);
         }
@@ -87,7 +99,7 @@ namespace CPC02.Controllers
                 model.LOG009 = Permission != null ? Convert.ToInt32(Permission) : (int?)null;
                 model.Mid = mid;
                 model.LOG008 = DepartmentP;
-
+                model.IP =Request.UserHostAddress;
                 model.Status = 0;
                 _erpcpc.WLOGA.Add(model);  
 
@@ -163,6 +175,118 @@ namespace CPC02.Controllers
             return View("WorkLogList", result); 
         }
         #endregion
+
+        #region 專案名稱
+        [HttpGet]
+        public ActionResult ProjectList()
+        {
+            ViewBag.Title = "專案名稱";
+
+            if (Session["Mid"] == null)
+            {
+                return RedirectToAction("LogLogin", "Member");
+            }
+
+            var DepartmentP = Session["DepartmentP"]?.ToString();
+
+            var model =_erpcpc.WLOGB.Where(x=>x.Status!=-1 && x.LOG002== DepartmentP).OrderByDescending(x => x.LOG001).AsQueryable();
+            var members = _erp.CMSMV
+                .Select(v => new { v.MV001, v.MV002, v.MV004 })
+                .ToList();
+            var positionIds = members.Select(m => m.MV004).Distinct().ToList();
+            var positions = _erp.CMSME
+             .Where(e => positionIds.Contains(e.ME001))
+             .Select(e => new { ME001 = e.ME001.Trim(), e.ME002 })
+             .ToList();
+
+            var result = model.ToList().Select(log =>
+            {
+                var member = members.FirstOrDefault(m => m.MV001 == log.Mid);
+
+                var position = positions.FirstOrDefault(p => p.ME001 == member?.MV004);
+                log.MPosition = position?.ME002 ?? "未知";
+
+                return log;
+            }).ToList();
+
+            return View(model.ToList());
+        }
+
+        [HttpGet]
+        public ActionResult ProjectEdit(WLOGB model)
+        {
+            if (Session["Mid"] == null)
+            {
+                return RedirectToAction("LogLogin", "Member");
+            }
+            ViewBag.IsUpdate = false;
+            ViewBag.Title = $"專案名稱 {model.LOG001 ?? ""}";
+
+            model = _erpcpc.WLOGB.Find(model.LOG000);
+            if (model != null)
+            {
+                ViewBag.formattedDate = model.LOG005?.ToString("yyyy-MM-dd");
+                ViewBag.IsUpdate = true;
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult ProjectEdit(WLOGB model, bool IsUpdate = false)
+        {
+            if (Session["Mid"] == null)
+            {
+                return RedirectToAction("LogLogin", "Member");
+            }
+
+            if (IsUpdate)
+            {
+                var existingDevice = _erpcpc.WLOGB.Find(model.LOG000);
+                if (existingDevice != null)
+                {
+                    _erpcpc.Entry(existingDevice).CurrentValues.SetValues(model);
+
+                    try
+                    {
+                        _erpcpc.SaveChanges();
+                        TempData["SuccessMessage"] = "更新成功！";
+                    }
+                    catch
+                    {
+                        TempData["ErrorMessage"] = "更新失敗！";
+                    }
+                }
+            }
+            else
+            {
+                model.LOG000 = Guid.NewGuid();
+                model.CreaTime = DateTime.Now;
+                var mid = Session["Mid"]?.ToString();
+                var DepartmentP = Session["DepartmentP"]?.ToString();
+                var Permission = Session["Permission"];
+                model.Mid = mid;
+                model.LOG002 = DepartmentP;
+                model.IP = Request.UserHostAddress;
+                model.Status = 0;
+                _erpcpc.WLOGB.Add(model);
+
+                try
+                {
+                    _erpcpc.SaveChanges();
+                    TempData["SuccessMessage"] = "新增成功！";
+                }
+                catch
+                {
+                    TempData["ErrorMessage"] = "新增失敗！";
+                }
+            }
+
+            return RedirectToAction("ProjectList");
+        }
+
+        #endregion
+
+
 
         #region  檔案多筆上傳
         [HttpGet]

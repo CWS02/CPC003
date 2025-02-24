@@ -1,6 +1,4 @@
 ﻿.btn {
-    font-size: 16px;
-    background-color: #6c757d;
     color: white;
     border: none;
     border-radius: 5px;
@@ -23,7 +21,6 @@ table#datatable td {
 }
 
 .btn {
-    font-size: 12px;
     padding: 5px 10px;
 }
 
@@ -104,3 +101,6 @@ label {
     margin-bottom: 1rem;
 }
 
+.red-text {
+    color: red;
+}

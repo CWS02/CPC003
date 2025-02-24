@@ -46,8 +46,9 @@
                             工作記錄
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="@Url.Action("WorkLogList", "Common")">個人工作記錄</a></li>                            
-                            <li><a class="dropdown-item  @(permission<2?"disabled":"")"  href="@Url.Action("ManageLogList", "Common")">部門人員記錄</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("WorkLogList", "Common")">個人工作記錄</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("ProjectList", "Common")">專案名稱</a></li>
+                            <li><a class="dropdown-item  @(permission<2?"disabled":"")" href="@Url.Action("ManageLogList", "Common")">部門人員記錄</a></li>
 
                         </ul>
                     </li>

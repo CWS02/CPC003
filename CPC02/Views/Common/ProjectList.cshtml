@@ -1,0 +1,65 @@
+﻿@model IEnumerable<CPC02.Models.WLOGB>
+
+@{
+    Layout = "~/Views/Shared/_LayoutCommon.cshtml";
+}
+<link rel="stylesheet" href="~/css/style3.css" />
+
+<div id="alert-container"></div>
+
+<div class="title">@ViewBag.Title</div>
+<div id="app" class="container">
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-3">
+                <a href="@Url.Action("ProjectEdit")"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
+            </div>
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table id="datatable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>序</th>
+                            <th>專案名稱</th>
+                            <th>專案日期</th>
+                            <th>部門</th>
+                            <th>專案目標</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(Model.ToList().IndexOf(item) + 1)</a></td>
+                                <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG001</a></td>
+                                <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG005?.ToString("yyyyMMdd"))</a></td>
+                                <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.MPosition??"　")</a></td>
+                                <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG003??"　")</a></td>
+                                <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.Status==0 ? "未結案":"已結案")</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+      document.addEventListener('DOMContentLoaded', () => {
+     const successMessage = '@TempData["SuccessMessage"]';
+     if (successMessage) {
+         alert(successMessage);
+     }
+      });
+
+    $(document).ready(function () {
+        $('#datatable').DataTable({
+        });
+    });
+
+</script>
+

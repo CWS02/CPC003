@@ -43,6 +43,7 @@ namespace CPC02.Models
 
         /// <summary>
         /// 共同完成人員
+        /// (取消使用)
         /// </summary>
         public string LOG006 { get; set; }
 
@@ -64,9 +65,17 @@ namespace CPC02.Models
         public string Mid { get; set; }
 
         /// <summary>
+        /// IP
+        /// </summary>
+        public string IP { get; set; }
+        /// <summary>
         /// 狀態
         /// </summary>
         public int Status { get; set; }
+        /// <summary>
+        /// WLOGB關聯
+        /// </summary>
+        public Guid? WLOGB { get; set; }
 
         /// <summary>
         /// 建立時間

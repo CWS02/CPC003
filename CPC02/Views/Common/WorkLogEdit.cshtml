@@ -1,6 +1,5 @@
 ﻿@using Newtonsoft.Json
 @{
-    ViewBag.Title = "個人工作記錄";
     Layout = "~/Views/Shared/_LayoutCommon.cshtml";
 }
 
@@ -19,6 +18,7 @@
         <input type="hidden" name="Mid" v-model="formData.Mid" />
         <input type="hidden" name="LOG008" v-model="formData.LOG008" />
         <input type="hidden" name="LOG009" v-model="formData.LOG009" />
+        <input type="hidden" name="IP" v-model="formData.IP" />
 
         <div class="row">
             <div class="col-md-4">
@@ -35,6 +35,17 @@
                     <option :value="true">是</option>
                     <option :value="false">否</option>
                 </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">專案</label>
+                <select class="form-control" v-model="formData.WLOGB" v-bind:disabled="!isEditing" name="WLOGB">
+                    <option value="">無</option>
+                    <option v-for="item in wlogbList" :key="item.LOG000" :value="item.LOG000">
+                        {{ item.LOG001 }}
+                    </option>
+                </select>
+
             </div>
 
 
@@ -54,10 +65,6 @@
                 <label for="LOG005" class="form-label">明日工作計劃</label>
                 <textarea class="form-control" name="LOG005" v-model="formData.LOG005" v-bind:disabled="!isEditing" rows="5"></textarea>
             </div>
-            <div class="col-12">
-                <label for="LOG006" class="form-label">共同完成人員</label>
-                <textarea class="form-control" name="LOG006" v-model="formData.LOG006" v-bind:disabled="!isEditing" rows="5"></textarea>
-            </div>
         </div>
 
         <div class="row mt-4" v-if="isEditing">
@@ -74,12 +81,13 @@
             data() {
                 return {
                     isEditing: '@ViewBag.IsUpdate' !== 'True',
+                    wlogbList: [],
                     formData: {
                         ...@Html.Raw(JsonConvert.SerializeObject(Model ?? new {}, new JsonSerializerSettings
                         {
                             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                         })),
-                        LOG001: '@ViewBag.formattedDate',                        
+                        LOG001: '@ViewBag.formattedDate',
                     },
                     minDate: this.getMinDate(),
                     maxDate: this.getMaxDate(),
@@ -93,12 +101,12 @@
                     getMinDate() {
                         const today = new Date();
                         const minDate = new Date(today);
-                        minDate.setDate(today.getDate() - 7); 
+                        minDate.setDate(today.getDate() - 7);
                         return minDate.toISOString().split('T')[0];
                     },
                     getMaxDate() {
                         const today = new Date();
-                        return today.toISOString().split('T')[0]; 
+                        return today.toISOString().split('T')[0];
 
                 },
 
@@ -106,7 +114,7 @@
                     const isConfirmed = window.confirm("資料是否無誤？");
                     if (isConfirmed) {
                         const form = document.querySelector('form');
-                        form.method = "post";  
+                        form.method = "post";
                         form.submit();
                     }
                 }
@@ -118,8 +126,9 @@
                 if (this.formData.LOG007 === null || this.formData.LOG007 === undefined) {
                     this.formData.LOG007 = false;
                 }
+                this.wlogbList = JSON.parse('@Html.Raw(JsonConvert.SerializeObject(ViewBag.wlogb))');
             },
-            
+
         });
         app.mount('#app');
     </script>

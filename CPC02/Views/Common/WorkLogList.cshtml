@@ -28,7 +28,7 @@
                             <th>問題是否排除</th>
                             <th>備註</th>
                             <th>明日工作計畫</th>
-                            <th>共同完成人員</th>
+                            @*<th>共同完成人員</th>*@
                             <th>是否完成</th>
                         </tr>
                     </thead>
@@ -60,9 +60,6 @@
                                 </td>
                                 <td>
                                     <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG005??"　")</a>
-                                </td>
-                                <td>
-                                    <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG006??"　")</a>
                                 </td>
                                 <td>
                                     <a href="@Url.Action("WorkLogEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG007 ? "是" : "否")</a>
