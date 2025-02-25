@@ -279,6 +279,7 @@
     <Content Include="image\Icons\folder.png" />
     <Content Include="image\Icons\history.png" />
     <Content Include="image\Icons\info.png" />
+    <Content Include="image\Icons\list.png" />
     <Content Include="image\Icons\reply.png" />
     <Content Include="image\Icons\request_quote.png" />
     <Content Include="image\Icons\setting.png" />

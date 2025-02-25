@@ -20,10 +20,12 @@
                         <tr>
                             <th>序</th>
                             <th>專案名稱</th>
-                            <th>專案日期</th>
+                            <th>開始日期</th>
+                            <th>結束日期</th>
                             <th>部門</th>
                             <th>專案目標</th>
                             <th>狀態</th>
+                            <th>管理</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,9 +36,15 @@
                                 <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(Model.ToList().IndexOf(item) + 1)</a></td>
                                 <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@item.LOG001</a></td>
                                 <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG005?.ToString("yyyyMMdd"))</a></td>
+                                <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG006?.ToString("yyyyMMdd"))</a></td>
                                 <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.MPosition??"　")</a></td>
                                 <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.LOG003??"　")</a></td>
                                 <td><a href="@Url.Action("ProjectEdit", new { LOG000 = item.LOG000 })" class="clickable-td">@(item.Status==0 ? "未結案":"已結案")</a></td>
+                                <td>
+                                    <a href="@Url.Action("ProjectManage", new { WLOGB = item.LOG000 })">
+                                        <img src="~/image/icons/list.png"  style="width: 20px; height: 20px;" />
+                                    </a>
+                                </td>
                             </tr>
                         }
                     </tbody>

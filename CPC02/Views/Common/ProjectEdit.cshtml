@@ -11,7 +11,7 @@
                 v-on:click="toggleEditMode">
             {{isEditing?' 編輯中... ' : ' 編輯 '}}
         </button>
-        <div class="flex-grow-1 text-center title">個人工作記錄</div>
+        <div class="flex-grow-1 text-center title">@ViewBag.Title</div>
     </div>
     <form method="post" action="@Url.Action("ProjectEdit", new { IsUpdate = ViewBag.IsUpdate })" enctype="multipart/form-data">
         <input type="hidden" name="LOG000" v-model="formData.LOG000" />
@@ -27,21 +27,27 @@
             </div>
             <div class="col-md-4">
                 <label for="LOG005" class="form-label">
-                    日期<span class="red-text">*</span>
+                    開始日期<span class="red-text">*</span>
                 </label>
                 <input type="date" class="form-control" name="LOG005" v-model="formData.LOG005" v-bind:disabled="!isEditing" required />
+            </div>
+            <div class="col-md-4">
+                <label for="LOG006" class="form-label">
+                    結束日期<span class="red-text">*</span>
+                </label>
+                <input type="date" class="form-control" name="LOG006" v-model="formData.LOG006" v-bind:disabled="!isEditing" required />
             </div>
         </div>
 
 
 
         <div class="col-12">
-            <label for="LOG003" class="form-label"> 專案目標</label>
-            <textarea class="form-control" name="LOG003" v-model="formData.LOG003" v-bind:disabled="!isEditing" rows="5"></textarea>
+            <label for="LOG003" class="form-label"> 專案目標<span class="red-text">*</span></label>
+            <textarea class="form-control" name="LOG003" v-model="formData.LOG003" v-bind:disabled="!isEditing" rows="5" required></textarea>
         </div>
         <div class="col-12">
-            <label for="LOG004" class="form-label">專案內容</label>
-            <textarea class="form-control" name="LOG004" v-model="formData.LOG004" v-bind:disabled="!isEditing" rows="5"></textarea>
+            <label for="LOG004" class="form-label">專案內容<span class="red-text">*</span></label>
+            <textarea class="form-control" name="LOG004" v-model="formData.LOG004" v-bind:disabled="!isEditing" rows="5" required></textarea>
         </div>
 
 
@@ -65,7 +71,9 @@
                         {
                             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                         })),
-                        LOG005: '@ViewBag.formattedDate',
+                        LOG005: '@ViewBag.formatLOG005',
+                        LOG006: '@ViewBag.formatLOG006',
+
                     },
                 };
             },
@@ -74,7 +82,7 @@
                     this.isEditing = !this.isEditing;
                 },
 
- 
+
 
                 submitForm() {
                     const isConfirmed = window.confirm("資料是否無誤？");
@@ -86,13 +94,6 @@
                 }
 
 
-            },
-            mounted() {
-                // 確保 LOG007 會有預設值
-                if (this.formData.LOG007 === null || this.formData.LOG007 === undefined) {
-                    this.formData.LOG007 = false;
-                }
-                this.wlogbList = JSON.parse('@Html.Raw(JsonConvert.SerializeObject(ViewBag.wlogb))');
             },
 
         });

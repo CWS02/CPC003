@@ -49,9 +49,13 @@ namespace CPC02.Models
         /// </summary>
         public string LOG004 { get; set; }
         /// <summary>
-        /// 專案日期
+        /// 專案開始日期
         /// </summary>
         public DateTime? LOG005 { get; set; }
+        /// <summary>
+        /// 專案結束日期
+        /// </summary>
+        public DateTime? LOG006 { get; set; }
 
 
         /// <summary>
@@ -64,5 +68,6 @@ namespace CPC02.Models
         /// </summary>
         [NotMapped]
         public string MPosition { get; set; }
+
     }
 }

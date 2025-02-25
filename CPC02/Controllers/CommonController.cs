@@ -24,6 +24,7 @@ namespace CPC02.Controllers
         public ActionResult WorkLogList()
         {
             ViewBag.Title = "個人工作記錄";
+            Session["Role"] = null ;
 
             if (Session["Mid"] == null)
             {
@@ -52,6 +53,7 @@ namespace CPC02.Controllers
                 ViewBag.formattedDate = model.LOG001.ToString("yyyy-MM-dd"); 
 
                 ViewBag.IsUpdate = true;
+                ViewBag.Title = $"個人工作記錄 {ViewBag.formattedDate}";
             }
 
             var DepartmentP = Session["DepartmentP"]?.ToString();
@@ -114,6 +116,14 @@ namespace CPC02.Controllers
                 }
             }
 
+            if (Session["Role"]?.ToString() == "ProjectManage")
+            {
+                return RedirectToAction("ProjectManage", new { WLOGB = model.WLOGB });  
+            }
+            else if (Session["Role"]?.ToString() == "ManageLogList")
+            {
+                return RedirectToAction("ManageLogList"); 
+            }
             return RedirectToAction("WorkLogList");
         }
         #endregion
@@ -123,6 +133,7 @@ namespace CPC02.Controllers
         public ActionResult ManageLogList()
         {
             ViewBag.Title = "部門人員記錄";
+            Session["Role"] = "ManageLogList";
 
             if (Session["Mid"] == null)
             {
@@ -171,16 +182,16 @@ namespace CPC02.Controllers
 
                 return log;
             }).ToList();
-
+            
             return View("WorkLogList", result); 
         }
         #endregion
 
-        #region 專案名稱
+        #region 專案管理
         [HttpGet]
         public ActionResult ProjectList()
         {
-            ViewBag.Title = "專案名稱";
+            ViewBag.Title = "專案管理";
 
             if (Session["Mid"] == null)
             {
@@ -215,17 +226,21 @@ namespace CPC02.Controllers
         [HttpGet]
         public ActionResult ProjectEdit(WLOGB model)
         {
+            ViewBag.Title = "專案管理";
+
             if (Session["Mid"] == null)
             {
                 return RedirectToAction("LogLogin", "Member");
             }
             ViewBag.IsUpdate = false;
-            ViewBag.Title = $"專案名稱 {model.LOG001 ?? ""}";
 
             model = _erpcpc.WLOGB.Find(model.LOG000);
+
             if (model != null)
             {
-                ViewBag.formattedDate = model.LOG005?.ToString("yyyy-MM-dd");
+                ViewBag.formatLOG005 = model.LOG005?.ToString("yyyy-MM-dd");
+                ViewBag.formatLOG006 = model.LOG006?.ToString("yyyy-MM-dd");
+                ViewBag.Title = $"專案管理 {model.LOG001 ?? ""}";
                 ViewBag.IsUpdate = true;
             }
             return View(model);
@@ -286,6 +301,67 @@ namespace CPC02.Controllers
 
         #endregion
 
+        #region 專案管理
+        [HttpGet]
+        public ActionResult ProjectManage(WLOGA model)
+        {
+            ViewBag.Title = "專案管理";
+            Session["Role"] = "ProjectManage";
+
+            if (Session["Mid"] == null)
+            {
+                return RedirectToAction("LogLogin", "Member");
+            }
+
+            var data = from a in _erpcpc.WLOGA
+                       join b in _erpcpc.WLOGB on a.WLOGB equals b.LOG000
+                       where a.Status != -1 && b.LOG000 == model.WLOGB
+                       select a;
+
+            #region 權限
+            var department = Session["Department"]?.ToString();
+            int permission = 0;
+            if (Session["Permission"] != null)
+            {
+                int.TryParse(Session["Permission"].ToString(), out permission);
+                data = data.Where(x => permission >= x.LOG009);
+            }
+            if (permission < 2)
+            {
+                return RedirectToAction("WorkLogList");
+            }
+
+            if (!string.IsNullOrEmpty(department))
+            {
+                data = data.Where(x => department.Contains(x.LOG008));
+            }
+            #endregion
+
+            // 取得會員資料 (MV001: 會員 ID, MV002: 會員名稱, MV004: 職稱代號)
+            var members = _erp.CMSMV
+                .Select(v => new { v.MV001, v.MV002, v.MV004 })
+                .ToList();
+            // 取得所有會員對應的職稱資料
+            var positionIds = members.Select(m => m.MV004).Distinct().ToList();
+            var positions = _erp.CMSME
+             .Where(e => positionIds.Contains(e.ME001))
+             .Select(e => new { ME001 = e.ME001.Trim(), e.ME002 })
+             .ToList();
+
+            var result = data.ToList().Select(log =>
+            {
+                var member = members.FirstOrDefault(m => m.MV001 == log.Mid);
+                log.MName = member?.MV002 ?? "未知";
+
+                var position = positions.FirstOrDefault(p => p.ME001 == member?.MV004);
+                log.MPosition = position?.ME002 ?? "未知";
+
+                return log;
+            }).ToList();
+
+            return View("WorkLogList", result);
+        }
+        #endregion
 
 
         #region  檔案多筆上傳

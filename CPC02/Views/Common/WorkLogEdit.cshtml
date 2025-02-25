@@ -11,7 +11,7 @@
                 v-on:click="toggleEditMode">
             {{isEditing?' 編輯中... ' : ' 編輯 '}}
         </button>
-        <div class="flex-grow-1 text-center title">個人工作記錄</div>
+        <div class="flex-grow-1 text-center title">@ViewBag.Title</div>
     </div>
     <form method="post" action="@Url.Action("WorkLogEdit", new { IsUpdate = ViewBag.IsUpdate })" enctype="multipart/form-data">
         <input type="hidden" name="LOG000" v-model="formData.LOG000" />
