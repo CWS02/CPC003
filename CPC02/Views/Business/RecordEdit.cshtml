@@ -80,7 +80,7 @@
         </div>
     </div>
 
-    <form v-on:submit.prevent="submitForm" method="post" action="@Url.Action("RecordEdit", new { IsUpdate = ViewBag.IsUpdate })">
+    <form v-on:submit.prevent="submitForm" method="post" action="@Url.Action("RecordEdit", new { IsUpdate = ViewBag.IsUpdate })" enctype="multipart/form-data">
         <input type="hidden" name="INT999" v-model="formData.INT999" />
         <input type="hidden" name="INT000" v-model="formData.INT000" />
 
@@ -151,6 +151,11 @@
                     @(currentLang == "zh-TW" ? "子公司客戶" : "Subsidiary")
                 </label>
                 <input type="text" class="form-control" name="INT011" v-model="formData.INT011" v-bind:disabled="!isEditing" />
+            </div>
+            <div class="col-md-4">
+                <label for="fileUpload" class="form-label">@(currentLang == "zh-TW" ? "圖片上傳" : "Image Upload")</label>
+                <input type="file" id="fileUpload" class="form-control" name="UploadedFile" v-bind:disabled="!isEditing" />
+                <img v-if="formData.INT012" :src="formData.INT012" class="img-fluid img-small" style="width: 150px; height: 150px; object-fit: cover;">
             </div>
         </div>
 

@@ -3,7 +3,7 @@
 @{
     Layout = ViewBag.Layout;
     string currentLang = (string)Session["Culture"] ?? "zh-TW";
-    ViewBag.Title = (currentLang == "zh-TW" ? " 多筆上傳" : "MultipleFiles");
+    ViewBag.Title = (currentLang == "zh-TW" ? " 附件上傳" : "MultipleFiles");
 }
 <link rel="stylesheet" href="~/css/style3.css" />
 
@@ -12,7 +12,7 @@
         <img src="~/image/icons/back.png" style="width: 20px; height: 20px;" /> @(currentLang=="zh-TW"? "返回" : "Back")
     </a>
         <div class="flex-grow-1 text-center title">
-            @(ViewBag.name!=null?(currentLang == "zh-TW" ? $"多筆上傳 - {ViewBag.name}" : $"MultipleFiles - {ViewBag.name}"): (currentLang == "zh-TW" ? "多筆上傳" : "MultipleFiles"))
+            @(ViewBag.name!=null?(currentLang == "zh-TW" ? $"附件上傳 - {ViewBag.name}" : $"MultipleFiles - {ViewBag.name}"): (currentLang == "zh-TW" ? "附件上傳" : "MultipleFiles"))
         </div>
 </div>
 

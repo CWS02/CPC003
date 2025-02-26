@@ -69,6 +69,10 @@ namespace CPC02.Models
         /// </summary>
         public string INT011 { get; set; }
         /// <summary>
+        /// 圖片上傳
+        /// </summary>
+        public string INT012 { get; set; }
+        /// <summary>
         /// 會員ID
         /// </summary>
         public int? Mid { get; set; }

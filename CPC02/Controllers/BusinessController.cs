@@ -354,7 +354,7 @@ namespace CPC02.Controllers
         }
 
         [HttpPost]
-        public ActionResult RecordEdit(INTRB model, bool IsUpdate = false)
+        public ActionResult RecordEdit(HttpPostedFileBase UploadedFile,INTRB model, bool IsUpdate = false)
         {
             if (Session["Mid"] == null)
             {
@@ -375,6 +375,7 @@ namespace CPC02.Controllers
             if (IsUpdate)
             {
                 var existingDevice = _db.INTRB.Find(model.INT000);
+
                 if (existingDevice != null)
                 {
                     existingDevice.INT001 = model.INT001;
@@ -387,7 +388,12 @@ namespace CPC02.Controllers
                     //existingDevice.INT010 = model.INT010;
                     existingDevice.INT011 = model.INT011;
                     existingDevice.Level = model.Level;
-
+                    if (UploadedFile != null && UploadedFile.ContentLength > 0)
+                    {
+                        var file = Request.Files[0];
+                        var newFilePath = SaveUploadedFile(file, "/image/Business/UploadCard");
+                        existingDevice.INT012 = newFilePath;
+                    }
 
                     existingDevice.IP = Request.UserHostAddress;
 
@@ -408,7 +414,12 @@ namespace CPC02.Controllers
                 model.IP = Request.UserHostAddress;
                 model.Status = 0;
                 model.Mid = Convert.ToInt32(Session["Mid"]);
-
+                if (UploadedFile != null && UploadedFile.ContentLength > 0)
+                {
+                    var file = Request.Files[0];
+                    var newFilePath = SaveUploadedFile(file, "/image/Business/UploadCard");
+                    model.INT012 = newFilePath;
+                }
                 _db.INTRB.Add(model);
 
                 try
