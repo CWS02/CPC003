@@ -9,21 +9,10 @@
 }
 
 <style>
-    .btn {
-        font-size: 16px;
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
     table#datatable th,
     table#datatable td {
         font-size: 12px;
         padding: 4px;
-        white-space: nowrap;
     }
 
     .btn img {
@@ -31,10 +20,7 @@
         height: 16px;
     }
 
-    .btn {
-        font-size: 12px;
-        padding: 5px 10px;
-    }
+
 
     table#datatable th {
         font-size: 14px;
@@ -45,9 +31,10 @@
     }
 
         table#datatable td {
-            word-wrap: break-word;
-            max-width: 50px;
-            white-space: normal;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
         }
 
     .clickable-td {
@@ -172,18 +159,18 @@
                             }
                             <th>@(currentLang == "zh-TW" ? Html.Raw("報價PDF") : Html.Raw("Quotation<br>PDF"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("報價Word") : Html.Raw("Quotation<br>Word"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("報價編號") : Html.Raw("Quotation<br>ID"))</th>
+
                             <th>@(currentLang == "zh-TW" ? Html.Raw("報價日期") : Html.Raw("Quotation<br>Date"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("交期") : Html.Raw("Deadline"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("業務人員") : Html.Raw("Sales<br>Representative"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("客戶名稱") : Html.Raw("Customer<br>Name"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("國家") : Html.Raw("Country"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("地區") : Html.Raw("Region"))</th>
+
 
                             @*<th>@(currentLang == "zh-TW" ? Html.Raw("圖面上傳 (old)") : Html.Raw("Image<br>Upload (old)"))</th>*@
                             <th>@(currentLang == "zh-TW" ? Html.Raw("圖面下載 (old)") : Html.Raw("Image<br>Download (old)"))</th>
-                            
+
                             <th>@(currentLang == "zh-TW" ? "多筆上傳" : "MultipleFiles")</th>
-                            
+
 
 
                             <th>@(currentLang == "zh-TW" ? "訂單狀態" : "Order Status")</th>
@@ -225,12 +212,11 @@
                                         <img src="~/image/icons/file_download.png" alt="下載" style="width: 20px; height: 20px;" />
                                     </a>
                                 </td>
+                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.INT011?? "　")</a></td>
+
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.INT001?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(item.INT004?? "　")</a></td>
                                 <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(member != null ? member.Mem001 : "未選擇會員")</a></td>
-                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT001?? "　")</a></td>
-                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT006?? "　")</a></td>
-                                <td><a href="@Url.Action("QuoteEdit", new { INT000 = item.INT000,IsUpdate=true })" class="clickable-td">@(intra.INT007?? "　")</a></td>
                                 @* <td>
                                    <form action="@Url.Action("UploadQuote", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
             <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />

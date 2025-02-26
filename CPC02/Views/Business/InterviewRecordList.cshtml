@@ -14,7 +14,7 @@
     table#datatable td {
         font-size: 12px;
         padding: 4px;
-        white-space: nowrap;
+        
     }
 
     .btn img {
@@ -33,9 +33,10 @@
     }
 
         table#datatable td {
-            word-wrap: break-word;
-            max-width: 50px;
-            white-space: normal;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; 
+            max-width: 150px; 
         }
 
     .clickable-td {
@@ -120,17 +121,13 @@
                 <table id="datatable" class="table table-striped">
                     <thead>
                         <tr>
+                            <th>@(currentLang == "zh-TW" ? "編輯" : "Edit")</th>
                             <th>@(currentLang == "zh-TW" ? "序" : "No.")</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("負責<br>業務") :Html.Raw("Sales"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("負責業務") :Html.Raw("Sales"))</th>
                             <th>@(currentLang == "zh-TW" ? "國家別" : "Country")</th>
-                            <th>@(currentLang == "zh-TW" ? "地區別" : "Region")</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("客戶名稱") : Html.Raw("Customer<br>Name"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("電話") : Html.Raw("TEL"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("聯絡人") : Html.Raw("Contact<br>Person"))</th>
-                            <th>@(currentLang == "zh-TW" ? "職稱" : "Title")</th>
-                            <th>@(currentLang == "zh-TW" ? "聯絡電話" : "Phone")</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("事件/<br>訪談記錄") : Html.Raw("Event/<br>Interview Record"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("報價記錄") : Html.Raw("Quote<br>Record"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("客戶名稱") : Html.Raw("Customer Name"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("事件/訪談記錄") : Html.Raw("Event/Interview Record"))</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("報價記錄") : Html.Raw("Quote Record"))</th>
                             @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[0] == 'Y')
                             {
                                 <th>@(currentLang == "zh-TW" ? Html.Raw("刪除") : Html.Raw("Delete"))</th>
@@ -144,17 +141,13 @@
                             var member = members.FirstOrDefault(m => m.Mem000 == item.Mid);
 
                             <tr>
-                                <td>
-                                    <a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(Model.ToList().IndexOf(item) + 1)</a>
+                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td"> 
+                                    <img src="~/image/icons/edit.png" style="width: 20px; height: 20px;" /></a>
                                 </td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(member != null ? member.Mem001 : "未選擇會員")</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT006 ?? "　")</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT007 ?? "　")</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT001 ?? "　")</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT004 ?? "　")</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT008 ?? "　")</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT009 ?? "　")</a></td>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT010??"　")</a></td>
+                                <td>@(Model.ToList().IndexOf(item) + 1) </td>
+                                <td>@(member != null ? member.Mem001 : "未選擇會員")</td>
+                                <td>@(item.INT006 ?? "　")</td>
+                                <td>@(item.INT001 ?? "　")</td>
                                 <td>
                                     <a href="@Url.Action("RecordList", new { INT000 = item.INT000 })" class="clickable-td">
                                         @(item.LastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
@@ -169,9 +162,9 @@
                                 @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[0] == 'Y')
                                 {
                                     <td>
-                                       <a href="@Url.Action("ChangeStatusForINTRA", new { id = item.INT000,status=-1 })">
-                                           <img src="~/image/icons/delete.png" style="width: 20px; height: 20px;" />
-                                       </a>
+                                        <a href="@Url.Action("ChangeStatusForINTRA", new { id = item.INT000,status=-1 })">
+                                            <img src="~/image/icons/delete.png" style="width: 20px; height: 20px;" />
+                                        </a>
                                     </td>
                                 }
                             </tr>

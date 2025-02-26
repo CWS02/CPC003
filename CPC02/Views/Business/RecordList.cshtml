@@ -11,23 +11,10 @@
     var headerText2 = (Session["Mid2"]?.ToString() == "27") ? (currentLang == "zh-TW" ? "展覽" : "Exhibition") : (currentLang == "zh-TW" ? "專案名稱" : "Project Name");
 }
 <style>
-    .btn {
-        font-size: 16px;
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-
-
     table#datatable th,
     table#datatable td {
         font-size: 12px;
         padding: 4px;
-        white-space: nowrap;
     }
 
     .btn img {
@@ -35,10 +22,7 @@
         height: 16px;
     }
 
-    .btn {
-        font-size: 12px;
-        padding: 5px 10px;
-    }
+
 
     table#datatable th {
         font-size: 14px;
@@ -49,9 +33,10 @@
     }
 
         table#datatable td {
-            word-wrap: break-word;
-            max-width: 50px;
-            white-space: normal;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
         }
 
     .clickable-td {
@@ -120,6 +105,21 @@
 }
 
 <div id="app" class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            @if (ViewBag.INT000 != null)
+            {
+                var item = intraModels?.FirstOrDefault(x => x.INT000 == ViewBag.INT000);
+                <p class="info-line">
+                    @(currentLang == "zh-TW" ? "國家" : "Country"): @(item.INT006 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "區域" : "Region"): @(item.INT007 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "聯絡人" : "Contact Person"): @(item.INT008 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "電話" : "Phone"): @(item.INT004 ?? "N/A")
+                    | @(currentLang == "zh-TW" ? "分機" : "Fax"): @(item.INT005 ?? "N/A")
+                </p>
+            }
+        </div>
+    </div>
     <div class="card">
         <div class="card-body">
             <div class="mb-3">
@@ -144,9 +144,6 @@
                             <th>@(currentLang == "zh-TW" ? Html.Raw("訪談Word") : Html.Raw("Report<br>Word"))</th>
 
                             <th>@(currentLang == "zh-TW" ? Html.Raw("訪談/記錄人員") : Html.Raw("Interviewer"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("客戶名稱") : Html.Raw("Customer<br>Name"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("國家") : Html.Raw("Country"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("地區") : Html.Raw("Region"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("訪談日期") : Html.Raw("Date"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("訪談方式") : Html.Raw("Method"))</th>
                             <th>@headerText</th>
@@ -159,7 +156,7 @@
 
 
                             @*<th>@(currentLang == "zh-TW" ? "狀態" : "Status")</th>
-        <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>*@
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>*@
 
                             @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[1] == 'Y')
                             {
@@ -204,9 +201,6 @@
                                 </td>
 
                                 <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(member != null ? member.Mem001 : "未找到會員")</a></td>
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(intra.INT001?? "　")</a></td>
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(intra.INT006?? "　")</a></td>
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(intra.INT007?? "　")</a></td>
 
                                 <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT005</a></td>
                                 <td>
@@ -242,8 +236,8 @@
                                         {
                                             @(
                                                 !string.IsNullOrEmpty(item.INT004)
-                                                    ? (item.INT004.Length > 50
-                                                        ? item.INT004.Substring(0, 50) + "..."
+                                                    ? (item.INT004.Length > 10
+                                                        ? item.INT004.Substring(0, 10) + "..."
                                                         : item.INT004)
                                                     : "　"
                                             )
@@ -253,15 +247,15 @@
                                 </td>
 
                                 @*
-        <td>
-            <form action="@Url.Action("UploadRecord", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
-                <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
-                <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
-                    <img src="~/image/icons/file_upload.png" alt="附近上傳" style="width: 20px; height: 20px;" />
-                </a>
-                <input type="submit" value="上傳" style="display: none;" />
-            </form>
-        </td>*@
+                                    <td>
+                                        <form action="@Url.Action("UploadRecord", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
+                                            <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
+                                            <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
+                                                <img src="~/image/icons/file_upload.png" alt="附近上傳" style="width: 20px; height: 20px;" />
+                                            </a>
+                                            <input type="submit" value="上傳" style="display: none;" />
+                                        </form>
+                                    </td>*@
                                 <td>
                                     @if (item.INT003 != null)
                                     {
@@ -272,11 +266,11 @@
                                 </td>
 
                                 @*<td>
-            <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
-                @(item.Status == 0 ? "未審核" : (item.Status == 1 ? "已審核" : "已刪除"))
-            </a>
-        </td>
-        <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT006</a></td>*@
+                                        <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
+                                            @(item.Status == 0 ? "未審核" : (item.Status == 1 ? "已審核" : "已刪除"))
+                                        </a>
+                                    </td>
+                                    <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT006</a></td>*@
 
                                 <td>
                                     <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000,SourceDB="INTRB",name=intra.INT001, layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">

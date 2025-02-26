@@ -305,7 +305,8 @@ namespace CPC02.Controllers
         [HttpGet]
         public ActionResult ProjectManage(WLOGA model)
         {
-            ViewBag.Title = "專案管理";
+            var title = _erpcpc.WLOGB.Find(model.WLOGB);
+            ViewBag.Title =$"部門專案記錄 {title.LOG001}";
             Session["Role"] = "ProjectManage";
 
             if (Session["Mid"] == null)
