@@ -766,7 +766,7 @@ namespace CPC02.Controllers
                 ViewBag.IsUpdate = true;
             }
             ViewBag.INT000 = model.INT999;
-            ViewBag.INTRAModel = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT999)?.INT001;
+            ViewBag.INTRB = _db.INTRB.FirstOrDefault(x => x.INT000 == model.INT999);
 
             return View(model);
         }
