@@ -315,6 +315,23 @@ namespace CPC02.Controllers
                 return RedirectToAction("Login", "Member");
             }
             var data = _db.INTRB.Where(x => x.INT999 == model.INT000 && x.Status!=-1).OrderBy(x => x.Status).ThenByDescending(x => x.CreateTime).ToList();
+            foreach (var intre in data)
+            {
+                var latestIntre = _db.INTRE
+                    .Where(b => b.INT999 == intre.INT000)
+                    .OrderByDescending(b => b.INT001)
+                    .FirstOrDefault();
+
+                if (latestIntre != null)
+                {
+                    DateTime latestDate;
+                    if (DateTime.TryParse(latestIntre.INT001, out latestDate))
+                    {
+                        intre.LastDate = latestDate;
+                    }
+                }
+            }
+
             ViewBag.INT000 = model.INT000;
 
             var members = _db.Member.ToList();
@@ -709,12 +726,13 @@ namespace CPC02.Controllers
             {
                 return RedirectToAction("Login", "Member");
             }
-            var data = _db.INTRE.Where(x => x.INT999 == model.INT000 && x.status != -1).OrderBy(x => x.status).ThenByDescending(x => x.CreateTime).ToList();
-            ViewBag.INT000 = model.INT000;
+            var data = _db.INTRE.Where(x => x.INT999 == model.INT000 && x.status != -1).OrderByDescending(x => x.INT001).ToList();
 
+            
+
+            ViewBag.INT000 = model.INT000;
             var members = _db.Member.ToList();
             ViewBag.Members = members;
-
             ViewBag.INTRB = _db.INTRB.FirstOrDefault(x => x.INT000 == model.INT000);
             ViewBag.INTRAModel = _db.INTRA.ToList();
             return View(data);

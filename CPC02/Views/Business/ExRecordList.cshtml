@@ -92,38 +92,44 @@
                             var member = members.FirstOrDefault(m => m.Mem000 == item.Mid);
 
                             <tr>
-                                <td>@(Model.ToList().IndexOf(item) + 1)</td>
+                                <td><a href="@Url.Action("ExRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(Model.ToList().IndexOf(item) + 1)</a></td>
                                 <td><a href="@Url.Action("ExRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(member != null ? member.Mem001 : "未找到會員")</a></td>
-                                <td>@item.INT001</td>
+                                <td><a href="@Url.Action("ExRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT001</a></td>
                                 <td>
-                                    @switch (item.INT003)
-                                    {
-                                        case 1:
-                                            @(currentLang == "zh-TW" ? Html.Raw("到訪記錄") : Html.Raw("Visit Record"))
-                                            break;
-                                        case 2:
-                                            @(currentLang == "zh-TW" ? Html.Raw("電話記錄") : Html.Raw("Phone Record"))
-                                            break;
-                                        case 3:
-                                            @(currentLang == "zh-TW" ? Html.Raw("Email") : Html.Raw("via emails"))
-                                            break;
-                                        case 4:
-                                            @(currentLang == "zh-TW" ? Html.Raw("線上會議") : Html.Raw("On-line meeting"))
-                                            break;
-                                        case 5:
-                                            @(currentLang == "zh-TW" ? Html.Raw("視訊") : Html.Raw("Video Conference"))
-                                            break;
-                                        case 6:
-                                            @(currentLang == "zh-TW" ? Html.Raw("來訪記錄") : Html.Raw("Visitor Record"))
-                                            break;
-                                    }
+                                    <a href="@Url.Action("ExRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
+                                        @switch (item.INT003)
+                                        {
+                                            case 1:
+                                                @(currentLang == "zh-TW" ? Html.Raw("到訪記錄") : Html.Raw("Visit Record"))
+                                                break;
+                                            case 2:
+                                                @(currentLang == "zh-TW" ? Html.Raw("電話記錄") : Html.Raw("Phone Record"))
+                                                break;
+                                            case 3:
+                                                @(currentLang == "zh-TW" ? Html.Raw("Email") : Html.Raw("via emails"))
+                                                break;
+                                            case 4:
+                                                @(currentLang == "zh-TW" ? Html.Raw("線上會議") : Html.Raw("On-line meeting"))
+                                                break;
+                                            case 5:
+                                                @(currentLang == "zh-TW" ? Html.Raw("視訊") : Html.Raw("Video Conference"))
+                                                break;
+                                            case 6:
+                                                @(currentLang == "zh-TW" ? Html.Raw("來訪記錄") : Html.Raw("Visitor Record"))
+                                                break;
+                                        }
+                                    </a>
                                 </td>
                                 <td>
-                                    @(string.IsNullOrEmpty(item.INT002) ? "　" : (item.INT002.Length > 10 ? item.INT002.Substring(0, 10) + "..." : item.INT002))
+                                    <a href="@Url.Action("ExRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
+                                        @(string.IsNullOrEmpty(item.INT002) ? "　" : (item.INT002.Length > 10 ? item.INT002.Substring(0, 10) + "..." : item.INT002))
+                                    </a>
                                 </td>
 
                                 <td>
-                                    @(string.IsNullOrEmpty(item.INT004) ? "　": (item.INT004.Length > 10 ? item.INT004.Substring(0, 10) + "..." : item.INT004))
+                                    <a href="@Url.Action("ExRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
+                                        @(string.IsNullOrEmpty(item.INT004) ? "　": (item.INT004.Length > 10 ? item.INT004.Substring(0, 10) + "..." : item.INT004))
+                                    </a>
                                 </td>
                             </tr>
                         }

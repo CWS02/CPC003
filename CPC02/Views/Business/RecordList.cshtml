@@ -298,7 +298,7 @@
                                 {
                                     <td>
                                         <a href="@Url.Action("ExRecordList", new { INT000 = item.INT000 })" class="clickable-td">
-                                            @*@(item.QuoteLastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")*@1911/01/01
+                                            @(item.LastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
                                         </a>
                                     </td>
                                 }

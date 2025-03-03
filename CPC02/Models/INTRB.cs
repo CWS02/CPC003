@@ -108,5 +108,10 @@ namespace CPC02.Models
 
         public virtual INTRA INTRA { get; set; }
         public virtual Member Member { get; set; }
+        /// <summary>
+        /// 最新訪談時間
+        /// </summary>
+        [NotMapped]
+        public DateTime? LastDate { get; set; }
     }
 }
