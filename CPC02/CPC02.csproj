@@ -222,6 +222,7 @@
     </Compile>
     <Compile Include="Models\COPTC.cs" />
     <Compile Include="Models\CPC2Context.cs" />
+    <Compile Include="Models\INTRE.cs" />
     <Compile Include="Models\INTRD.cs" />
     <Compile Include="Models\Files.cs" />
     <Compile Include="Models\WLOGB.cs" />
@@ -344,6 +345,8 @@
     <Content Include="Views\Common\MultipleFiles.cshtml" />
     <Content Include="Views\Common\ProjectList.cshtml" />
     <Content Include="Views\Common\ProjectEdit.cshtml" />
+    <Content Include="Views\Business\ExRecordList.cshtml" />
+    <Content Include="Views\Business\ExRecordEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

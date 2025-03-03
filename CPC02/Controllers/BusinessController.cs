@@ -21,6 +21,7 @@ using System.Web.Mvc;
 using System.Web.UI.HtmlControls;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using static System.Data.Entity.Infrastructure.Design.Executor;
+using System.Data.Entity;
 
 namespace CPC02.Controllers
 {
@@ -51,6 +52,7 @@ namespace CPC02.Controllers
             else
             {
                 Session["Mid2"] = null;
+                modelQuery = modelQuery.Where(x => x.Mid != 27);
             }
 
             if (!string.IsNullOrEmpty(INT001))
@@ -139,6 +141,7 @@ namespace CPC02.Controllers
 
             
             var members = _db.Member.Where(x=>x.IsBusiness=="Y").ToList();
+            ViewBag.TotalMembers = _db.Member.ToList();
             ViewBag.Members = members;
 
             ViewBag.INT006List = _db.INTRA
@@ -460,9 +463,11 @@ namespace CPC02.Controllers
             {
                 data = from item in data
                        join intra in intraModels on item.INT999 equals intra.INT000
-                       where intra.INT001.Contains(search.Name)
+                       where intra.INT001.Contains(search.Name) 
                        select item;
             }
+
+
             #region 登入權限
             int mid = Convert.ToInt32(Session["Mid"]);
             var member = _db.Member.FirstOrDefault(x => x.Mem000 == mid);
@@ -490,6 +495,12 @@ namespace CPC02.Controllers
                        select item;
             }
             #endregion
+
+            data = from item in data
+                   join intra in intraModels on item.INT999 equals intra.INT000
+                   where intra.Mid!=27
+                   select item;
+
             return View("RecordList", data.ToList());
         }
         #endregion
@@ -688,6 +699,109 @@ namespace CPC02.Controllers
             return View("QuoteList", data.ToList());  
         }
 
+        #endregion
+
+        #region 展覽訪談記錄
+        [HttpGet]
+        public ActionResult ExRecordList(INTRB model)
+        {
+            if (Session["Mid"] == null)
+            {
+                return RedirectToAction("Login", "Member");
+            }
+            var data = _db.INTRE.Where(x => x.INT999 == model.INT000 && x.status != -1).OrderBy(x => x.status).ThenByDescending(x => x.CreateTime).ToList();
+            ViewBag.INT000 = model.INT000;
+
+            var members = _db.Member.ToList();
+            ViewBag.Members = members;
+
+            ViewBag.INTRB = _db.INTRB.FirstOrDefault(x => x.INT000 == model.INT000);
+            ViewBag.INTRAModel = _db.INTRA.ToList();
+            return View(data);
+        }
+
+        [HttpGet]
+        public ActionResult ExRecordEdit(INTRE model)
+        {
+            if (Session["Mid"] == null)
+            {
+                return RedirectToAction("Login", "Member");
+            }
+            ViewBag.IsUpdate = false;
+            if (model.INT000 != null)
+            {
+                model = _db.INTRE.Find(model.INT000);
+                ViewBag.IsUpdate = true;
+            }
+            ViewBag.INT000 = model.INT999;
+            ViewBag.INTRAModel = _db.INTRA.FirstOrDefault(x => x.INT000 == model.INT999)?.INT001;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult ExRecordEdit(INTRE model, bool IsUpdate = false)
+        {
+            if (Session["Mid"] == null)
+            {
+                return RedirectToAction("Login", "Member");
+            }
+            string currentLang = (string)Session["Culture"] ?? "zh-TW";
+            string actionKey = string.Empty;
+            if (currentLang == "zh-TW")
+            {
+                actionKey = IsUpdate ? "更新" : "新增";
+            }
+            else
+            {
+                actionKey = IsUpdate ? "Update" : "Add";
+            }
+
+
+            if (IsUpdate)
+            {
+                var existingDevice = _db.INTRE.Find(model.INT000);
+
+                if (existingDevice != null)
+                {
+                    _db.Entry(existingDevice).CurrentValues.SetValues(model);
+                    _db.Entry(existingDevice).Property(e => e.IP).IsModified = false;
+                    _db.Entry(existingDevice).Property(e => e.CreateTime).IsModified = false;
+                    _db.Entry(existingDevice).Property(e => e.Mid).IsModified = false;
+                    _db.Entry(existingDevice).Property(e => e.status).IsModified = false;
+                    try
+                    {
+                        _db.SaveChanges();
+                        TempData["SuccessMessage"] = GetSuccessMessage(actionKey, currentLang);
+                    }
+                    catch
+                    {
+                        TempData["SuccessMessage"] = GetFailureMessage(actionKey, currentLang);
+                    }
+                }
+            }
+            else
+            {
+                model.INT000 = Guid.NewGuid().ToString();
+                model.IP = Request.UserHostAddress;
+                model.status = 0;
+                model.Mid = Convert.ToInt32(Session["Mid"]);
+
+                _db.INTRE.Add(model);
+
+                try
+                {
+                    _db.SaveChanges();
+                    TempData["SuccessMessage"] = GetSuccessMessage(actionKey, currentLang);
+                }
+                catch
+                {
+                    TempData["SuccessMessage"] = GetFailureMessage(actionKey, currentLang);
+                }
+            }
+
+            return RedirectToAction("ExRecordList", new { INT000 = model.INT999 });
+        }
         #endregion
 
         #region 下載報價單

@@ -33,6 +33,10 @@ namespace CPC02.Models
         /// </summary>
         public virtual DbSet<INTRD> INTRD { get; set; }
         /// <summary>
+        /// 展覽訪談追蹤記錄
+        /// </summary>
+        public virtual DbSet<INTRE> INTRE { get; set; }
+        /// <summary>
         /// 業務會員
         /// </summary>
         public virtual DbSet<Member> Member { get; set; }        

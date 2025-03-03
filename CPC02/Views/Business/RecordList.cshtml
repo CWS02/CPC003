@@ -6,9 +6,6 @@
     string currentLang = (string)Session["Culture"] ?? "zh-TW";
     var members = ViewBag.Members as List<CPC02.Models.Member>;
     var intraModels = (List<CPC02.Models.INTRA>)ViewBag.INTRAModel;
-
-    var headerText = (Session["Mid2"]?.ToString() == "27") ? (currentLang == "zh-TW" ? "公司" : "Company") : (currentLang == "zh-TW" ? "主題" : "Subject");
-    var headerText2 = (Session["Mid2"]?.ToString() == "27") ? (currentLang == "zh-TW" ? "展覽" : "Exhibition") : (currentLang == "zh-TW" ? "專案名稱" : "Project Name");
 }
 <style>
     table#datatable th,
@@ -140,23 +137,47 @@
                                 <th>@(currentLang == "zh-TW" ? Html.Raw("主管審核") : Html.Raw("Manager<br>Review"))</th>
                                 <th>@(currentLang == "zh-TW" ? Html.Raw("主管回覆") : Html.Raw("Manager<br>Reply"))</th>
                             }
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談PDF") : Html.Raw("Report<br>PDF"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談Word") : Html.Raw("Report<br>Word"))</th>
+                            @if (Session["Mid2"]?.ToString() != "27")
+                            {
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("訪談PDF") : Html.Raw("Report<br>PDF"))</th>
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("訪談Word") : Html.Raw("Report<br>Word"))</th>
+                            }
 
                             <th>@(currentLang == "zh-TW" ? Html.Raw("訪談/記錄人員") : Html.Raw("Interviewer"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("訪談日期") : Html.Raw("Date"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("訪談方式") : Html.Raw("Method"))</th>
-                            <th>@headerText</th>
-                            <th>@headerText2</th>
+                            @if (Session["Mid2"]?.ToString() != "27")
+                            {
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("訪談方式") : Html.Raw("Method"))</th>
+                            }
+                            @if ((Session["Mid2"]?.ToString() == "27"))
+                            {
+                                <th>@(currentLang == "zh-TW" ? "主題" : "Subject")</th>
+                            }
+                            else
+                            {
+                                <th>@(currentLang == "zh-TW" ? "公司" : "Company")</th>
+                                <th>@(currentLang == "zh-TW" ? "專案名稱" : "Project Name")</th>
+                            }
+
                             <th>@(currentLang == "zh-TW" ? "內容" : "Contents")</th>
-                            @*<th>@(currentLang == "zh-TW" ? Html.Raw("附件上傳(old)") : Html.Raw("Upload (old)"))</th>*@
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("附件下載(old)") : Html.Raw("Download (old)"))</th>
+                            @if ((Session["Mid2"]?.ToString() != "27"))
+                            {
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("附件下載(old)") : Html.Raw("Download (old)"))</th>
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("附件上傳") : Html.Raw("MultipleFiles"))</th>
+                            }
 
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("附件上傳") : Html.Raw("MultipleFiles"))</th>
-
+                            @if ((Session["Mid2"]?.ToString() == "27"))
+                            {
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("訪談追蹤記錄") : Html.Raw("Interview tracking"))</th>
+                            }
 
                             @*<th>@(currentLang == "zh-TW" ? "狀態" : "Status")</th>
-                                <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>*@
+        <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>*@
+
+                            @*@if ((Session["Mid2"]?.ToString() != "27"))
+                            {
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("附件下載(old)") : Html.Raw("Download (old)"))</th>
+                            }*@
 
                             @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[1] == 'Y')
                             {
@@ -189,47 +210,57 @@
                                         </a>
                                     </td>
                                 }
-                                <td>
-                                    <a href="@Url.Action("PrintRecord", new {  INT000 = item.INT999,intrb=item.INT000})" target="_blank">
-                                        <img src="~/image/icons/file_download.png" alt="下載" style="width: 20px; height: 20px;" />
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="@Url.Action("PrintRecord", new {  INT000 = item.INT999,intrb=item.INT000,type="docx"})" target="_blank">
-                                        <img src="~/image/icons/file_download.png" alt="下載" style="width: 20px; height: 20px;" />
-                                    </a>
-                                </td>
+                                @if (Session["Mid2"]?.ToString() != "27")
+                                {
+                                    <td>
+                                        <a href="@Url.Action("PrintRecord", new {  INT000 = item.INT999,intrb=item.INT000})" target="_blank">
+                                            <img src="~/image/icons/file_download.png" alt="下載" style="width: 20px; height: 20px;" />
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("PrintRecord", new {  INT000 = item.INT999,intrb=item.INT000,type="docx"})" target="_blank">
+                                            <img src="~/image/icons/file_download.png" alt="下載" style="width: 20px; height: 20px;" />
+                                        </a>
+                                    </td>
+                                }
 
                                 <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(member != null ? member.Mem001 : "未找到會員")</a></td>
 
                                 <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT005</a></td>
-                                <td>
-                                    <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
-                                        @switch (item.INT002)
-                                        {
-                                            case 1:
-                                                @(currentLang == "zh-TW" ? Html.Raw("到訪記錄") : Html.Raw("Visit Record"))
-                                                break;
-                                            case 2:
-                                                @(currentLang == "zh-TW" ? Html.Raw("電話記錄") : Html.Raw("Phone Record"))
-                                                break;
-                                            case 3:
-                                                @(currentLang == "zh-TW" ? Html.Raw("Email") : Html.Raw("via emails"))
-                                                break;
-                                            case 4:
-                                                @(currentLang == "zh-TW" ? Html.Raw("線上會議") : Html.Raw("On-line meeting"))
-                                                break;
-                                            case 5:
-                                                @(currentLang == "zh-TW" ? Html.Raw("視訊") : Html.Raw("Video Conference"))
-                                                break;
-                                            case 6:
-                                                @(currentLang == "zh-TW" ? Html.Raw("來訪記錄") : Html.Raw("Visitor Record"))
-                                                break;
-                                        }
-                                    </a>
-                                </td>
+                                @if (Session["Mid2"]?.ToString() != "27")
+                                {
+                                    <td>
+                                        <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
+                                            @switch (item.INT002)
+                                            {
+                                                case 1:
+                                                    @(currentLang == "zh-TW" ? Html.Raw("到訪記錄") : Html.Raw("Visit Record"))
+                                                    break;
+                                                case 2:
+                                                    @(currentLang == "zh-TW" ? Html.Raw("電話記錄") : Html.Raw("Phone Record"))
+                                                    break;
+                                                case 3:
+                                                    @(currentLang == "zh-TW" ? Html.Raw("Email") : Html.Raw("via emails"))
+                                                    break;
+                                                case 4:
+                                                    @(currentLang == "zh-TW" ? Html.Raw("線上會議") : Html.Raw("On-line meeting"))
+                                                    break;
+                                                case 5:
+                                                    @(currentLang == "zh-TW" ? Html.Raw("視訊") : Html.Raw("Video Conference"))
+                                                    break;
+                                                case 6:
+                                                    @(currentLang == "zh-TW" ? Html.Raw("來訪記錄") : Html.Raw("Visitor Record"))
+                                                    break;
+                                            }
+                                        </a>
+                                    </td>
+                                }
+
                                 <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT001</a></td>
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT007?? "　")</a></td>
+                                @if ((Session["Mid2"]?.ToString() != "27"))
+                                {
+                                    <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT007?? "　")</a></td>
+                                }
                                 <td style="word-wrap: break-word; white-space: normal;">
                                     <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
                                         @if (!string.IsNullOrEmpty(item.INT004))
@@ -245,38 +276,32 @@
                                         }
                                     </a>
                                 </td>
-
-                                @*
+                                @if ((Session["Mid2"]?.ToString() != "27"))
+                                {
                                     <td>
-                                        <form action="@Url.Action("UploadRecord", new { INT000 = item.INT000, INT999 = item.INT999 })" method="post" enctype="multipart/form-data">
-                                            <input type="file" name="fileUpload" style="display: none;" data-id="@item.INT000" />
-                                            <a onclick="document.querySelector('[data-id=\'@item.INT000\']').click()">
-                                                <img src="~/image/icons/file_upload.png" alt="附近上傳" style="width: 20px; height: 20px;" />
+                                        @if (item.INT003 != null)
+                                        {
+                                            <a href="@Url.Action("DownloadRecord", new {  INT000 = item.INT000, INT999 = item.INT999 })" target="_blank">
+                                                <img src="~/image/icons/file_download.png" alt="附件下載" style="width: 20px; height: 20px;" />
                                             </a>
-                                            <input type="submit" value="上傳" style="display: none;" />
-                                        </form>
-                                    </td>*@
-                                <td>
-                                    @if (item.INT003 != null)
-                                    {
-                                        <a href="@Url.Action("DownloadRecord", new {  INT000 = item.INT000, INT999 = item.INT999 })" target="_blank">
-                                            <img src="~/image/icons/file_download.png" alt="附件下載" style="width: 20px; height: 20px;" />
-                                        </a>
-                                    }
-                                </td>
-
-                                @*<td>
-                                        <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
-                                            @(item.Status == 0 ? "未審核" : (item.Status == 1 ? "已審核" : "已刪除"))
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000,SourceDB="INTRB",name=intra.INT001, layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
+                                            <img src="~/image/icons/folder.png" style="width: 20px; height: 20px;" />
                                         </a>
                                     </td>
-                                    <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT006</a></td>*@
+                                }
 
-                                <td>
-                                    <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000,SourceDB="INTRB",name=intra.INT001, layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
-                                        <img src="~/image/icons/folder.png" style="width: 20px; height: 20px;" />
-                                    </a>
-                                </td>
+
+                                @if ((Session["Mid2"]?.ToString() == "27"))
+                                {
+                                    <td>
+                                        <a href="@Url.Action("ExRecordList", new { INT000 = item.INT000 })" class="clickable-td">
+                                            @*@(item.QuoteLastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")*@1911/01/01
+                                        </a>
+                                    </td>
+                                }
 
 
 

@@ -4,7 +4,7 @@
     ViewBag.Title = "業務銷售系統";
     Layout = "~/Views/Shared/_LayoutBusiness.cshtml";
     string currentLang = (string)Session["Culture"] ?? "zh-TW";
-    var members = ViewBag.Members as List<CPC02.Models.Member>;
+    var members = ViewBag.TotalMembers as List<CPC02.Models.Member>;
 
 }
 <link rel="stylesheet" href="~/css/style2.css" />
@@ -127,7 +127,10 @@
                             <th>@(currentLang == "zh-TW" ? "國家別" : "Country")</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("客戶名稱") : Html.Raw("Customer Name"))</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("事件/訪談記錄") : Html.Raw("Event/Interview Record"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("報價記錄") : Html.Raw("Quote Record"))</th>
+                            @if (Session["Mid2"]?.ToString() != "27")
+                            {
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("報價記錄") : Html.Raw("Quote Record"))</th>
+                            }
                             @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[0] == 'Y')
                             {
                                 <th>@(currentLang == "zh-TW" ? Html.Raw("刪除") : Html.Raw("Delete"))</th>
@@ -141,8 +144,10 @@
                             var member = members.FirstOrDefault(m => m.Mem000 == item.Mid);
 
                             <tr>
-                                <td><a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td"> 
-                                    <img src="~/image/icons/edit.png" style="width: 20px; height: 20px;" /></a>
+                                <td>
+                                    <a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
+                                        <img src="~/image/icons/edit.png" style="width: 20px; height: 20px;" />
+                                    </a>
                                 </td>
                                 <td>@(Model.ToList().IndexOf(item) + 1) </td>
                                 <td>@(member != null ? member.Mem001 : "未選擇會員")</td>
@@ -153,11 +158,14 @@
                                         @(item.LastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
                                     </a>
                                 </td>
-                                <td>
-                                    <a href="@Url.Action("QuoteList", new { INT000 = item.INT000 })" class="clickable-td">
-                                        @(item.QuoteLastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
-                                    </a>
-                                </td>
+                                @if (Session["Mid2"]?.ToString() != "27")
+                                {
+                                    <td>
+                                        <a href="@Url.Action("QuoteList", new { INT000 = item.INT000 })" class="clickable-td">
+                                            @(item.QuoteLastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
+                                        </a>
+                                    </td>
+                                }
 
                                 @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[0] == 'Y')
                                 {
