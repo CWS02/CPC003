@@ -130,6 +130,7 @@
                     <thead>
                         <tr>
                             <th>@(currentLang == "zh-TW" ? "序" : "No.")</th>
+                            <th>@(currentLang == "zh-TW" ? "編輯" : "Edit")</th>
                             <th>@(currentLang == "zh-TW" ? Html.Raw("重要性") : Html.Raw("Priority"))</th>
 
                             @if (Session["Per"] != null && (bool)Session["Per"])
@@ -169,15 +170,8 @@
                             @if ((Session["Mid2"]?.ToString() == "27"))
                             {
                                 <th>@(currentLang == "zh-TW" ? Html.Raw("訪談追蹤記錄") : Html.Raw("Interview tracking"))</th>
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("標記") : Html.Raw("Flag"))</th>
                             }
-
-                            @*<th>@(currentLang == "zh-TW" ? "狀態" : "Status")</th>
-        <th>@(currentLang == "zh-TW" ? Html.Raw("主管批示") : Html.Raw("Manager<br>Reply"))</th>*@
-
-                            @*@if ((Session["Mid2"]?.ToString() != "27"))
-                            {
-                                <th>@(currentLang == "zh-TW" ? Html.Raw("附件下載(old)") : Html.Raw("Download (old)"))</th>
-                            }*@
 
                             @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[1] == 'Y')
                             {
@@ -192,7 +186,12 @@
                             var intra = intraModels.FirstOrDefault(m => m.INT000 == item.INT999);
                             <tr>
                                 <td>@(Model.ToList().IndexOf(item) + 1)</td>
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.Level</a></td>
+                                <td>
+                                    <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
+                                        <img src="~/image/icons/edit.png" style="width: 20px; height: 20px;" />
+                                    </a>
+                                </td>
+                                <td>@item.Level</td>
 
                                 @if (Session["Per"] != null && (bool)Session["Per"])
                                 {
@@ -224,13 +223,12 @@
                                     </td>
                                 }
 
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(member != null ? member.Mem001 : "未找到會員")</a></td>
+                                <td>@(member != null ? member.Mem001 : "未找到會員")</td>
 
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT005</a></td>
+                                <td>@item.INT005</td>
                                 @if (Session["Mid2"]?.ToString() != "27")
                                 {
                                     <td>
-                                        <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
                                             @switch (item.INT002)
                                             {
                                                 case 1:
@@ -252,17 +250,15 @@
                                                     @(currentLang == "zh-TW" ? Html.Raw("來訪記錄") : Html.Raw("Visitor Record"))
                                                     break;
                                             }
-                                        </a>
                                     </td>
                                 }
 
-                                <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@item.INT001</a></td>
+                                <td>@item.INT001</td>
                                 @if ((Session["Mid2"]?.ToString() != "27"))
                                 {
-                                    <td><a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">@(item.INT007?? "　")</a></td>
+                                    <td>@(item.INT007?? "　")</td>
                                 }
                                 <td style="word-wrap: break-word; white-space: normal;">
-                                    <a href="@Url.Action("RecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
                                         @if (!string.IsNullOrEmpty(item.INT004))
                                         {
                                             @(
@@ -274,7 +270,6 @@
                                             )
 
                                         }
-                                    </a>
                                 </td>
                                 @if ((Session["Mid2"]?.ToString() != "27"))
                                 {
@@ -303,6 +298,25 @@
                                     </td>
                                 }
 
+                                @if ((Session["Mid2"]?.ToString() == "27") && Convert.ToInt32(Session["Perm_Flag"]) >= 90)
+                                {
+                                    <td>
+                                        <img src="~/image/icons/@(item.INT013 == true ? "banner.png" : "square.png")"
+                                             class="toggle-flag"
+                                             data-id="@item.INT000"
+                                             style="width: 20px; height: 20px; cursor: pointer;" />
+                                    </td>
+                                }
+                                else if (Session["Mid2"]?.ToString() == "27")
+                                {
+                                    <td>
+                                        @if (item.INT013 == true)
+                                        {
+                                            <img src="@Url.Content("~/image/icons/banner.png")"
+                                                 style="width: 20px; height: 20px; cursor: pointer;" />
+                                        }
+                                    </td>
+                                }
 
 
                                 @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[1] == 'Y')
@@ -313,6 +327,7 @@
                                         </a>
                                     </td>
                                 }
+
                             </tr>
                         }
                     </tbody>
@@ -344,4 +359,17 @@ document.querySelector('body').addEventListener('change', function(e) {
         }
     }
 });
+
+    $(document).on("click", ".toggle-flag", function () {
+        var img = $(this);
+        var id = img.data("id");
+
+        $.post("/Business/ToggleFlag", { id: id }, function (response) {
+            if (response.success) {
+                var newSrc = response.newStatus ? "/image/icons/banner.png" : "/image/icons/square.png";
+                img.attr("src", newSrc);
+            } else {
+            }
+        });
+    });
 </script>

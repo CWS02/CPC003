@@ -73,6 +73,10 @@ namespace CPC02.Models
         /// </summary>
         public string INT012 { get; set; }
         /// <summary>
+        /// 是否有旗子
+        /// </summary>
+        public bool? INT013 { get; set; }
+        /// <summary>
         /// 會員ID
         /// </summary>
         public int? Mid { get; set; }

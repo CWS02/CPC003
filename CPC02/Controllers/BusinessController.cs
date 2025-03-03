@@ -520,6 +520,20 @@ namespace CPC02.Controllers
 
             return View("RecordList", data.ToList());
         }
+
+        [HttpPost]
+        public JsonResult ToggleFlag(string id)
+        {
+            var item = _db.INTRB.Find(id);
+            if (item != null)
+            {
+                item.INT013 = !(item.INT013 ?? false);
+                _db.SaveChanges();
+                return Json(new { success = true, newStatus = item.INT013 });
+            }
+            return Json(new { success = false });
+        }
+
         #endregion
 
         #region 報價紀錄
@@ -815,6 +829,21 @@ namespace CPC02.Controllers
                 catch
                 {
                     TempData["SuccessMessage"] = GetFailureMessage(actionKey, currentLang);
+                }
+
+                //旗子更新
+                var existingDevice = _db.INTRB.Find(model.INT999);
+                if (existingDevice != null) 
+                {
+                    existingDevice.INT013 = false;
+                    try
+                    {
+                        _db.SaveChanges();
+                    }
+                    catch
+                    {
+                        TempData["ErrorMessage"] = "旗標更新失敗";
+                    }
                 }
             }
 

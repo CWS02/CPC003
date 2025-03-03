@@ -33,6 +33,8 @@ namespace CPC02.Controllers
                 Session["Perm_C"] = model.Perm_C;
                 Session["Perm_U"] = model.Perm_U;
                 Session["Perm_D"] = model.Perm_D;
+                Session["Perm_Flag"] = model.Permission;
+
 
                 return RedirectToAction(model.Action, model.Controller);
             }

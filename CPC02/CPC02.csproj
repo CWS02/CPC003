@@ -270,6 +270,7 @@
     <Content Include="image\Icons\add.png" />
     <Content Include="image\Icons\analytics.png" />
     <Content Include="image\Icons\back.png" />
+    <Content Include="image\Icons\banner.png" />
     <Content Include="image\Icons\build.png" />
     <Content Include="image\Icons\check.png" />
     <Content Include="image\Icons\delete.png" />
@@ -284,6 +285,7 @@
     <Content Include="image\Icons\reply.png" />
     <Content Include="image\Icons\request_quote.png" />
     <Content Include="image\Icons\setting.png" />
+    <Content Include="image\Icons\square.png" />
     <Content Include="image\Icons\warning.png" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />

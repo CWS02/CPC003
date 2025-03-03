@@ -14,7 +14,6 @@
     table#datatable td {
         font-size: 12px;
         padding: 4px;
-        
     }
 
     .btn img {
@@ -35,8 +34,8 @@
         table#datatable td {
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; 
-            max-width: 150px; 
+            text-overflow: ellipsis;
+            max-width: 150px;
         }
 
     .clickable-td {
@@ -55,137 +54,139 @@
 <div class="title" style="color: blue;">@(currentLang=="zh-TW"? "直得科技" : "CHIEFTEK")</div>
 <div class="title">@(currentLang=="zh-TW"? "業務銷售系統" : "Business Sales System")</div>
 
-<form method="get" class="form-inline justify-content-center mb-4">
-    <div class="input-group" style="margin-top:20px">
-        <label for="responsibleBusiness" class="form-label">
-            @(currentLang == "zh-TW" ? "負責業務" : "Responsible Business")
-        </label>
-        <select id="responsibleBusiness" name="Mid2" class="form-control">
-            <option value="" @(string.IsNullOrEmpty(Request.QueryString["Mid2"]) ? "selected" : "")>
-                @(currentLang == "zh-TW" ? "請選擇" : "Please Select")
-            </option>
-            @if (ViewBag.Members != null)
-            {
-                foreach (var member in ViewBag.Members)
+@if (Session["Mid2"]?.ToString() != "27")
+{
+    <form method="get" class="form-inline justify-content-center mb-4">
+        <div class="input-group" style="margin-top:20px">
+            <label for="responsibleBusiness" class="form-label">
+                @(currentLang == "zh-TW" ? "負責業務" : "Responsible Business")
+            </label>
+            <select id="responsibleBusiness" name="Mid2" class="form-control">
+                <option value="" @(string.IsNullOrEmpty(Request.QueryString["Mid2"]) ? "selected" : "")>
+                    @(currentLang == "zh-TW" ? "請選擇" : "Please Select")
+                </option>
+                @if (ViewBag.Members != null)
                 {
-                    <option value="@member.Mem000" @(Request.QueryString["Mid2"] == member.Mem000.ToString() ? "selected" : "")>
-                        @member.Mem001
+                    foreach (var member in ViewBag.Members)
+                    {
+                        <option value="@member.Mem000" @(Request.QueryString["Mid2"] == member.Mem000.ToString() ? "selected" : "")>
+                            @member.Mem001
+                        </option>
+                    }
+                }
+            </select>
+
+            <label for="INT006" class="mr-3" style="margin-left: 10px;">
+                @(currentLang == "zh-TW" ? "國家:" : "Country")
+            </label>
+            <select id="INT006" name="INT006" class="form-control" style="margin-right: 10px;">
+                <option value="">@(currentLang == "zh-TW" ? "請選擇" : "Please Select")</option>
+                @foreach (var item in ViewBag.INT006List)
+                {
+                    <option value="@item" @(Request.QueryString["INT006"] == item ? "selected" : "")>
+                        @item
                     </option>
                 }
-            }
-        </select>
-
-        <label for="INT006" class="mr-3" style="margin-left: 10px;">
-            @(currentLang == "zh-TW" ? "國家:" : "Country")
-        </label>
-        <select id="INT006" name="INT006" class="form-control" style="margin-right: 10px;">
-            <option value="">@(currentLang == "zh-TW" ? "請選擇" : "Please Select")</option>
-            @foreach (var item in ViewBag.INT006List)
-            {
-                <option value="@item" @(Request.QueryString["INT006"] == item ? "selected" : "")>
-                    @item
-                </option>
-            }
-        </select>
+            </select>
 
 
 
-        <label for="INT001" class="mr-3" style="margin-left: 10px;">
-            @(currentLang == "zh-TW" ? "客戶名稱:" : "Customer Name:")
-        </label>
-        <input type="text" id="INT001" name="INT001" class="form-control"
-               value="@Request.QueryString["INT001"]" style="margin-right: 10px;" placeholder="
+            <label for="INT001" class="mr-3" style="margin-left: 10px;">
+                @(currentLang == "zh-TW" ? "客戶名稱:" : "Customer Name:")
+            </label>
+            <input type="text" id="INT001" name="INT001" class="form-control"
+                   value="@Request.QueryString["INT001"]" style="margin-right: 10px;" placeholder="
                @(currentLang == "zh-TW" ? "請輸入關鍵字" : "Enter Keyword")" />
 
 
 
-        <div class="input-group-append">
-            <button class="btn btn-primary" type="submit" style="margin-left: 10px;">
-                @(currentLang == "zh-TW" ? "搜索" : "Search")
-            </button>
-        </div>
-    </div>
-</form>
-
-
-<div id="app" class="container">
-    <div class="card">
-        <div class="card-body">
-            <div class="mb-3">
-                @if (Session["Perm_C"] != null && Session["Perm_C"].ToString()[0] == 'Y')
-                {
-                    <a href="@Url.Action("InterviewRecordEdit")"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
-                }
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit" style="margin-left: 10px;">
+                    @(currentLang == "zh-TW" ? "搜索" : "Search")
+                </button>
             </div>
-            <div class="table-responsive" style="overflow-x: auto;">
-                <table id="datatable" class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>@(currentLang == "zh-TW" ? "編輯" : "Edit")</th>
-                            <th>@(currentLang == "zh-TW" ? "序" : "No.")</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("負責業務") :Html.Raw("Sales"))</th>
-                            <th>@(currentLang == "zh-TW" ? "國家別" : "Country")</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("客戶名稱") : Html.Raw("Customer Name"))</th>
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("事件/訪談記錄") : Html.Raw("Event/Interview Record"))</th>
-                            @if (Session["Mid2"]?.ToString() != "27")
-                            {
-                                <th>@(currentLang == "zh-TW" ? Html.Raw("報價記錄") : Html.Raw("Quote Record"))</th>
-                            }
-                            @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[0] == 'Y')
-                            {
-                                <th>@(currentLang == "zh-TW" ? Html.Raw("刪除") : Html.Raw("Delete"))</th>
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
+        </div>
+    </form>
+}
 
-                        @foreach (var item in Model)
-                        {
-                            var member = members.FirstOrDefault(m => m.Mem000 == item.Mid);
-
+    <div id="app" class="container">
+        <div class="card">
+            <div class="card-body">
+                <div class="mb-3">
+                    @if (Session["Perm_C"] != null && Session["Perm_C"].ToString()[0] == 'Y')
+                    {
+                        <a href="@Url.Action("InterviewRecordEdit")"> <img src="~/image/icons/add.png" alt="新增" style="width: 30px; height: 30px;" /></a>
+                    }
+                </div>
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table id="datatable" class="table table-striped">
+                        <thead>
                             <tr>
-                                <td>
-                                    <a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
-                                        <img src="~/image/icons/edit.png" style="width: 20px; height: 20px;" />
-                                    </a>
-                                </td>
-                                <td>@(Model.ToList().IndexOf(item) + 1) </td>
-                                <td>@(member != null ? member.Mem001 : "未選擇會員")</td>
-                                <td>@(item.INT006 ?? "　")</td>
-                                <td>@(item.INT001 ?? "　")</td>
-                                <td>
-                                    <a href="@Url.Action("RecordList", new { INT000 = item.INT000 })" class="clickable-td">
-                                        @(item.LastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
-                                    </a>
-                                </td>
+                                <th>@(currentLang == "zh-TW" ? "編輯" : "Edit")</th>
+                                <th>@(currentLang == "zh-TW" ? "序" : "No.")</th>
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("負責業務") :Html.Raw("Sales"))</th>
+                                <th>@(currentLang == "zh-TW" ? "國家別" : "Country")</th>
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("客戶名稱") : Html.Raw("Customer Name"))</th>
+                                <th>@(currentLang == "zh-TW" ? Html.Raw("事件/訪談記錄") : Html.Raw("Event/Interview Record"))</th>
                                 @if (Session["Mid2"]?.ToString() != "27")
                                 {
-                                    <td>
-                                        <a href="@Url.Action("QuoteList", new { INT000 = item.INT000 })" class="clickable-td">
-                                            @(item.QuoteLastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
-                                        </a>
-                                    </td>
+                                    <th>@(currentLang == "zh-TW" ? Html.Raw("報價記錄") : Html.Raw("Quote Record"))</th>
                                 }
-
                                 @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[0] == 'Y')
                                 {
-                                    <td>
-                                        <a href="@Url.Action("ChangeStatusForINTRA", new { id = item.INT000,status=-1 })">
-                                            <img src="~/image/icons/delete.png" style="width: 20px; height: 20px;" />
-                                        </a>
-                                    </td>
+                                    <th>@(currentLang == "zh-TW" ? Html.Raw("刪除") : Html.Raw("Delete"))</th>
                                 }
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                var member = members.FirstOrDefault(m => m.Mem000 == item.Mid);
+
+                                <tr>
+                                    <td>
+                                        <a href="@Url.Action("InterviewRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
+                                            <img src="~/image/icons/edit.png" style="width: 20px; height: 20px;" />
+                                        </a>
+                                    </td>
+                                    <td>@(Model.ToList().IndexOf(item) + 1) </td>
+                                    <td>@(member != null ? member.Mem001 : "未選擇會員")</td>
+                                    <td>@(item.INT006 ?? "　")</td>
+                                    <td>@(item.INT001 ?? "　")</td>
+                                    <td>
+                                        <a href="@Url.Action("RecordList", new { INT000 = item.INT000 })" class="clickable-td">
+                                            @(item.LastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
+                                        </a>
+                                    </td>
+                                    @if (Session["Mid2"]?.ToString() != "27")
+                                    {
+                                        <td>
+                                            <a href="@Url.Action("QuoteList", new { INT000 = item.INT000 })" class="clickable-td">
+                                                @(item.QuoteLastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
+                                            </a>
+                                        </td>
+                                    }
+
+                                    @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[0] == 'Y')
+                                    {
+                                        <td>
+                                            <a href="@Url.Action("ChangeStatusForINTRA", new { id = item.INT000,status=-1 })">
+                                                <img src="~/image/icons/delete.png" style="width: 20px; height: 20px;" />
+                                            </a>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
-<script>
+    <script>
       document.addEventListener('DOMContentLoaded', () => {
      const successMessage = '@TempData["SuccessMessage"]';
      if (successMessage) {
@@ -198,4 +199,4 @@
         });
     });
 
-</script>
+    </script>
