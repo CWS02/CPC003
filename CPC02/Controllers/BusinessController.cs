@@ -304,6 +304,20 @@ namespace CPC02.Controllers
 
             return RedirectToAction("InterviewRecordList");
         }
+
+        [HttpPost]
+        public JsonResult ToggleFlagA(string id)
+        {
+            var item = _db.INTRA.Find(id);
+            if (item != null)
+            {
+                item.INT032 = !(item.INT032 ?? false);
+                _db.SaveChanges();
+                return Json(new { success = true, newStatus = item.INT032 });
+            }
+            return Json(new { success = false });
+        }
+
         #endregion
 
         #region 訪談記錄
@@ -441,7 +455,16 @@ namespace CPC02.Controllers
                     model.INT012 = newFilePath;
                 }
                 _db.INTRB.Add(model);
-
+                //旗子更新
+                var existingDevice = _db.INTRA.Find(model.INT999);
+                if (existingDevice != null)
+                {
+                    if (existingDevice.INT032 ?? true)
+                    {
+                        existingDevice.INT032 = false;
+                        model.INT014 = true;
+                    }
+                }
                 try
                 {
                     _db.SaveChanges();
@@ -818,6 +841,16 @@ namespace CPC02.Controllers
                 model.IP = Request.UserHostAddress;
                 model.status = 0;
                 model.Mid = Convert.ToInt32(Session["Mid"]);
+                //旗子更新
+                var existingDevice = _db.INTRB.Find(model.INT999);
+                if (existingDevice != null)
+                {
+                    if (existingDevice.INT013 ?? true)
+                    {
+                        existingDevice.INT013 = false;
+                        model.INT005= true;
+                    }
+                }
 
                 _db.INTRE.Add(model);
 
@@ -829,22 +862,7 @@ namespace CPC02.Controllers
                 catch
                 {
                     TempData["SuccessMessage"] = GetFailureMessage(actionKey, currentLang);
-                }
-
-                //旗子更新
-                var existingDevice = _db.INTRB.Find(model.INT999);
-                if (existingDevice != null) 
-                {
-                    existingDevice.INT013 = false;
-                    try
-                    {
-                        _db.SaveChanges();
-                    }
-                    catch
-                    {
-                        TempData["ErrorMessage"] = "旗標更新失敗";
-                    }
-                }
+                }              
             }
 
             return RedirectToAction("ExRecordList", new { INT000 = model.INT999 });

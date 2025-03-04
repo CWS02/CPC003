@@ -77,6 +77,10 @@ namespace CPC02.Models
         /// </summary>
         public bool? INT013 { get; set; }
         /// <summary>
+        /// ºX¼Ð
+        /// </summary>
+        public bool? INT014 { get; set; }
+        /// <summary>
         /// ·|­ûID
         /// </summary>
         public int? Mid { get; set; }

@@ -84,6 +84,8 @@
                             <th>@(currentLang == "zh-TW" ? "聯絡方式" : "Contact")</th>
                             <th>@(currentLang == "zh-TW" ? "內容" : "Content")</th>
                             <th>@(currentLang == "zh-TW" ? "後續步驟" : "Next steps")</th>
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("標記") : Html.Raw("Flag"))</th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -130,6 +132,13 @@
                                     <a href="@Url.Action("ExRecordEdit", new { INT000 = item.INT000 })" class="clickable-td">
                                         @(string.IsNullOrEmpty(item.INT004) ? "　": (item.INT004.Length > 10 ? item.INT004.Substring(0, 10) + "..." : item.INT004))
                                     </a>
+                                </td>
+                                <td>
+                                    @if (item.INT005 == true)
+                                    {
+                                        <img src="@Url.Content("~/image/icons/banner.png")"
+                                             style="width: 20px; height: 20px; cursor: pointer;" />
+                                    }
                                 </td>
                             </tr>
                         }

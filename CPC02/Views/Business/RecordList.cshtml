@@ -152,7 +152,9 @@
                             }
                             @if ((Session["Mid2"]?.ToString() == "27"))
                             {
-                                <th>@(currentLang == "zh-TW" ? "主題" : "Subject")</th>
+                                <th>
+                                    @(currentLang == "zh-TW" ? "客戶名稱" : "Customer Name")
+                                </th>
                             }
                             else
                             {
@@ -170,8 +172,9 @@
                             @if ((Session["Mid2"]?.ToString() == "27"))
                             {
                                 <th>@(currentLang == "zh-TW" ? Html.Raw("訪談追蹤記錄") : Html.Raw("Interview tracking"))</th>
-                                <th>@(currentLang == "zh-TW" ? Html.Raw("標記") : Html.Raw("Flag"))</th>
                             }
+                            <th>@(currentLang == "zh-TW" ? Html.Raw("標記") : Html.Raw("Flag"))</th>
+
 
                             @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[1] == 'Y')
                             {
@@ -229,27 +232,27 @@
                                 @if (Session["Mid2"]?.ToString() != "27")
                                 {
                                     <td>
-                                            @switch (item.INT002)
-                                            {
-                                                case 1:
-                                                    @(currentLang == "zh-TW" ? Html.Raw("到訪記錄") : Html.Raw("Visit Record"))
-                                                    break;
-                                                case 2:
-                                                    @(currentLang == "zh-TW" ? Html.Raw("電話記錄") : Html.Raw("Phone Record"))
-                                                    break;
-                                                case 3:
-                                                    @(currentLang == "zh-TW" ? Html.Raw("Email") : Html.Raw("via emails"))
-                                                    break;
-                                                case 4:
-                                                    @(currentLang == "zh-TW" ? Html.Raw("線上會議") : Html.Raw("On-line meeting"))
-                                                    break;
-                                                case 5:
-                                                    @(currentLang == "zh-TW" ? Html.Raw("視訊") : Html.Raw("Video Conference"))
-                                                    break;
-                                                case 6:
-                                                    @(currentLang == "zh-TW" ? Html.Raw("來訪記錄") : Html.Raw("Visitor Record"))
-                                                    break;
-                                            }
+                                        @switch (item.INT002)
+                                        {
+                                            case 1:
+                                                @(currentLang == "zh-TW" ? Html.Raw("到訪記錄") : Html.Raw("Visit Record"))
+                                                break;
+                                            case 2:
+                                                @(currentLang == "zh-TW" ? Html.Raw("電話記錄") : Html.Raw("Phone Record"))
+                                                break;
+                                            case 3:
+                                                @(currentLang == "zh-TW" ? Html.Raw("Email") : Html.Raw("via emails"))
+                                                break;
+                                            case 4:
+                                                @(currentLang == "zh-TW" ? Html.Raw("線上會議") : Html.Raw("On-line meeting"))
+                                                break;
+                                            case 5:
+                                                @(currentLang == "zh-TW" ? Html.Raw("視訊") : Html.Raw("Video Conference"))
+                                                break;
+                                            case 6:
+                                                @(currentLang == "zh-TW" ? Html.Raw("來訪記錄") : Html.Raw("Visitor Record"))
+                                                break;
+                                        }
                                     </td>
                                 }
 
@@ -259,9 +262,9 @@
                                     <td>@(item.INT007?? "　")</td>
                                 }
                                 <td style="word-wrap: break-word; white-space: normal;">
-                                        @if (!string.IsNullOrEmpty(item.INT004))
-                                        {
-                                            @(
+                                    @if (!string.IsNullOrEmpty(item.INT004))
+                                    {
+                                        @(
                                                 !string.IsNullOrEmpty(item.INT004)
                                                     ? (item.INT004.Length > 10
                                                         ? item.INT004.Substring(0, 10) + "..."
@@ -269,7 +272,7 @@
                                                     : "　"
                                             )
 
-                                        }
+                                    }
                                 </td>
                                 @if ((Session["Mid2"]?.ToString() != "27"))
                                 {
@@ -311,6 +314,18 @@
                                 {
                                     <td>
                                         @if (item.INT013 == true)
+                                        {
+                                            <img src="@Url.Content("~/image/icons/banner.png")"
+                                                 style="width: 20px; height: 20px; cursor: pointer;" />
+                                        }
+
+
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        @if (item.INT014 == true)
                                         {
                                             <img src="@Url.Content("~/image/icons/banner.png")"
                                                  style="width: 20px; height: 20px; cursor: pointer;" />

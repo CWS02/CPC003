@@ -64,6 +64,7 @@ namespace CPC02.Models
         /// 編號
         /// </summary>
         public string INT011 { get; set; }
+
         /// <summary>
         /// 業務人員 ID。
         /// </summary>

@@ -86,7 +86,7 @@
 
         <div>
             <label for="INT001" class="form-label">
-                @(currentLang == "zh-TW" ? "主題" : "Title")<span class="red-text">*</span>
+                @(currentLang == "zh-TW" ? "客戶名稱" : "Customer Name")<span class="red-text">*</span>
             </label>
             <input type="text" class="form-control" name="INT001" v-model="formData.INT001" maxlength="250" v-bind:disabled="!isEditing" required />
         </div>
@@ -155,7 +155,9 @@
             <div class="col-md-4">
                 <label for="fileUpload" class="form-label">@(currentLang == "zh-TW" ? "圖片上傳" : "Image Upload")</label>
                 <input type="file" id="fileUpload" class="form-control" name="UploadedFile" v-bind:disabled="!isEditing" />
-                <img v-if="formData.INT012" :src="formData.INT012" class="img-fluid img-small" style="width: 150px; height: 150px; object-fit: cover;">
+                <a v-if="formData.INT012" :href="formData.INT012" target="_blank">
+                    <img v-if="formData.INT012" :src="formData.INT012" class="img-fluid img-small" style="width: 150px; height: 150px; object-fit: cover;">
+                    </a>
             </div>
         </div>
 

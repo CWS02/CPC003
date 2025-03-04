@@ -131,7 +131,10 @@
                                 @if (Session["Mid2"]?.ToString() != "27")
                                 {
                                     <th>@(currentLang == "zh-TW" ? Html.Raw("報價記錄") : Html.Raw("Quote Record"))</th>
+                                    <th>@(currentLang == "zh-TW" ? Html.Raw("標記") : Html.Raw("Flag"))</th>
+
                                 }
+
                                 @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[0] == 'Y')
                                 {
                                     <th>@(currentLang == "zh-TW" ? Html.Raw("刪除") : Html.Raw("Delete"))</th>
@@ -166,7 +169,29 @@
                                                 @(item.QuoteLastDate?.ToString("yyyy/MM/dd") ?? "1911/01/01")
                                             </a>
                                         </td>
+
+                                        if (Convert.ToInt32(Session["Perm_Flag"]) >= 90)
+                                        {
+                                            <td>
+                                                <img src="~/image/icons/@(item.INT032 == true ? "banner.png" : "square.png")"
+                                                     class="toggle-flag"
+                                                     data-id="@item.INT000"
+                                                     style="width: 20px; height: 20px; cursor: pointer;" />
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                @if (item.INT032 == true)
+                                                {
+                                                    <img src="@Url.Content("~/image/icons/banner.png")"
+                                                         style="width: 20px; height: 20px; cursor: pointer;" />
+                                                }
+                                            </td>
+                                        }
                                     }
+
+
 
                                     @if (Session["Perm_D"] != null && Session["Perm_D"].ToString()[0] == 'Y')
                                     {
@@ -199,4 +224,16 @@
         });
     });
 
+        $(document).on("click", ".toggle-flag", function () {
+            var img = $(this);
+            var id = img.data("id");
+
+            $.post("/Business/ToggleFlagA", { id: id }, function (response) {
+                if (response.success) {
+                    var newSrc = response.newStatus ? "/image/icons/banner.png" : "/image/icons/square.png";
+                    img.attr("src", newSrc);
+                } else {
+                }
+            });
+        });
     </script>

@@ -169,9 +169,12 @@
                 <input type="text" class="form-control" name="INT007" v-model="formData.INT007" v-bind:disabled="!isEditing" />
             </div>
             <div class="col-md-4">
-
-                <img v-if="formData.INT030" :src="formData.INT030" class="img-fluid img-small" style="width: 150px; height: 150px; object-fit: cover;">
+                <a v-if="formData.INT030" :href="formData.INT030" target="_blank">
+                    <img :src="formData.INT030" class="img-fluid img-small"
+                         style="width: 150px; height: 150px; object-fit: cover;">
+                </a>
             </div>
+
         </div>
 
         <div class="row">

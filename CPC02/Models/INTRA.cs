@@ -8,7 +8,7 @@ using System.Linq;
 namespace CPC02.Models
 {
     [Table("INTRA")]
-    public class INTRA
+    public class INTRA 
     {
         /// <summary>
         /// 流水號
@@ -179,6 +179,10 @@ namespace CPC02.Models
         /// 幣別
         /// </summary>
         public string INT031 { get; set; }
+        /// <summary>
+        /// 旗標
+        /// </summary>
+        public bool? INT032 { get; set; }
         /// <summary>
         /// 客戶狀態/來源 (與INTRD的INT000)關聯
         /// </summary>

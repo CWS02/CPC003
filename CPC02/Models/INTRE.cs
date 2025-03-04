@@ -38,6 +38,10 @@ namespace CPC02.Models
         /// 後續步驟
         /// </summary>
         public string INT004 { get; set; }
+        /// <summary>
+        /// 記錄旗標
+        /// </summary>
+        public bool? INT005 { get; set; }
 
         /// <summary>
         /// IP 位址
