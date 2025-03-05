@@ -109,6 +109,10 @@ namespace CPC02.Models
         /// </summary>
         public string INT021 { get; set; }
         /// <summary>
+        /// 地址(for展覽)
+        /// </summary>
+        public string INT022 { get; set; }
+        /// <summary>
         /// 會員ID
         /// </summary>
         public int? Mid { get; set; }

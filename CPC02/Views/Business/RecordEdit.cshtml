@@ -204,6 +204,12 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-md-4">
+                    <label for="INT022" class="form-label">
+                        @(currentLang == "zh-TW" ? "興趣產品" : "Interested Products")
+                    </label>
+                    <input type="text" class="form-control" name="INT022" v-model="formData.INT022" v-bind:disabled="!isEditing" />
+                </div>
                 <div>
                     <label for="INT021" class="form-label">
                         @(currentLang == "zh-TW" ? "地址" : "Address")
@@ -221,13 +227,13 @@
         </div>
         <div>
             <label for="INT004" class="form-label">
-                @(currentLang == "zh-TW" ? "內容/興趣產品" : "Content/Interested Products")
+                @(currentLang == "zh-TW" ? "備註" : "Remark")
             </label>
             <textarea class="form-control" name="INT004" v-model="formData.INT004" v-bind:disabled="!isEditing" rows="10"></textarea>
         </div>
         <div>
             <label for="INT009" class="form-label">
-                @(currentLang == "zh-TW" ? "後續步驟/備註" : "Next steps/Remark")
+                @(currentLang == "zh-TW" ? "後續步驟" : "Next steps")
             </label>
             <textarea class="form-control" name="INT009" v-model="formData.INT009" v-bind:disabled="!isEditing" rows="5"></textarea>
         </div>

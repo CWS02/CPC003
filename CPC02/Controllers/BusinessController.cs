@@ -428,6 +428,7 @@ namespace CPC02.Controllers
                     existingDevice.INT019 = model.INT019;
                     existingDevice.INT020 = model.INT020;
                     existingDevice.INT021 = model.INT021;
+                    existingDevice.INT022 = model.INT022;
 
                     existingDevice.Level = model.Level;
                     if (UploadedFile != null && UploadedFile.ContentLength > 0)
