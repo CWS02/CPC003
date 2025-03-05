@@ -157,11 +157,61 @@
                 <input type="file" id="fileUpload" class="form-control" name="UploadedFile" v-bind:disabled="!isEditing" />
                 <a v-if="formData.INT012" :href="formData.INT012" target="_blank">
                     <img v-if="formData.INT012" :src="formData.INT012" class="img-fluid img-small" style="width: 150px; height: 150px; object-fit: cover;">
-                    </a>
+                </a>
             </div>
         </div>
 
-
+        @if ((Session["Mid2"]?.ToString() == "27"))
+        {
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="INT015" class="form-label">
+                        @(currentLang == "zh-TW" ? "負責業務" : "Responsible Business")
+                    </label>
+                    <input type="text" class="form-control" name="INT015" v-model="formData.INT015" v-bind:disabled="!isEditing" />
+                </div>
+                <div class="col-md-4">
+                    <label for="INT016" class="form-label">
+                        @(currentLang == "zh-TW" ? "填表人" : "Form Filler")
+                    </label>
+                    <input type="text" class="form-control" name="INT016" v-model="formData.INT016" v-bind:disabled="!isEditing" />
+                </div>
+                <div class="col-md-4">
+                    <label for="INT017" class="form-label">
+                        @(currentLang == "zh-TW" ? "客戶姓名" : "Customer Name")
+                    </label>
+                    <input type="text" class="form-control" name="INT017" v-model="formData.INT017" v-bind:disabled="!isEditing" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="INT018" class="form-label">
+                        @(currentLang == "zh-TW" ? "Email" : "Email")
+                    </label>
+                    <input type="text" class="form-control" name="INT018" v-model="formData.INT018" v-bind:disabled="!isEditing" />
+                </div>
+                <div class="col-md-4">
+                    <label for="INT019" class="form-label">
+                        @(currentLang == "zh-TW" ? "電話" : "Phone ")
+                    </label>
+                    <input type="text" class="form-control" name="INT019" v-model="formData.INT019" v-bind:disabled="!isEditing" />
+                </div>
+                <div class="col-md-4">
+                    <label for="INT020" class="form-label">
+                        @(currentLang == "zh-TW" ? "網址" : "Website")
+                    </label>
+                    <input type="text" class="form-control" name="INT020" v-model="formData.INT020" v-bind:disabled="!isEditing" />
+                </div>
+            </div>
+            <div class="row">
+                <div>
+                    <label for="INT021" class="form-label">
+                        @(currentLang == "zh-TW" ? "地址" : "Address")
+                    </label>
+                    <input type="text" class="form-control" name="INT021" v-model="formData.INT021" v-bind:disabled="!isEditing" />
+                </div>
+            </div>
+        }
 
         <div>
             <label for="INT008" class="form-label">
@@ -171,13 +221,13 @@
         </div>
         <div>
             <label for="INT004" class="form-label">
-                @(currentLang == "zh-TW" ? "內容" : "Content")
+                @(currentLang == "zh-TW" ? "內容/興趣產品" : "Content/Interested Products")
             </label>
             <textarea class="form-control" name="INT004" v-model="formData.INT004" v-bind:disabled="!isEditing" rows="10"></textarea>
         </div>
         <div>
             <label for="INT009" class="form-label">
-                @(currentLang == "zh-TW" ? "後續步驟" : "Next steps")
+                @(currentLang == "zh-TW" ? "後續步驟/備註" : "Next steps/Remark")
             </label>
             <textarea class="form-control" name="INT009" v-model="formData.INT009" v-bind:disabled="!isEditing" rows="5"></textarea>
         </div>

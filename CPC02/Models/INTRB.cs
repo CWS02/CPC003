@@ -81,6 +81,34 @@ namespace CPC02.Models
         /// </summary>
         public bool? INT014 { get; set; }
         /// <summary>
+        /// 負責業務(for展覽)
+        /// </summary>
+        public string INT015 { get; set; }
+        /// <summary>
+        /// 填表人(for展覽)
+        /// </summary>
+        public string INT016 { get; set; }
+        /// <summary>
+        /// 客戶姓名(for展覽)
+        /// </summary>
+        public string INT017 { get; set; }
+        /// <summary>
+        /// Email(for展覽)
+        /// </summary>
+        public string INT018 { get; set; }
+        /// <summary>
+        /// 電話(for展覽)
+        /// </summary>
+        public string INT019 { get; set; }
+        /// <summary>
+        /// 網址(for展覽)
+        /// </summary>
+        public string INT020 { get; set; }
+        /// <summary>
+        /// 地址(for展覽)
+        /// </summary>
+        public string INT021 { get; set; }
+        /// <summary>
         /// 會員ID
         /// </summary>
         public int? Mid { get; set; }
