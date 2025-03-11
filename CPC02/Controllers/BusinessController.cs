@@ -1148,10 +1148,10 @@ namespace CPC02.Controllers
                 ["5"] = model.INT008 ?? "",
                 ["6"] = model.INT006 ?? "",
                 ["7"] = model.INT007 ?? "",
-                ["8"] = intrbdata.INT008 ?? "",
-                ["9"] = model.INT028 ?? "",
-                ["10"] = intrbdata.INT004 ?? "",
-                ["11"] = intrbdata.INT009 ?? "",
+                ["8"] = (intrbdata.INT008?.Replace("\r\n", "\\n").Replace("\n", "\\n")) ?? string.Empty,
+                ["9"] = (model.INT028?.Replace("\r\n", "\\n").Replace("\n", "\\n")) ?? string.Empty,
+                ["10"] = (intrbdata.INT004?.Replace("\r\n", "\\n").Replace("\n", "\\n")) ?? string.Empty,
+                ["11"] = (intrbdata.INT009?.Replace("\r\n", "\\n").Replace("\n", "\\n")) ?? string.Empty,
             };
 
             byte[] resultFile = WordRender.GenerateDocx(template, data);
