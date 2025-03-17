@@ -95,5 +95,9 @@ namespace CPC02.Models
         /// ex:YNY
         /// </summary>
         public string Perm_D { get; set; }
+        /// <summary>
+        /// 上次登入時間
+        /// </summary>
+        public DateTime? LastLoginTime { get; set; }
     }
 }

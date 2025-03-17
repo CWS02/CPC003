@@ -1,6 +1,8 @@
 ﻿using CPC02.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -22,7 +24,7 @@ namespace CPC02.Controllers
         [HttpPost]
         public ActionResult Login(Member model)
         {
-            model = _db.Member.FirstOrDefault(m => m.Mem001==model.Mem001&&m.Mem002 == model.Mem002 && m.Mem003 == model.Mem003 && model.Status==0);
+            model = _db.Member.FirstOrDefault(m => m.Mem001==model.Mem001&&m.Mem002 == model.Mem002 && m.Mem003 == model.Mem003 && m.Status==0);
             if (model != null)
             {
                 Session.Timeout = 60;
@@ -35,6 +37,10 @@ namespace CPC02.Controllers
                 Session["Perm_D"] = model.Perm_D;
                 Session["Perm_Flag"] = model.Permission;
 
+                //更新LastLoginTime
+                model.LastLoginTime = DateTime.Now;
+                _db.Entry(model).State = EntityState.Modified;
+                _db.SaveChanges();
 
                 return RedirectToAction(model.Action, model.Controller);
             }
