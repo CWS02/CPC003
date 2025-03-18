@@ -101,7 +101,7 @@ namespace CPC02.Controllers
             foreach (var intra in model)
             {
                 var latestIntrb = _db.INTRB
-                    .Where(b => b.INT999 == intra.INT000)
+                    .Where(b => b.INT999 == intra.INT000 && b.Status!=-1)
                     .OrderByDescending(b => b.INT005)
                     .FirstOrDefault();
 
@@ -118,7 +118,7 @@ namespace CPC02.Controllers
             foreach (var intrc in model)
             {
                 var latestIntrb = _db.INTRC
-                    .Where(b => b.INT999 == intrc.INT000)
+                    .Where(b => b.INT999 == intrc.INT000 && b.Status != -1)
                     .OrderByDescending(b => b.INT001)
                     .FirstOrDefault();
 
@@ -328,7 +328,13 @@ namespace CPC02.Controllers
             {
                 return RedirectToAction("Login", "Member");
             }
-            var data = _db.INTRB.Where(x => x.INT999 == model.INT000 && x.Status!=-1).OrderBy(x => x.Status).ThenByDescending(x => x.CreateTime).ToList();
+
+            var data = _db.INTRB
+                .Where(x => x.INT999 == model.INT000 && x.Status != -1)
+                .OrderBy(x => x.Level)
+                .ThenBy(x => x.INT001)
+                .ToList(); 
+
             foreach (var intre in data)
             {
                 var latestIntre = _db.INTRE
@@ -371,8 +377,8 @@ namespace CPC02.Controllers
                 //上下一筆
                 var int000List = _db.INTRB
                 .Where(x => x.INT999 == model.INT999)
-                .OrderBy(x => x.Status)
-                .ThenByDescending(x => x.CreateTime)
+                .OrderBy(x => x.Level)
+                .ThenBy(x => x.INT001)
                 .Select(x => x.INT000)
                 .ToList();
 
