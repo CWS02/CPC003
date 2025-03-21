@@ -918,19 +918,26 @@ namespace CPC02.Controllers
             string margin2Lines = string.Join("\\n", items.Select(item => item.margin2?.ToString() ?? ""));
             string unitLines = string.Join("\\n", items.Select(item => item.unit?.ToString() ?? ""));
             string quantityLines = string.Join("\\n", items.Select(item => item.quantity?.ToString() ?? ""));
+
             string unitPriceLines = string.Join("\\n", items.Select(item =>
             {
-                decimal unitPrice = decimal.TryParse(item.unitPrice?.ToString(), out decimal p) ? p : 0;
+                if (!decimal.TryParse(item.unitPrice?.ToString(), out decimal unitPrice))
+                    return string.Empty; 
 
-                return (unitPrice);
+                return unitPrice.ToString("#,0");
             }));
-            string totalLines = string.Join("\\n", items.Select(item =>
+
+            string totalLines = string.Join("\n", items.Select(item =>
             {
-                decimal quantity = decimal.TryParse(item.quantity?.ToString(), out decimal q) ? q : 0;
-                decimal unitPrice = decimal.TryParse(item.unitPrice?.ToString(), out decimal p) ? p : 0;
+                decimal quantity = 0, unitPrice = 0; 
+
+                if (!decimal.TryParse(item.quantity?.ToString(), out quantity) ||
+                    !decimal.TryParse(item.unitPrice?.ToString(), out unitPrice))
+                    return string.Empty; 
 
                 return (quantity * unitPrice).ToString("#,0");
             }));
+
             decimal totalSum = items.Sum(item =>
             {
                 decimal quantity = decimal.TryParse(item.quantity?.ToString(), out decimal q) ? q : 0;
@@ -949,7 +956,7 @@ namespace CPC02.Controllers
                 ["3"] = INTRAdata.INT004 ?? "",
                 ["4"] = INTRAdata.INT005 ?? "",
                 ["5"] = model.INT001 ?? "",
-                ["6"] = "",
+                ["6"] = model.INT011??"",
                 ["7"] = member.Mem001 ?? "",
                 ["8"] = model.INT004 ?? "",
                 ["9"] = INTRAdata.INT026 ?? "",
