@@ -472,13 +472,10 @@ namespace CPC02.Controllers
                 _db.INTRB.Add(model);
                 //旗子更新
                 var existingDevice = _db.INTRA.Find(model.INT999);
-                if (existingDevice != null)
+                if (existingDevice != null && existingDevice.INT032 == true)
                 {
-                    if (existingDevice.INT032 ?? true)
-                    {
-                        existingDevice.INT032 = false;
-                        model.INT014 = true;
-                    }
+                    existingDevice.INT032 = false;
+                    model.INT014 = true;
                 }
                 try
                 {
@@ -858,13 +855,10 @@ namespace CPC02.Controllers
                 model.Mid = Convert.ToInt32(Session["Mid"]);
                 //旗子更新
                 var existingDevice = _db.INTRB.Find(model.INT999);
-                if (existingDevice != null)
+                if (existingDevice != null && existingDevice.INT013 == true)
                 {
-                    if (existingDevice.INT013 ?? true)
-                    {
-                        existingDevice.INT013 = false;
-                        model.INT005= true;
-                    }
+                    existingDevice.INT013 = false;
+                    model.INT005 = true;
                 }
 
                 _db.INTRE.Add(model);

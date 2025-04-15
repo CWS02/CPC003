@@ -198,7 +198,7 @@ namespace CPC02.Models
         public string IP { get; set; }
 
         /// <summary>
-        /// ª¬ºA 0=±Ò¥Î 1=§R°£
+        /// ª¬ºA 0=±Ò¥Î -1=§R°£
         /// </summary>
         public int Status { get; set; }
 

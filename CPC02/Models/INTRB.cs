@@ -109,7 +109,7 @@ namespace CPC02.Models
         /// </summary>
         public string INT021 { get; set; }
         /// <summary>
-        /// 地址(for展覽)
+        /// 興趣產品(for展覽)
         /// </summary>
         public string INT022 { get; set; }
         /// <summary>

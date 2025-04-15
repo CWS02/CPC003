@@ -49,7 +49,7 @@ namespace CPC02.Models
         /// </summary>
         public string SourceDB { get; set; }        
         /// <summary>
-        /// DB來源
+        /// IP
         /// </summary>
         public string IP { get; set; }
 

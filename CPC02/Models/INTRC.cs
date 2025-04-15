@@ -81,7 +81,7 @@ namespace CPC02.Models
         public string IP { get; set; }
 
         /// <summary>
-        /// 訂單狀態 0=追蹤中 1=已結案 2=正式訂單
+        /// 訂單狀態 -1=刪除 0=追蹤中 1=已結案 2=正式訂單
         /// </summary>
         public int Status { get; set; }
 
