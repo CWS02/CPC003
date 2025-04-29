@@ -921,7 +921,7 @@ namespace CPC02.Controllers
                 return unitPrice.ToString("#,0");
             }));
 
-            string totalLines = string.Join("\n", items.Select(item =>
+            string totalLines = string.Join("\\n", items.Select(item =>
             {
                 decimal quantity = 0, unitPrice = 0; 
 
