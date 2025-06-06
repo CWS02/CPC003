@@ -1,0 +1,676 @@
+﻿@model IEnumerable<object>
+@using CPC02.Models;
+@using Newtonsoft.Json
+@{
+    Layout = "~/Views/Shared/_LayoutMember2.cshtml";
+    ViewBag.Title = "數據統計";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/style2.css" />
+</head>
+<div id="app" class="container" style="margin-top: 50px;">
+    <h2 class="text-center">數據統計</h2>
+
+    <form method="get" action="@Url.Action("SGS_Calculate", "ESG")" class="form-inline justify-content-center mb-4">
+        <div class="form-group mr-3">
+            <label for="category" class="mr-3">選擇類別:</label>
+            <select v-model="category" name="category" class="form-control">
+                <option value="">請選擇</option>
+                <option value="electricity">電費</option>
+                <option value="water">水費</option>
+                <option value="waste">廢棄物</option>
+                <option value="fireextin">滅火器</option>
+                <option value="wd40">WD40</option>
+                <option value="coldcoal">冷媒</option>
+                <option value="commuting">員工通勤</option>
+                <option value="traffic">交通</option>
+            </select>
+        </div>
+
+        <!-- 電費 -->
+        <div v-if="category === 'electricity'" class="form-group mr-3">
+            <label for="year" class="mr-3">年份:</label>
+            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+            <label for="factory" class="mr-3">選擇廠區:</label>
+            <select name="factory" class="form-control" v-model="factory">
+                <option>請選擇</option>
+                <option value="南科廠">南科廠</option>
+                <option value="樹谷廠">樹谷廠</option>
+            </select>
+        </div>
+
+        <!-- 水費 -->
+        <div v-if="category === 'water'" class="form-group mr-3">
+            <label for="year" class="mr-3">年份:</label>
+            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+            <label for="factory" class="mr-3">選擇廠區:</label>
+            <select name="factory" class="form-control" v-model="factory">
+                <option>請選擇</option>
+                <option value="南科廠">南科廠</option>
+                <option value="樹谷一期">樹谷一期</option>
+                <option value="樹谷二期">樹谷二期</option>
+            </select>
+            <label for="waterdiameter" class="mr-3">水表口徑:</label>
+            <select name="waterdiameter" class="form-control" v-model="waterdiameter">
+                <option>請選擇</option>
+                <option value="40">40</option>
+                <option value="75">75</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+
+        <!-- 廢棄物 -->
+        <div v-if="category === 'waste'" class="form-group mr-3">
+            <label for="year" class="mr-3">年份:</label>
+            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+            <label for="methods" class="mr-3">處理方式:</label>
+            <select name="methods" class="form-control" v-model="methods">
+                <option>請選擇</option>
+                <option value="掩埋">掩埋</option>
+                <option value="焚化處理">焚化處理</option>
+            </select>
+            <label for="code" class="mr-3">廢棄物代碼:</label>
+            <select name="code" class="form-control" v-model="code">
+                <option>請選擇</option>
+                <option value="D-1801">D-1801</option>
+                <option value="D-2399">D-2399</option>
+                <option value="D-2406">D-2406</option>
+                <option value="D-2499">D-2499</option>
+            </select>
+        </div>
+        <!-- 滅火器 -->
+        <div v-if="category === 'fireextin'" class="form-group mr-3">
+            <label for="factory" class="mr-3">選擇廠區:</label>
+            <select name="factory" class="form-control" v-model="factory">
+                <option>請選擇</option>
+                <option value="南科">南科</option>
+                <option value="樹谷">樹谷</option>
+            </select>
+            <label for="content" class="mr-3">選擇內含物:</label>
+            <select name="content" class="form-control" v-model="content">
+                <option>請選擇</option>
+                <option value="CO2">CO₂</option>
+                <option value="磷酸二氫銨">磷酸二氫銨</option>
+            </select>
+        </div>
+        <!-- WD40 -->
+        <div v-if="category === 'wd40'" class="form-group mr-3">
+            <label for="year" class="mr-3">年份:</label>
+            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" step="1" />
+        </div>
+
+        <!--冷媒-->
+        <div v-if="category === 'coldcoal'" class="form-group mr-3">
+            <label for="factory" class="mr-3">選擇廠區:</label>
+            <select name="factory" class="form-control" v-model="factory">
+                <option>請選擇</option>
+                <option value="南科">南科</option>
+                <option value="樹谷">樹谷</option>
+                <option value="非公司">非公司</option>
+            </select>
+        </div>
+        <!--通勤-->
+        <div v-if="category === 'commuting'" class="form-group mr-3">
+            <label for="year" class="mr-3">年份:</label>
+            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" step="1" />
+        </div>
+        <!--交通-->
+        <div v-if="category === 'traffic'" class="form-group mr-3">
+            <label for="year" class="mr-3">年份:</label>
+            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" step="1" />
+            <label for="methods" class="mr-3">類別:</label>
+            <select name="methods" class="form-control" v-model="methods">
+                <option>請選擇</option>
+                <option value="高鐵">商務旅行(高鐵)</option>
+                <option value="飛機">商務旅行(飛機)</option>
+                <option value="計程車">商務旅行(計程車)</option>
+                <option value="捷運">商務旅行(捷運)</option>
+                <option value="地鐵">商務旅行(地鐵)</option>
+            </select>
+        </div>
+
+        <div v-if="category" class="form-group">
+            <button class="btn btn-primary btn-spacing" type="submit">搜索</button>
+        </div>
+    </form>
+
+    <br />
+
+    <!--table-->
+
+    @if (Model is List<ElectricitySummaryViewModel> electricityModel)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>廠區</th>
+                                <th>尖峰<br />用電度數(kWh)</th>
+                                <th>半尖峰<br />用電度數(kWh)</th>
+                                <th>週六半尖峰<br />用電度數(kWh)</th>
+                                <th>離峰<br />用電度數(kWh)</th>
+                                <th>總費用(含稅)</th>
+                                <th>本期碳排量</th>
+                                <th>總用電數(kWh)</th>
+                                <th style="width:150px">係數</th>
+                                <th style="width:150px">計算結果</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in electricityModel)
+                            {
+                                <tr>
+                                    <td>@item.Factory</td>
+                                    <td>@string.Format("{0:N2}", item.SumPeakElectricity)</td>
+                                    <td>@string.Format("{0:N2}", item.SumHalfSpikePower)</td>
+                                    <td>@string.Format("{0:N2}", item.SumSaturdayHalfPeak)</td>
+                                    <td>@string.Format("{0:N2}", item.SumOffPeakElectricity)</td>
+                                    <td>@string.Format("{0:N2}", item.SumTotalBillTax)</td>
+                                    <td>@string.Format("{0:N2}", item.SumCarbonPeriod)</td>
+                                    <td>@string.Format("{0:N2}", item.SumTotalElectricity)</td>
+                                    <td>
+                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
+                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
+                                            <option v-for="option in filteredOptions"
+                                                    :key="option.Id"
+                                                    :value="option.Id">
+                                                {{ option.Label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.SumTotalElectricity)" readonly />
+                                        <span class="input-group-text">tonCo₂e/度</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model is List<WaterSummaryViewModel> waterModel)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>廠區</th>
+                                <th>水表口徑(mm)</th>
+                                <th>本期指針數</th>
+                                <th>總水費(含稅)</th>
+                                <th>本期碳排量</th>
+                                <th>總用度數(m³)</th>
+                                <th style="width:150px">係數</th>
+                                <th style="width:150px">計算結果</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in waterModel)
+                            {
+                                <tr>
+                                    <td>@item.Factory</td>
+                                    <td>@item.Waterdiameter</td>
+                                    <td>@string.Format("{0:N2}", item.SumNUMBERPOINTERS)</td>
+                                    <td>@string.Format("{0:N2}", item.SumTOTALBILLTAX)</td>
+                                    <td>@string.Format("{0:N2}", item.SumCARBONPERIOD)</td>
+                                    <td>@string.Format("{0:N2}", item.SumTOTALWATER)</td>
+                                    <td>
+                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
+                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
+                                            <option v-for="option in filteredOptions"
+                                                    :key="option.Id"
+                                                    :value="option.Id">
+                                                {{ option.Label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.SumTOTALWATER)" readonly />
+                                        <span class="input-group-text">tonCo₂e/度</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model is List<WasteSummaryViewModel> wasteModel)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>中間處理方式</th>
+                                <th>廢棄物代碼</th>
+                                <th>申報重量(公噸)</th>
+                                <th>運輸公里(km)</th>
+                                <th>活動數據</th>
+                                <th style="width:150px">係數</th>
+                                <th style="width:150px">計算結果</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in wasteModel)
+                            {
+                                <tr>
+                                    <td>@item.methods</td>
+                                    <td>@item.code</td>
+                                    <td>@(item.SumDECLAREDWEIGHT?.ToString("G29") ?? "N/A")</td>
+                                    <td>@(item.SumCKILOMETERS?.ToString("G29") ?? "N/A")</td>
+                                    <td>@(item.SumACTIVITYDATA?.ToString("G29") ?? "N/A")</td>
+                                    <td>
+                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
+                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
+                                            <option v-for="option in filteredOptions"
+                                                    :key="option.Id"
+                                                    :value="option.Id">
+                                                {{ option.Label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.SumACTIVITYDATA)" readonly />
+                                        <span class="input-group-text">tonCo₂e/ton</span>
+
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model is List<FireExtinViewModel> fireextinModel)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>廠區</th>
+                                <th>內容物</th>
+                                <th>數量(瓶)</th>
+                                <th>總量(公噸)</th>
+                                <th style="width:150px">係數</th>
+                                <th style="width:150px">計算結果</th>
+                                <th style="width:150px">計算結果</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in fireextinModel)
+                            {
+                                <tr>
+                                    <td>@item.Factory</td>
+                                    <td>@item.content</td>
+                                    <td>@(item.SumFE002?.ToString("G29") ?? "N/A")</td>
+                                    <td>@(item.Sumton?.ToString("G29") ?? "N/A")</td>
+
+                                    <td>
+                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
+                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
+                                            <option v-for="option in filteredOptions"
+                                                    :key="option.Id"
+                                                    :value="option.Id">
+                                                {{ option.Label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission(@item.Sumton)" readonly />
+                                        <span class="input-group-text">kgCo₂e/公噸</span>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.Sumton)" readonly />
+                                        <span class="input-group-text">tonCo₂e/公噸</span>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model is List<WD40ViewModel> WD40Model)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>二氧化碳重量(克)</th>
+                                <th style="width:150px">係數</th>
+                                <th style="width:150px">計算結果</th>
+                                <th style="width:150px">計算結果</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in WD40Model)
+                            {
+                                <tr>
+                                    <td>@(item.SumWD011?.ToString("G29") ?? "")</td>
+
+                                    <td>
+                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
+                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
+                                            <option v-for="option in filteredOptions"
+                                                    :key="option.Id"
+                                                    :value="option.Id">
+                                                {{ option.Label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.SumWD011)" readonly />
+                                        <span class="input-group-text">kgCo₂e/公噸</span>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission3(@item.SumWD011)" readonly />
+                                        <span class="input-group-text">tonCo₂e/公噸</span>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                    <div>
+                        <p>資料來源：採購單查詢系統</p>
+                        <p>WD-40 多功能除鏽潤滑劑 11.2oz = 333ml</p>
+                        <p>WD-40 多功能除鏽潤滑劑 11.2oz = 412ml</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model is List<ColdCoalViewModel> ColdCoalModel)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>冷媒</th>
+                                <th>逸散量(公噸)</th>
+                                <th style="width:150px">系數(公噸/公噸)</th>
+                                <th style="width:150px">GWP值</th>
+                                <th style="width:150px">計算結果(tonCO2e/公噸)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ColdCoalModel)
+                            {
+                                <tr>
+                                    <td>@item.Code</td>
+                                    <td>@(item.SumCC012)</td>
+                                    <td>1</td>
+                                    <td>
+                                        @{
+                                            int gwpValue = 0;
+
+                                            if (item.Code.Trim() == "R-134A")
+                                            {
+                                                gwpValue = 1530;
+                                            }
+                                            else if (item.Code.Trim() == "HFC-134A")
+                                            {
+                                                gwpValue = 1530;
+                                            }
+                                            else if (item.Code.Trim() == "R-407C")
+                                            {
+                                                gwpValue = 1908;
+                                            }
+                                            else if (item.Code.Trim() == "R-410A")
+                                            {
+                                                gwpValue = 2256;
+                                            }
+                                        }
+                                        @gwpValue
+                                    </td>
+
+                                    <td>
+                                        <input type="text" class="form-control" value="@( (gwpValue *(decimal)item.SumCC012).ToString("N4") )" readonly />
+                                        <span class="input-group-text">tonCo₂e/公噸</span>
+                                    </td>
+
+
+
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                    <div>參考來源：2006 IPCC Guidelines for National Greenhouse Gas Inventories, volume 3, chapter7, table 7.9 及環境部氣候變遷署溫室氣體排放係數管理表6.0.4版 預設參考係數。年逸散量計算採公噸單位，並依環境部建議採小數點後四位。</div>
+                    <div>冷媒(R600a、R22等等)屬於蒙特婁公約管制氣體，環保署未公告其GWP 值，本盤查不列入計算。</div>
+                    <div>全球暖化潛勢(GWP)：敍述一單位的特定溫室氣體相對於一單位的二氧化碳之輻射效能衝擊的係數。</div>
+
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model is List<CommutingViewModel> CommutingModel)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>項目</th>
+                                <th>
+                                    活動數據
+                                    (總公里數)
+                                </th>
+                                <th style="width:150px">
+                                    碳排係數
+                                    ((kg CO2e/每延人公里))
+                                </th>
+                                <th style="width:150px">
+                                    計算結果
+                                    (kg CO2e/每延人公里)
+                                </th>
+                                <th style="width:150px">
+                                    計算結果
+                                    (ton CO2e/每延人公里)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in CommutingModel)
+                            {
+                                <tr>
+                                    <td>@item.TRANSPORTATION</td>
+                                    <td>@(item.TotalDoubleKM)</td>
+                                    <td>@item.EF_VALUE</td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="@( (item.TotalDoubleKM.Value * item.EF_VALUE.Value).ToString("F4") )" readonly />
+                                        <span class="input-group-text">kgCo₂e/公噸</span>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="@( ((item.TotalDoubleKM.Value * item.EF_VALUE.Value) / 1000).ToString("F4") )" readonly />
+                                        <span class="input-group-text">tonCo₂e/公噸</span>
+                                    </td>
+
+
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model is List<TrafficViewModel> TrafficModel)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>總公里數(km)</th>
+                                <th>
+                                    活動數據
+                                    (kg CO2e/每延人公里)
+                                </th>
+                                <th style="width:150px">
+                                    計算結果
+                                    (kg CO2e/每延人公里)
+                                </th>
+                                <th style="width:150px">
+                                    計算結果
+                                    (ton CO2e/每延人公里)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in TrafficModel)
+                            {
+                                <tr>
+                                    <td>@item.TotalEmission</td>
+                                    <td>
+                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
+                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
+                                            <option v-for="option in filteredOptions"
+                                                    :key="option.Id"
+                                                    :value="option.Id">
+                                                {{ option.Label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission(@item.TotalEmission)" readonly />
+                                        <span class="input-group-text">kgCo₂e/公噸</span>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.TotalEmission)" readonly />
+                                        <span class="input-group-text">tonCo₂e/公噸</span>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    new Vue({
+    el: '#app',
+    data: {
+        category: '',
+        startdate: '',
+        enddate: '',
+        factory: '',
+        waterdiameter: '',
+        methods: '',
+        code: '',
+        content: '',
+        item: '',
+        year:'',
+        coefficientOptions: @Html.Raw(JsonConvert.SerializeObject(ViewBag.CoefficientOptions)) || [],
+        selectedCoefficient: '@(ViewBag.SelectedCoefficientId ?? "")',
+        selectedCoefficientValue: 0,
+        searchQuery: '',
+        allParameters: @Html.Raw(JsonConvert.SerializeObject(ViewBag.AllParameters)),
+        },
+    mounted() {
+        const urlParams = new URLSearchParams(window.location.search);
+        this.category = urlParams.get('category') || '';
+        this.startdate = urlParams.get('startdate') || '';
+        this.enddate = urlParams.get('enddate') || '';
+        this.factory = urlParams.get('factory') || '';
+        this.waterdiameter = urlParams.get('waterdiameter') || '';
+        this.methods = urlParams.get('methods') || '';
+        this.code = urlParams.get('code') || '';
+        this.content = urlParams.get('content') || '';
+        this.item = urlParams.get('item') || '';
+        this.year = urlParams.get('year') || '';
+
+        if (this.category === 'waste' || this.category==='traffic') {
+            this.Option = this.allParameters.filter(p => p.Category === this.category && p.Category2 === this.methods);
+        } else {
+            this.Option = this.allParameters.filter(p => p.Category === this.category);
+        }
+
+        this.selectedCoefficient = this.Option[0]?.Id || null;
+        if (this.selectedCoefficient) {
+            this.updateSelectedCoefficient();
+        }
+
+    },
+    computed: {
+        filteredOptions() {
+            return this.coefficientOptions.filter(option =>
+                option.Label.toLowerCase().includes(this.searchQuery.toLowerCase())
+            );
+        }
+
+    },
+    methods: {
+        updateSelectedCoefficient() {
+            const selected = this.filteredOptions.find(opt => opt.Id === this.selectedCoefficient);
+            if (selected) {
+                this.selectedCoefficientValue = selected.Value;
+            }
+        },
+
+        calculateCarbonEmission(co2Value) {
+
+            if (this.selectedCoefficient && co2Value) {
+                return (parseFloat(this.selectedCoefficientValue) * parseFloat(co2Value)).toFixed(4);
+            }
+            return '';
+        },
+        calculateCarbonEmission2(co2Value) {
+            if (this.selectedCoefficient && co2Value) {
+                return (parseFloat(this.selectedCoefficientValue) * parseFloat(co2Value) / 1000).toFixed(4);
+            }
+            return '';
+        },
+        calculateCarbonEmission3(co2Value) {
+            if (this.selectedCoefficient && co2Value) {
+                return (parseFloat(this.selectedCoefficientValue) * parseFloat(co2Value) / 1000000000).toFixed(4);
+            }
+            return '';
+        },
+        calculateCarbonEmission4(co2Value) {
+            if (this.selectedCoefficient && co2Value) {
+                const result = parseFloat(this.selectedCoefficientValue) * parseFloat(co2Value);
+                return parseFloat(result.toFixed(10));
+            }
+            return null;
+        }
+
+    }
+});
+
+</script>

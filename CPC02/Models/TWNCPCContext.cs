@@ -32,5 +32,9 @@ namespace CPC02.Models
         /// ­q³æ
         /// </summary>
         public virtual DbSet<COPTC> COPTC { get; set; }
+
+        public virtual DbSet<ACPTA> ACPTA { get; set; }
+        public virtual DbSet<ACPTB> ACPTB { get; set; }
+        public virtual DbSet<PCMTG> PCMTG { get; set; }
     }
 }

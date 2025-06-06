@@ -214,17 +214,33 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BusinessController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
+    <Compile Include="Controllers\ESGController.cs" />
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\WordRender.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ACPTA.cs" />
+    <Compile Include="Models\ACPTB.cs" />
+    <Compile Include="Models\BRM_MST_EMISSION_FACTOR.cs" />
+    <Compile Include="Models\CAT_THREE_EMPLOYEE_COMMUTING.cs" />
+    <Compile Include="Models\ColdCoal.cs" />
     <Compile Include="Models\COPTC.cs" />
     <Compile Include="Models\CPC2Context.cs" />
+    <Compile Include="Models\ESGContext.cs" />
+    <Compile Include="Models\ELECTRICITY_BILL.cs" />
+    <Compile Include="Models\FireExtin.cs" />
+    <Compile Include="Models\GHG_MST_COMMUTE.cs" />
     <Compile Include="Models\INTRE.cs" />
     <Compile Include="Models\INTRD.cs" />
     <Compile Include="Models\Files.cs" />
+    <Compile Include="Models\PCMTG.cs" />
+    <Compile Include="Models\SGS_Parameter.cs" />
+    <Compile Include="Models\SGS_ParameterSetting.cs" />
+    <Compile Include="Models\WASTES.cs" />
+    <Compile Include="Models\WATER_BILL.cs" />
+    <Compile Include="Models\WD40A.cs" />
     <Compile Include="Models\WLOGB.cs" />
     <Compile Include="Models\WLOGA.cs" />
     <Compile Include="Models\CMSME.cs" />
@@ -349,6 +365,8 @@
     <Content Include="Views\Common\ProjectEdit.cshtml" />
     <Content Include="Views\Business\ExRecordList.cshtml" />
     <Content Include="Views\Business\ExRecordEdit.cshtml" />
+    <Content Include="Views\ESG\SGS_Calculate.cshtml" />
+    <Content Include="Views\Shared\_LayoutMember2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
