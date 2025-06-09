@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -191,26 +192,63 @@ namespace CPC02.Controllers
             else if (search.category == "traffic")
             {
                 var trafficList = new List<TrafficViewModel>();
-                var sumACPTB = (
-                    from a in _TWNCPCdb.ACPTA
-                    join b in _TWNCPCdb.ACPTB
-                        on new { Key1 = a.TA001.Trim(), Key2 = a.TA002.Trim() }
-                        equals new { Key1 = b.TB001.Trim(), Key2 = b.TB002.Trim() }
-                    where (b.UDF01 ?? "").StartsWith(search.methods)
-                       && (a.TA015 ?? "").Substring(0, 4) == search.year
-                    select (decimal?)b.UDF06
-                ).Sum() ?? 0;
-
-                var sumPCMTG = _TWNCPCdb.PCMTG
-                    .Where(x => x.UDF01.StartsWith(search.methods) && x.TG013.Substring(0, 4) == search.year)
-                    .Sum(x => (decimal?)x.UDF06) ?? 0;
-
-                trafficList.Add(new TrafficViewModel
+                if (search.methods == "公務車")
                 {
-                    TotalEmission = sumACPTB + sumPCMTG
-                });
+                    var sumACPTB = (from a in _TWNCPCdb.ACPTA
+                                    join b in _TWNCPCdb.ACPTB
+                                    on new { Key1 = a.TA001.Trim(), Key2 = a.TA002.Trim() }
+                                      equals new { Key1 = b.TB001.Trim(), Key2 = b.TB002.Trim() }
+                                    where b.UDF01.StartsWith("公務") && a.TA015.Substring(0, 4) == search.year
+                                    group b by b.UDF01.Contains("小貨車") ? "小貨車" : "公務車" into g
+                                    select new TrafficViewModel
+                                    {
+                                        Type = g.Key,
+                                        TotalEmission = g.Sum(x => x.UDF06 ?? 0)
+                                    }).ToList();
 
+                    var sumPCMTG = _TWNCPCdb.PCMTG
+                    .Where(x => x.UDF01.StartsWith("公務") && x.TG013.Substring(0, 4) == search.year)
+                    .GroupBy(x => x.UDF01.Contains("小貨車") ? "小貨車" : "公務車")
+                    .Select(g => new TrafficViewModel
+                    {
+                        Type = g.Key,
+                        TotalEmission = g.Sum(x => x.UDF06 ?? 0)
+                    })
+                    .ToList();
+
+                    trafficList = sumACPTB
+                    .Concat(sumPCMTG)
+                    .GroupBy(x => x.Type)
+                    .Select(g => new TrafficViewModel
+                    {
+                        Type = g.Key,
+                        TotalEmission = g.Sum(x => x.TotalEmission)
+                    }).ToList();
+                }
+                else
+                {
+                    var sumACPTB = (
+                        from a in _TWNCPCdb.ACPTA
+                        join b in _TWNCPCdb.ACPTB
+                            on new { Key1 = a.TA001.Trim(), Key2 = a.TA002.Trim() }
+                            equals new { Key1 = b.TB001.Trim(), Key2 = b.TB002.Trim() }
+                        where (b.UDF01 ?? "").StartsWith(search.methods)
+                           && (a.TA015 ?? "").Substring(0, 4) == search.year
+                        select (decimal?)b.UDF06
+                    ).Sum() ?? 0;
+
+                    var sumPCMTG = _TWNCPCdb.PCMTG
+                        .Where(x => x.UDF01.StartsWith(search.methods) && x.TG013.Substring(0, 4) == search.year)
+                        .Sum(x => (decimal?)x.UDF06) ?? 0;
+
+                    trafficList.Add(new TrafficViewModel
+                    {
+                        TotalEmission = sumACPTB + sumPCMTG
+                    });
+
+                }
                 return View(trafficList);
+
             }
             return View();
         }

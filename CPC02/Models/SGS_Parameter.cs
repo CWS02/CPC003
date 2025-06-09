@@ -109,6 +109,13 @@ namespace CPC02.Models
     }
     public class TrafficViewModel
     {
+        public string Type { get; set; }
         public decimal TotalEmission { get; set; }
+    }
+    public class GasCoefficient
+    {
+        public string GasName { get; set; }
+        public decimal Coefficient { get; set; }
+        public decimal Factor { get; set; } 
     }
 }
