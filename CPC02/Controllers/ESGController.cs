@@ -89,17 +89,17 @@ namespace CPC02.Controllers
             else if (search.category == "waste")
             {
                 var query = _db.WASTES
-               .Where(x => x.TREATMENT == search.methods && x.SCRAP_CODE == search.code);
+               .Where(x => x.TREATMENT == search.methods);
                 if (!string.IsNullOrEmpty(search.year))
                 {
                     query = query.Where(x => x.REMOVAL_DATE.Value.Year.ToString() == search.year);
                 }
                 var result = query
-                               .GroupBy(x => x.TREATMENT)
+                               .GroupBy(x => new { x.TREATMENT, x.SCRAP_CODE } )
                                .Select(g => new WasteSummaryViewModel
                                {
-                                   methods = search.methods,
-                                   code = search.code,
+                                   methods = g.Key.TREATMENT,
+                                   code = g.Key.SCRAP_CODE,
                                    SumDECLAREDWEIGHT = g.Sum(x => x.DECLARED_WEIGHT),
                                    SumCKILOMETERS = g.Sum(x => x.KILOMETERS),
                                    SumACTIVITYDATA = g.Sum(x => x.ACTIVITY_DATA),
