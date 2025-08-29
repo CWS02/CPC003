@@ -1,15 +1,7 @@
 ﻿using CPC02.Function;
 using CPC02.Models;
 using CPC02.Parameters;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.EMMA;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.Ajax.Utilities;
-using Microsoft.Office.Interop.Word;
 using Newtonsoft.Json;
-using NPOI.HSSF.Record.Chart;
-using NPOI.OpenXml4Net.OPC.Internal;
-using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -18,10 +10,6 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.HtmlControls;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
-using static System.Data.Entity.Infrastructure.Design.Executor;
-using System.Data.Entity;
 
 namespace CPC02.Controllers
 {
@@ -376,7 +364,7 @@ namespace CPC02.Controllers
                 ViewBag.IsUpdate = true;
                 //上下一筆
                 var int000List = _db.INTRB
-                .Where(x => x.INT999 == model.INT999)
+                .Where(x => x.INT999 == model.INT999 && x.Status != -1)
                 .OrderBy(x => x.Level)
                 .ThenBy(x => x.INT001)
                 .Select(x => x.INT000)
@@ -449,11 +437,9 @@ namespace CPC02.Controllers
                     try
                     {
                         _db.SaveChanges();
-                        TempData["SuccessMessage"] = GetSuccessMessage(actionKey, currentLang);
                     }
                     catch
                     {
-                        TempData["SuccessMessage"] = GetFailureMessage(actionKey, currentLang);
                     }
                 }
             }
@@ -480,15 +466,13 @@ namespace CPC02.Controllers
                 try
                 {
                     _db.SaveChanges();
-                    TempData["SuccessMessage"] = GetSuccessMessage(actionKey, currentLang);
                 }
                 catch
                 {
-                    TempData["SuccessMessage"] = GetFailureMessage(actionKey, currentLang);
                 }
             }
 
-            return RedirectToAction("RecordList", new { INT000 = model.INT999 });
+            return RedirectToAction("RecordEdit", new { INT000 = model.INT000 });
         }
 
         [HttpGet]
@@ -607,7 +591,7 @@ namespace CPC02.Controllers
                 ViewBag.IsUpdate = true;
                 //上下一筆
                 var int000List = _db.INTRC
-                .Where(x => x.INT999 == model.INT999)
+                .Where(x => x.INT999 == model.INT999 && x.Status != -1)
                 .OrderByDescending(x => x.INT001)
                 .Select(x => x.INT000)
                 .ToList();

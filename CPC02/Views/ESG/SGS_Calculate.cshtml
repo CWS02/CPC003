@@ -4,19 +4,21 @@
 @{
     Layout = "~/Views/Shared/_LayoutMember2.cshtml";
     ViewBag.Title = "數據統計";
+    decimal transport1 = 0;
+    decimal transport2 = 0;
 
     var gasCoefficients = new List<GasCoefficient>
 {
-    new GasCoefficient { GasName = "CO₂", Coefficient = 2.263132872m, Factor = 1m },
-    new GasCoefficient { GasName = "CH₄", Coefficient = 0.000816426m, Factor = 27.9m },
-    new GasCoefficient { GasName = "N₂O", Coefficient = 0.0002612563m, Factor = 273m }
-};
+        new GasCoefficient { GasName = "CO₂", Coefficient = 2.263132872m, Factor = 1m },
+        new GasCoefficient { GasName = "CH₄", Coefficient = 0.000816426m, Factor = 27.9m },
+        new GasCoefficient { GasName = "N₂O", Coefficient = 0.0002612563m, Factor = 273m }
+    };
 }
 
 <head>
     <link rel="stylesheet" href="~/css/style2.css" />
 </head>
-<div id="app" class="container" style="margin-top: 50px;">
+<div id="app" class="container-fluid" style="margin-top: 50px;">
     <h2 class="text-center">數據統計</h2>
 
     <form method="get" action="@Url.Action("SGS_Calculate", "ESG")" class="form-inline justify-content-center mb-4">
@@ -236,9 +238,20 @@
                                 <th>廢棄物代碼</th>
                                 <th>中間處理方式</th>
                                 <th>申報重量(公噸)</th>
-
-                                <th style="width:150px">係數</th>
+                                <th style="width: 150px">係數</th>
                                 <th style="width:150px">計算結果</th>
+                                <th>運輸公里(km)</th>
+                                <th>
+                                    係數
+                                    營業大貨車(柴油)
+                                </th>
+                                <th>
+                                    係數
+                                    柴油動力垃圾車
+                                </th>
+                                <th>
+                                    廢棄物運輸計算結果
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -248,7 +261,7 @@
                                     <td>@item.code</td>
                                     <td>@item.methods</td>
                                     <td>@(item.SumDECLAREDWEIGHT?.ToString("G29") ?? "N/A")</td>
-                                    
+
                                     <td>
                                         <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
                                         <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
@@ -262,6 +275,64 @@
                                     <td>
                                         <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.SumDECLAREDWEIGHT)" readonly />
                                         <span class="input-group-text">tonCo₂e/ton</span>
+                                    </td>
+                                    <td>@(item.SumCKILOMETERS?.ToString("G29") ?? "")</td>
+                                    <td>
+                                        @{
+                                            transport1 = 0;
+                                            switch (item.code)
+                                            {
+                                                case "D-2499":
+                                                case "D-2406":
+                                                case "D-2399":
+                                                    transport1 = 0.131m;
+                                                    break;
+                                            }
+                                            if (transport1 != 0)
+                                            {
+                                                <div class="text-center">
+                                                    <span>@transport1.ToString("F4")</span><br />
+                                                    <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
+                                                </div>
+                                            }
+                                        }
+
+
+                                    </td>
+                                    <td>
+                                        @{
+                                            transport2 = 0;
+                                            switch (item.code)
+                                            {
+                                                case "D-1801":
+                                                    transport2 = 1.31m;
+                                                    break;
+                                            }
+                                            if (transport2 != 0)
+                                            {
+                                                <div class="text-center">
+                                                    <span>@transport2.ToString("F4")</span><br />
+                                                    <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
+                                                </div>
+                                                }
+                                            }
+
+                                        </td>
+                                    <td>
+                                        @{
+                                            decimal result = 0;
+
+                                            if (transport1 != 0)
+                                            {
+                                                result = item.SumCKILOMETERS.Value * transport1 / 1000;
+                                            }
+                                            else if (transport2 != 0)
+                                            {
+                                                result = item.SumCKILOMETERS.Value * transport2 / 1000;
+                                            }
+                                        }
+                                        @String.Format("{0:F4}", result)<br />
+                                        <span class="input-group-text">ton CO2e/延噸公里(tkm)</span>
                                     </td>
                                 </tr>
                             }
@@ -458,7 +529,7 @@
                 }
                 else if (Model is List<TrafficViewModel> TrafficModel)
                 {
-                     <!--公務車-->
+                    <!--公務車-->
                     <table class="table table-striped table-bordered table-hover" v-if="methods === '公務車'">
                         <thead>
                             <tr>
@@ -524,51 +595,51 @@
                         </tbody>
                     </table>
                     <!--其他-->
-            <table class="table table-striped table-bordered table-hover" v-if="methods !== '公務車'">
-                <thead>
-                    <tr>
-                        <th>總公里數(km)</th>
-                        <th>
-                            活動數據
-                            (kg CO2e/每延人公里)
-                        </th>
-                        <th style="width:150px">
-                            計算結果
-                            (kg CO2e/每延人公里)
-                        </th>
-                        <th style="width:150px">
-                            計算結果
-                            (ton CO2e/每延人公里)
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in TrafficModel)
-                    {
-                        <tr>
-                            <td>@item.TotalEmission</td>
-                            <td>
-                                <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
-                                <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
-                                    <option v-for="option in filteredOptions"
-                                            :key="option.Id"
-                                            :value="option.Id">
-                                        {{ option.Label }}
-                                    </option>
-                                </select>
-                            </td>
-                            <td>
-                                <input type="text" class="form-control" :value="calculateCarbonEmission(@item.TotalEmission)" readonly />
-                                <span class="input-group-text">kgCo₂e/公噸</span>
-                            </td>
-                            <td>
-                                <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.TotalEmission)" readonly />
-                                <span class="input-group-text">tonCo₂e/公噸</span>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    <table class="table table-striped table-bordered table-hover" v-if="methods !== '公務車'">
+                        <thead>
+                            <tr>
+                                <th>總公里數(km)</th>
+                                <th>
+                                    活動數據
+                                    (kg CO2e/每延人公里)
+                                </th>
+                                <th style="width:150px">
+                                    計算結果
+                                    (kg CO2e/每延人公里)
+                                </th>
+                                <th style="width:150px">
+                                    計算結果
+                                    (ton CO2e/每延人公里)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in TrafficModel)
+                            {
+                                <tr>
+                                    <td>@item.TotalEmission</td>
+                                    <td>
+                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
+                                            <option v-for="option in filteredOptions"
+                                                    :key="option.Id"
+                                                    :value="option.Id">
+                                                {{ option.Label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission(@item.TotalEmission)" readonly />
+                                        <span class="input-group-text">kgCo₂e/公噸</span>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.TotalEmission)" readonly />
+                                        <span class="input-group-text">tonCo₂e/公噸</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 }
             </div>
         </div>
