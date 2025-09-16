@@ -243,6 +243,7 @@ namespace CPC02.Controllers
 
                     trafficList.Add(new TrafficViewModel
                     {
+                        Type = search.methods,
                         TotalEmission = sumACPTB + sumPCMTG
                     });
 

@@ -24,7 +24,7 @@ namespace CPC02.Models
 
         /// <summary>
         /// 訪談記錄別
-        /// 1=到訪, 2=電話, 3=通信
+        /// 1=到訪記錄, 2=電話記錄, 3=Email,4=線上會議,5=視訊,6=來訪
         /// </summary>
         public int INT002 { get; set; }
 

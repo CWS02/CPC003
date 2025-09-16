@@ -167,7 +167,7 @@
 
 
                             @*<th>@(currentLang == "zh-TW" ? Html.Raw("圖面上傳 (old)") : Html.Raw("Image<br>Upload (old)"))</th>*@
-                            <th>@(currentLang == "zh-TW" ? Html.Raw("圖面下載 (old)") : Html.Raw("Image<br>Download (old)"))</th>
+                            @*<th>@(currentLang == "zh-TW" ? Html.Raw("圖面下載 (old)") : Html.Raw("Image<br>Download (old)"))</th>*@
 
                             <th>@(currentLang == "zh-TW" ? "附件上傳" : "MultipleFiles")</th>
 
@@ -226,14 +226,14 @@
             <input type="submit" value="上傳" style="display: none;" />
         </form>
                             </td>*@
-                                <td>
+                                @*<td>
                                     @if (item.INT006 != null)
                                     {
                                         <a href="@Url.Action("DownloadQuote", new {  INT000 = item.INT000, INT999 = item.INT999 })" target="_blank">
                                             <img src="~/image/icons/file_download.png" alt="附件下載" style="width: 20px; height: 20px;" />
                                         </a>
                                     }
-                                </td>
+                                </td>*@
 
                                 <td>
                                     <a href="@Url.Action("MultipleFiles","Common", new { SourceID = item.INT000,SourceDB="INTRC",name=intra.INT001, layout = "~/Views/Shared/_LayoutBusiness.cshtml"})">
