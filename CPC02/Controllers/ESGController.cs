@@ -109,6 +109,29 @@ namespace CPC02.Controllers
 
                 return View(result);
             }
+            else if (search.category == "wastetransportation")
+            {
+                var query = _db.WASTES
+               .Where(x => x.TREATMENT == search.methods);
+                if (!string.IsNullOrEmpty(search.year))
+                {
+                    query = query.Where(x => x.REMOVAL_DATE.Value.Year.ToString() == search.year);
+                }
+                var result = query
+                               .GroupBy(x => new { x.TREATMENT, x.SCRAP_CODE })
+                               .Select(g => new WastetransportationViewModel
+                               {
+                                   methods = g.Key.TREATMENT,
+                                   code = g.Key.SCRAP_CODE,
+                                   SumDECLAREDWEIGHT = g.Sum(x => x.DECLARED_WEIGHT),
+                                   SumCKILOMETERS = g.Sum(x => x.KILOMETERS),
+                                   SumACTIVITYDATA = g.Sum(x => x.ACTIVITY_DATA),
+                                   SumCARBONEMISSIONFACTOR = g.Sum(x => x.CARBON_EMISSION_FACTOR),
+                                   SumCCARBONDIOXIDE = g.Sum(x => x.CARBON_DIOXIDE),
+                               }).ToList();
+
+                return View(result);
+            }
             else if (search.category == "fireextin")
             {
                 var query = _db.FireExtin
@@ -250,6 +273,43 @@ namespace CPC02.Controllers
                 }
                 return View(trafficList);
 
+            }
+            else if (search.category == "officialcar")
+            {
+                var officialcarList = new List<OfficialcarViewModel>();
+
+                    var sumACPTB = (from a in _TWNCPCdb.ACPTA
+                                    join b in _TWNCPCdb.ACPTB
+                                    on new { Key1 = a.TA001.Trim(), Key2 = a.TA002.Trim() }
+                                      equals new { Key1 = b.TB001.Trim(), Key2 = b.TB002.Trim() }
+                                    where b.UDF01.StartsWith("公務") && a.TA015.Substring(0, 4) == search.year
+                                    group b by b.UDF01.Contains("小貨車") ? "小貨車" : "公務車" into g
+                                    select new OfficialcarViewModel
+                                    {
+                                        Type = g.Key,
+                                        TotalEmission = g.Sum(x => x.UDF06 ?? 0)
+                                    }).ToList();
+
+                    var sumPCMTG = _TWNCPCdb.PCMTG
+                    .Where(x => x.UDF01.StartsWith("公務") && x.TG013.Substring(0, 4) == search.year)
+                    .GroupBy(x => x.UDF01.Contains("小貨車") ? "小貨車" : "公務車")
+                    .Select(g => new OfficialcarViewModel
+                    {
+                        Type = g.Key,
+                        TotalEmission = g.Sum(x => x.UDF06 ?? 0)
+                    })
+                    .ToList();
+
+                officialcarList = sumACPTB
+                    .Concat(sumPCMTG)
+                    .GroupBy(x => x.Type)
+                    .Select(g => new OfficialcarViewModel
+                    {
+                        Type = g.Key,
+                        TotalEmission = g.Sum(x => x.TotalEmission)
+                    }).ToList();
+
+                return View(officialcarList);
             }
             return View();
         }

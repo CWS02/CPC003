@@ -91,6 +91,17 @@ namespace CPC02.Models
         public decimal? SumCARBONEMISSIONFACTOR { get; set; }
         public decimal? SumCCARBONDIOXIDE { get; set; }
     }
+    public class WastetransportationViewModel
+    {
+        public string methods { get; set; }
+        public string code { get; set; }
+        public decimal? SumDECLAREDWEIGHT { get; set; }
+        public decimal? TotalWasteCost { get; set; }
+        public decimal? SumCKILOMETERS { get; set; }
+        public decimal? SumACTIVITYDATA { get; set; }
+        public decimal? SumCARBONEMISSIONFACTOR { get; set; }
+        public decimal? SumCCARBONDIOXIDE { get; set; }
+    }
     public class FireExtinViewModel
     {
         public string Factory { get; set; }
@@ -108,6 +119,11 @@ namespace CPC02.Models
 
     }
     public class TrafficViewModel
+    {
+        public string Type { get; set; }
+        public decimal TotalEmission { get; set; }
+    }
+    public class OfficialcarViewModel
     {
         public string Type { get; set; }
         public decimal TotalEmission { get; set; }

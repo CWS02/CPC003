@@ -26,14 +26,16 @@
             <label for="category" class="mr-3">選擇類別:</label>
             <select v-model="category" name="category" class="form-control">
                 <option value="">請選擇</option>
-                <option value="electricity">電費</option>
-                <option value="water">水費</option>
-                <option value="waste">廢棄物</option>
-                <option value="fireextin">滅火器</option>
-                <option value="wd40">WD40</option>
-                <option value="coldcoal">冷媒</option>
-                <option value="commuting">員工通勤</option>
-                <option value="traffic">交通</option>
+                <option value="coldcoal">類別一_冷媒</option>
+                <option value="fireextin">類別一_滅火器</option>
+                <option value="wd40">類別一_WD40</option>
+                <option value="officialcar">類別一_公務車</option>
+                <option value="electricity">類別二_電費</option>
+                <option value="commuting">類別三_員工通勤</option>
+                <option value="traffic">類別三_交通</option>
+                <option value="wastetransportation">類別三_廢棄物運輸</option>
+                <option value="water">類別四_水費</option>
+                <option value="waste">類別五_廢棄物</option>
             </select>
         </div>
         <!-- 電費 -->
@@ -68,6 +70,17 @@
         </div>
         <!-- 廢棄物 -->
         <div v-if="category === 'waste'" class="form-group mr-3">
+            <label for="year" class="mr-3">年份:</label>
+            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+            <label for="methods" class="mr-3">處理方式:</label>
+            <select name="methods" class="form-control" v-model="methods">
+                <option>請選擇</option>
+                <option value="掩埋">掩埋</option>
+                <option value="焚化處理">焚化處理</option>
+            </select>
+        </div>
+        <!-- 廢棄物運輸 -->
+        <div v-if="category === 'wastetransportation'" class="form-group mr-3">
             <label for="year" class="mr-3">年份:</label>
             <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
             <label for="methods" class="mr-3">處理方式:</label>
@@ -124,13 +137,21 @@
                 <option value="火車">商務旅行(火車)</option>
                 <option value="私車公用-公里">商務旅行(私車公用-公里算)</option>
                 <option value="私車公用-公升">商務旅行(私車公用-公升算)</option>
-                <option value="公務車">公務車</option>
             </select>
             <template v-if="methods !== '火車' && methods !== '私車公用-公里' && methods !== '私車公用-公升' ">
                 <label for="year" class="mr-3">年份:</label>
                 <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" step="1" />
             </template>
         </div>
+        <!--公務車-->
+        <div v-if="category === 'officialcar'" class="form-group mr-3">
+            <template>
+                <label for="year" class="mr-3">年份:</label>
+                <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" step="1" />
+            </template>
+        </div>
+
+
         <div v-if="category" class="form-group">
             <button class="btn btn-primary btn-spacing" type="submit">搜索</button>
         </div>
@@ -242,20 +263,20 @@
                                 <th>廢棄物代碼</th>
                                 <th>中間處理方式</th>
                                 <th>申報重量(公噸)</th>
-                                <th style="width: 150px">係數</th>
-                                <th style="width:150px">計算結果</th>
-                                <th>運輸公里(km)</th>
-                                <th>
-                                    係數
-                                    營業大貨車(柴油)
-                                </th>
-                                <th>
-                                    係數
-                                    柴油動力垃圾車
-                                </th>
-                                <th>
-                                    廢棄物運輸計算結果
-                                </th>
+                                <th>係數</th>
+                                <th>計算結果</th>
+                                @*<th>運輸公里(km)</th>
+                        <th>
+                            係數
+                            營業大貨車(柴油)
+                        </th>
+                        <th>
+                            係數
+                            柴油動力垃圾車
+                        </th>
+                        <th>
+                            廢棄物運輸計算結果
+                        </th>*@
                             </tr>
                         </thead>
                         <tbody>
@@ -280,64 +301,155 @@
                                         <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.SumDECLAREDWEIGHT)" readonly />
                                         <span class="input-group-text">tonCo₂e/ton</span>
                                     </td>
+                                    @*<td>@(item.SumCKILOMETERS?.ToString("G29") ?? "")</td>
+                            <td>
+                                @{
+                                    transport1 = 0;
+                                    switch (item.code)
+                                    {
+                                        case "D-2499":
+                                        case "D-2406":
+                                        case "D-2399":
+                                            transport1 = 0.131m;
+                                            break;
+                                    }
+                                    if (transport1 != 0)
+                                    {
+                                        <div class="text-center">
+                                            <span>@transport1.ToString("F4")</span><br />
+                                            <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
+                                        </div>
+                                    }
+                                }
+
+
+                            </td>
+                            <td>
+                                @{
+                                    transport2 = 0;
+                                    switch (item.code)
+                                    {
+                                        case "D-1801":
+                                            transport2 = 1.31m;
+                                            break;
+                                    }
+                                    if (transport2 != 0)
+                                    {
+                                        <div class="text-center">
+                                            <span>@transport2.ToString("F4")</span><br />
+                                            <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
+                                        </div>
+                                    }
+                                }
+
+                            </td>
+                            <td>
+                                @{
+                                    decimal result = 0;
+
+                                    if (transport1 != 0)
+                                    {
+                                        result = item.SumCKILOMETERS.Value * transport1 / 1000;
+                                    }
+                                    else if (transport2 != 0)
+                                    {
+                                        result = item.SumCKILOMETERS.Value * transport2 / 1000;
+                                    }
+                                }
+                                @String.Format("{0:F4}", result)<br />
+                                <span class="input-group-text">ton CO2e/延噸公里(tkm)</span>
+                            </td>*@
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else if (Model is List<WastetransportationViewModel> wastetransportationModel)
+                {
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>廢棄物代碼</th>
+                                <th>中間處理方式</th>
+                                <th>運輸公里(km)</th>
+                        <th>
+                            係數
+                            營業大貨車(柴油)
+                        </th>
+                        <th>
+                            係數
+                            柴油動力垃圾車
+                        </th>
+                        <th>
+                            廢棄物運輸計算結果
+                        </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in wastetransportationModel)
+                            {
+                                <tr>
+                                    <td>@item.code</td>
+                                    <td>@item.methods</td>
+                                   
                                     <td>@(item.SumCKILOMETERS?.ToString("G29") ?? "")</td>
-                                    <td>
-                                        @{
-                                            transport1 = 0;
-                                            switch (item.code)
-                                            {
-                                                case "D-2499":
-                                                case "D-2406":
-                                                case "D-2399":
-                                                    transport1 = 0.131m;
-                                                    break;
-                                            }
-                                            if (transport1 != 0)
-                                            {
-                                                <div class="text-center">
-                                                    <span>@transport1.ToString("F4")</span><br />
-                                                    <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
-                                                </div>
-                                            }
-                                        }
+                            <td>
+                                @{
+                                    transport1 = 0;
+                                    switch (item.code)
+                                    {
+                                        case "D-2499":
+                                        case "D-2406":
+                                        case "D-2399":
+                                            transport1 = 0.131m;
+                                            break;
+                                    }
+                                    if (transport1 != 0)
+                                    {
+                                        <div class="text-center">
+                                            <span>@transport1.ToString("F4")</span><br />
+                                            <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
+                                        </div>
+                                    }
+                                }
 
 
-                                    </td>
-                                    <td>
-                                        @{
-                                            transport2 = 0;
-                                            switch (item.code)
-                                            {
-                                                case "D-1801":
-                                                    transport2 = 1.31m;
-                                                    break;
-                                            }
-                                            if (transport2 != 0)
-                                            {
-                                                <div class="text-center">
-                                                    <span>@transport2.ToString("F4")</span><br />
-                                                    <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
-                                                </div>
-                                            }
-                                        }
+                            </td>
+                            <td>
+                                @{
+                                    transport2 = 0;
+                                    switch (item.code)
+                                    {
+                                        case "D-1801":
+                                            transport2 = 1.31m;
+                                            break;
+                                    }
+                                    if (transport2 != 0)
+                                    {
+                                        <div class="text-center">
+                                            <span>@transport2.ToString("F4")</span><br />
+                                            <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
+                                        </div>
+                                    }
+                                }
 
-                                    </td>
-                                    <td>
-                                        @{
-                                            decimal result = 0;
+                            </td>
+                            <td>
+                                @{
+                                    decimal result = 0;
 
-                                            if (transport1 != 0)
-                                            {
-                                                result = item.SumCKILOMETERS.Value * transport1 / 1000;
-                                            }
-                                            else if (transport2 != 0)
-                                            {
-                                                result = item.SumCKILOMETERS.Value * transport2 / 1000;
-                                            }
-                                        }
-                                        @String.Format("{0:F4}", result)<br />
-                                        <span class="input-group-text">ton CO2e/延噸公里(tkm)</span>
-                                    </td>
+                                    if (transport1 != 0)
+                                    {
+                                        result = item.SumCKILOMETERS.Value * transport1 / 1000;
+                                    }
+                                    else if (transport2 != 0)
+                                    {
+                                        result = item.SumCKILOMETERS.Value * transport2 / 1000;
+                                    }
+                                }
+                                @String.Format("{0:F4}", result)<br />
+                                <span class="input-group-text">ton CO2e/延噸公里(tkm)</span>
+                            </td>
                                 </tr>
                             }
                         </tbody>
@@ -476,7 +588,7 @@
                                         @gwpValue
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" value="@( (gwpValue *(decimal)item.SumCC012).ToString("N4") )" readonly />
+                                        <input type="text" class="form-control" value="@( (gwpValue * (decimal)item.SumCC012).ToString("N4") )" readonly />
                                         <span class="input-group-text">tonCo₂e/公噸</span>
                                     </td>
                                 </tr>
@@ -533,71 +645,7 @@
                 }
                 else if (Model is List<TrafficViewModel> TrafficModel)
                 {
-                    <!--公務車-->
-                    <table class="table table-striped table-bordered table-hover" v-if="methods === '公務車'">
-                        <thead>
-                            <tr>
-                                <th>類別</th>
-                                <th>總公升數(L)</th>
-                                <th>
-                                    溫室氣體
-                                    種類
-                                </th>
-                                <th style="width:150px">
-                                    係數
-                                    (kg CO2e/公升)
-                                </th>
-                                <th>
-                                    GWP值
-                                </th>
-                                <th style="width:150px">
-                                    計算結果
-                                    (kg CO2e/公升)
-                                </th>
-                                <th style="width:150px">
-                                    計算結果
-                                    (ton CO2e/公噸)
-                                </th>
-                                <th>
-                                    計算結果
-                                    (ton CO2e/公噸)
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in TrafficModel)
-                            {
-                                var Emission = 0M;
-                                var sumEmission = 0M;
-                                for (int i = 0; i < gasCoefficients.Count; i++)
-                                {
-                                    Emission = item.TotalEmission * gasCoefficients[i].Coefficient * gasCoefficients[i].Factor / 1000;
-                                    sumEmission += Emission;
-                                }
-                                <tr>
-                                    <td rowspan="@gasCoefficients.Count">@item.Type</td>
-                                    <td rowspan="@gasCoefficients.Count">@item.TotalEmission</td>
-                                    <td>@gasCoefficients[0].GasName</td>
-                                    <td>@gasCoefficients[0].Coefficient</td>
-                                    <td>@gasCoefficients[0].Factor</td>
-                                    <td>@(item.TotalEmission * gasCoefficients[0].Coefficient * gasCoefficients[0].Factor)</td>
-                                    <td>@((item.TotalEmission * gasCoefficients[0].Coefficient * gasCoefficients[0].Factor / 1000).ToString("F4"))</td>
-                                    <td rowspan="@gasCoefficients.Count">@sumEmission.ToString("F4")</td>
-                                </tr>
 
-                                for (int i = 1; i < gasCoefficients.Count; i++)
-                                {
-                                    <tr>
-                                        <td>@gasCoefficients[i].GasName</td>
-                                        <td>@gasCoefficients[i].Coefficient</td>
-                                        <td>@gasCoefficients[i].Factor</td>
-                                        <td>@(item.TotalEmission * gasCoefficients[i].Coefficient * gasCoefficients[i].Factor)</td>
-                                        <td>@((item.TotalEmission * gasCoefficients[i].Coefficient * gasCoefficients[i].Factor / 1000).ToString("F4"))</td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
                     <!--私車公用-公里-->
                     <table class="table table-striped table-bordered table-hover" v-if="methods === '私車公用-公里'">
                         <thead>
@@ -755,6 +803,75 @@
                         </tbody>
                     </table>
                 }
+                else if (Model is List<OfficialcarViewModel> OfficialcarViewModel)
+                {
+                    <!--公務車-->
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>類別</th>
+                                <th>總公升數(L)</th>
+                                <th>
+                                    溫室氣體
+                                    種類
+                                </th>
+                                <th style="width:150px">
+                                    係數
+                                    (kg CO2e/公升)
+                                </th>
+                                <th>
+                                    GWP值
+                                </th>
+                                <th style="width:150px">
+                                    計算結果
+                                    (kg CO2e/公升)
+                                </th>
+                                <th style="width:150px">
+                                    計算結果
+                                    (ton CO2e/公噸)
+                                </th>
+                                <th>
+                                    計算結果
+                                    (ton CO2e/公噸)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in OfficialcarViewModel)
+                            {
+                                var Emission = 0M;
+                                var sumEmission = 0M;
+                                for (int i = 0; i < gasCoefficients.Count; i++)
+                                {
+                                    Emission = item.TotalEmission * gasCoefficients[i].Coefficient * gasCoefficients[i].Factor / 1000;
+                                    sumEmission += Emission;
+                                }
+                                <tr>
+                                    <td rowspan="@gasCoefficients.Count">@item.Type</td>
+                                    <td rowspan="@gasCoefficients.Count">@item.TotalEmission</td>
+                                    <td>@gasCoefficients[0].GasName</td>
+                                    <td>@gasCoefficients[0].Coefficient</td>
+                                    <td>@gasCoefficients[0].Factor</td>
+                                    <td>@(item.TotalEmission * gasCoefficients[0].Coefficient * gasCoefficients[0].Factor)</td>
+                                    <td>@((item.TotalEmission * gasCoefficients[0].Coefficient * gasCoefficients[0].Factor / 1000).ToString("F4"))</td>
+                                    <td rowspan="@gasCoefficients.Count">@sumEmission.ToString("F4")</td>
+                                </tr>
+
+                                for (int i = 1; i < gasCoefficients.Count; i++)
+                                {
+                                    <tr>
+                                        <td>@gasCoefficients[i].GasName</td>
+                                        <td>@gasCoefficients[i].Coefficient</td>
+                                        <td>@gasCoefficients[i].Factor</td>
+                                        <td>@(item.TotalEmission * gasCoefficients[i].Coefficient * gasCoefficients[i].Factor)</td>
+                                        <td>@((item.TotalEmission * gasCoefficients[i].Coefficient * gasCoefficients[i].Factor / 1000).ToString("F4"))</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+
             </div>
         </div>
     </div>
