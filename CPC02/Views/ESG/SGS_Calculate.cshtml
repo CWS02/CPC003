@@ -265,18 +265,6 @@
                                 <th>申報重量(公噸)</th>
                                 <th>係數</th>
                                 <th>計算結果</th>
-                                @*<th>運輸公里(km)</th>
-                        <th>
-                            係數
-                            營業大貨車(柴油)
-                        </th>
-                        <th>
-                            係數
-                            柴油動力垃圾車
-                        </th>
-                        <th>
-                            廢棄物運輸計算結果
-                        </th>*@
                             </tr>
                         </thead>
                         <tbody>
@@ -301,66 +289,17 @@
                                         <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.SumDECLAREDWEIGHT)" readonly />
                                         <span class="input-group-text">tonCo₂e/ton</span>
                                     </td>
-                                    @*<td>@(item.SumCKILOMETERS?.ToString("G29") ?? "")</td>
-                            <td>
-                                @{
-                                    transport1 = 0;
-                                    switch (item.code)
-                                    {
-                                        case "D-2499":
-                                        case "D-2406":
-                                        case "D-2399":
-                                            transport1 = 0.131m;
-                                            break;
-                                    }
-                                    if (transport1 != 0)
-                                    {
-                                        <div class="text-center">
-                                            <span>@transport1.ToString("F4")</span><br />
-                                            <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
-                                        </div>
-                                    }
-                                }
-
-
-                            </td>
-                            <td>
-                                @{
-                                    transport2 = 0;
-                                    switch (item.code)
-                                    {
-                                        case "D-1801":
-                                            transport2 = 1.31m;
-                                            break;
-                                    }
-                                    if (transport2 != 0)
-                                    {
-                                        <div class="text-center">
-                                            <span>@transport2.ToString("F4")</span><br />
-                                            <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
-                                        </div>
-                                    }
-                                }
-
-                            </td>
-                            <td>
-                                @{
-                                    decimal result = 0;
-
-                                    if (transport1 != 0)
-                                    {
-                                        result = item.SumCKILOMETERS.Value * transport1 / 1000;
-                                    }
-                                    else if (transport2 != 0)
-                                    {
-                                        result = item.SumCKILOMETERS.Value * transport2 / 1000;
-                                    }
-                                }
-                                @String.Format("{0:F4}", result)<br />
-                                <span class="input-group-text">ton CO2e/延噸公里(tkm)</span>
-                            </td>*@
                                 </tr>
                             }
+                        <tr style="background-color:#f5f5f5;">
+                            <td colspan="4" class="text-end"></td>
+                            <td>
+                                <input type="text" class="form-control" :value="calculateTotalEmission()" readonly />
+                                <span class="input-group-text">tonCo₂e/ton</span>
+
+                            </td>
+                        </tr>
+
                         </tbody>
                     </table>
                 }
@@ -372,17 +311,17 @@
                                 <th>廢棄物代碼</th>
                                 <th>中間處理方式</th>
                                 <th>運輸公里(km)</th>
-                        <th>
-                            係數
-                            營業大貨車(柴油)
-                        </th>
-                        <th>
-                            係數
-                            柴油動力垃圾車
-                        </th>
-                        <th>
-                            廢棄物運輸計算結果
-                        </th>
+                                <th>
+                                    係數
+                                    營業大貨車(柴油)
+                                </th>
+                                <th>
+                                    係數
+                                    柴油動力垃圾車
+                                </th>
+                                <th>
+                                    廢棄物運輸計算結果
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -391,65 +330,65 @@
                                 <tr>
                                     <td>@item.code</td>
                                     <td>@item.methods</td>
-                                   
+
                                     <td>@(item.SumCKILOMETERS?.ToString("G29") ?? "")</td>
-                            <td>
-                                @{
-                                    transport1 = 0;
-                                    switch (item.code)
-                                    {
-                                        case "D-2499":
-                                        case "D-2406":
-                                        case "D-2399":
-                                            transport1 = 0.131m;
-                                            break;
-                                    }
-                                    if (transport1 != 0)
-                                    {
-                                        <div class="text-center">
-                                            <span>@transport1.ToString("F4")</span><br />
-                                            <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
-                                        </div>
-                                    }
-                                }
+                                    <td>
+                                        @{
+                                            transport1 = 0;
+                                            switch (item.code)
+                                            {
+                                                case "D-2499":
+                                                case "D-2406":
+                                                case "D-2399":
+                                                    transport1 = 0.131m;
+                                                    break;
+                                            }
+                                            if (transport1 != 0)
+                                            {
+                                                <div class="text-center">
+                                                    <span>@transport1.ToString("F4")</span><br />
+                                                    <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
+                                                </div>
+                                            }
+                                        }
 
 
-                            </td>
-                            <td>
-                                @{
-                                    transport2 = 0;
-                                    switch (item.code)
-                                    {
-                                        case "D-1801":
-                                            transport2 = 1.31m;
-                                            break;
-                                    }
-                                    if (transport2 != 0)
-                                    {
-                                        <div class="text-center">
-                                            <span>@transport2.ToString("F4")</span><br />
-                                            <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
-                                        </div>
-                                    }
-                                }
+                                    </td>
+                                    <td>
+                                        @{
+                                            transport2 = 0;
+                                            switch (item.code)
+                                            {
+                                                case "D-1801":
+                                                    transport2 = 1.31m;
+                                                    break;
+                                            }
+                                            if (transport2 != 0)
+                                            {
+                                                <div class="text-center">
+                                                    <span>@transport2.ToString("F4")</span><br />
+                                                    <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
+                                                </div>
+                                            }
+                                        }
 
-                            </td>
-                            <td>
-                                @{
-                                    decimal result = 0;
+                                    </td>
+                                    <td>
+                                        @{
+                                            decimal result = 0;
 
-                                    if (transport1 != 0)
-                                    {
-                                        result = item.SumCKILOMETERS.Value * transport1 / 1000;
-                                    }
-                                    else if (transport2 != 0)
-                                    {
-                                        result = item.SumCKILOMETERS.Value * transport2 / 1000;
-                                    }
-                                }
-                                @String.Format("{0:F4}", result)<br />
-                                <span class="input-group-text">ton CO2e/延噸公里(tkm)</span>
-                            </td>
+                                            if (transport1 != 0)
+                                            {
+                                                result = item.SumCKILOMETERS.Value * transport1 / 1000;
+                                            }
+                                            else if (transport2 != 0)
+                                            {
+                                                result = item.SumCKILOMETERS.Value * transport2 / 1000;
+                                            }
+                                        }
+                                        @String.Format("{0:F4}", result)<br />
+                                        <span class="input-group-text">ton CO2e/延噸公里(tkm)</span>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -640,12 +579,28 @@
                                     </td>
                                 </tr>
                             }
+                            <tr style="background-color:#f5f5f5;">
+                                <td colspan="3" class="text-end"></td>
+                                <td>
+                                    @{
+                                        var totalKg = CommutingModel.Sum(x => x.TotalDoubleKM.Value * x.EF_VALUE.Value);
+                                    }
+                                    <input type="text" class="form-control" :value="@totalKg.ToString("F4")" readonly />
+                                    <span class="input-group-text">kgCo₂e/公噸</span>
+                                </td>
+                                <td>
+                                    @{
+                                        var totalTon = totalKg / 1000;
+                                    }
+                                    <input type="text" class="form-control" :value="@totalTon.ToString("F4")" readonly />
+                                    <span class="input-group-text">tonCo₂e/公噸</span>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 }
                 else if (Model is List<TrafficViewModel> TrafficModel)
                 {
-
                     <!--私車公用-公里-->
                     <table class="table table-striped table-bordered table-hover" v-if="methods === '私車公用-公里'">
                         <thead>
@@ -896,6 +851,8 @@
         selectedCoefficientValue: 0,
         searchQuery: '',
         allParameters: @Html.Raw(JsonConvert.SerializeObject(ViewBag.AllParameters)),
+        itemCoefficients: {},
+        wasteModel: @Html.Raw(JsonConvert.SerializeObject(Model as List<WasteSummaryViewModel>)) || [],
         },
     mounted() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -927,10 +884,24 @@
             return this.coefficientOptions.filter(option =>
                 option.Label.toLowerCase().includes(this.searchQuery.toLowerCase())
             );
-        }
+        },
 
     },
-    methods: {
+        methods: {
+            calculateTotalEmission() {
+                if (!this.wasteModel || !this.itemCoefficients) {
+                    return 'N/A';
+                }
+
+                const totalEmission = this.wasteModel.reduce((sum, item) => {
+                    const weight = parseFloat(item.SumDECLAREDWEIGHT) || 0;
+                    const coefficient = parseFloat(this.selectedCoefficientValue) || 0;
+
+                    return sum + (weight * coefficient/1000);
+                }, 0);
+
+                return totalEmission.toFixed(4); 
+            },
         updateSelectedCoefficient() {
             const selected = this.filteredOptions.find(opt => opt.Id === this.selectedCoefficient);
             if (selected) {
