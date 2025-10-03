@@ -315,6 +315,8 @@
     <Content Include="file\Business\報價單%28稅%29.docx" />
     <Content Include="file\Business\報價單-英%28稅%29.docx" />
     <Content Include="file\Business\客戶訪談記錄-英.docx" />
+    <Content Include="file\ESG\南部科學園區台南園區資源再生中心-公司路程圖.pdf" />
+    <Content Include="file\ESG\大寧掩埋場-公司路程圖.pdf" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\bootstrap\bootstrap.bundle.min.js" />
     <Content Include="Scripts\datatable\buttons.html5.min.js" />

@@ -311,7 +311,70 @@ namespace CPC02.Controllers
 
                 return View(officialcarList);
             }
-            return View();
+            else if (search.category == "elec_UP")
+            {
+                var query = _db.ELECTRICITY_BILL
+                    .AsQueryable();
+
+                if (!string.IsNullOrEmpty(search.year))
+                {
+                    query = query.Where(x => x.FROM_BILLING_PERIOD.Value.Year.ToString() == search.year);
+                }
+
+                // 總加總
+                var totalElectricity = query.Sum(x => x.TOTAL_ELECTRICITY);
+
+                var result = new List<Elec_UPViewModel>
+                {
+                    new Elec_UPViewModel
+                    {
+                        SumTotalElectricity = totalElectricity
+                    }
+                };
+
+                return View(result);
+            }
+            else if (search.category == "gas_UP")
+            {
+                var sumACPTB = (from a in _TWNCPCdb.ACPTA
+                                join b in _TWNCPCdb.ACPTB
+                                on new { Key1 = a.TA001.Trim(), Key2 = a.TA002.Trim() }
+                                  equals new { Key1 = b.TB001.Trim(), Key2 = b.TB002.Trim() }
+                                where b.UDF01.StartsWith("公務") && a.TA015.Substring(0, 4) == search.year
+                                group b by b.UDF01.Contains("小貨車") ? "小貨車" : "公務車" into g
+                                select new Gas_UPViewModel
+                                {
+                                    Type = g.Key,
+                                    TotalEmission = g.Sum(x => x.UDF06 ?? 0)
+                                }).ToList();
+
+                // 從 PCMTG 計算
+                var sumPCMTG = _TWNCPCdb.PCMTG
+                    .Where(x => x.UDF01.StartsWith("公務") && x.TG013.Substring(0, 4) == search.year)
+                    .GroupBy(x => x.UDF01.Contains("小貨車") ? "小貨車" : "公務車")
+                    .Select(g => new Gas_UPViewModel
+                    {
+                        Type = g.Key,
+                        TotalEmission = g.Sum(x => x.UDF06 ?? 0)
+                    })
+                    .ToList();
+
+                // 加總所有公里數成一筆
+                var totalEmission = sumACPTB.Sum(x => x.TotalEmission)
+                                  + sumPCMTG.Sum(x => x.TotalEmission);
+
+                var officialcarList = new List<Gas_UPViewModel>
+    {
+        new Gas_UPViewModel
+        {
+            Type = "合計",
+            TotalEmission = totalEmission
+        }
+    };
+
+                return View(officialcarList);
+            }
+                return View();
         }
     }
 }

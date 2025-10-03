@@ -134,4 +134,15 @@ namespace CPC02.Models
         public decimal Coefficient { get; set; }
         public decimal Factor { get; set; } 
     }
+
+    public class Elec_UPViewModel
+    {
+        public string Factory { get; set; }
+        public decimal? SumTotalElectricity { get; set; }
+    }
+    public class Gas_UPViewModel
+    {
+        public string Type { get; set; }
+        public decimal TotalEmission { get; set; }
+    }
 }

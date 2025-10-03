@@ -35,7 +35,9 @@
                 <option value="traffic">類別三_交通</option>
                 <option value="wastetransportation">類別三_廢棄物運輸</option>
                 <option value="water">類別四_水費</option>
-                <option value="waste">類別五_廢棄物</option>
+                <option value="elec_UP">類別四_外購電力上游排放(含運輸)</option>
+                <option value="gas_UP">類別四_汽油有關的上游排放</option>
+                <option value="waste">類別四_廢棄物</option>
             </select>
         </div>
         <!-- 電費 -->
@@ -150,7 +152,16 @@
                 <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" step="1" />
             </template>
         </div>
-
+        <!-- 外購電力上游排放(含運輸) -->
+        <div v-if="category === 'elec_UP'" class="form-group mr-3">
+            <label for="year" class="mr-3">年份:</label>
+            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+        </div>
+        <!-- 汽油有關的上游排放 -->
+        <div v-if="category === 'gas_UP'" class="form-group mr-3">
+            <label for="year" class="mr-3">年份:</label>
+            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+        </div>
 
         <div v-if="category" class="form-group">
             <button class="btn btn-primary btn-spacing" type="submit">搜索</button>
@@ -291,17 +302,21 @@
                                     </td>
                                 </tr>
                             }
-                        <tr style="background-color:#f5f5f5;">
-                            <td colspan="4" class="text-end"></td>
-                            <td>
-                                <input type="text" class="form-control" :value="calculateTotalEmission()" readonly />
-                                <span class="input-group-text">tonCo₂e/ton</span>
+                            <tr style="background-color:#f5f5f5;">
+                                <td colspan="4" class="text-end"></td>
+                                <td>
+                                    <input type="text" class="form-control" :value="calculateTotalEmission()" readonly />
+                                    <span class="input-group-text">tonCo₂e/ton</span>
 
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
 
                         </tbody>
                     </table>
+                    <div>
+                        <p> <a href="~/file/ESG/南部科學園區台南園區資源再生中心-公司路程圖.pdf">南部科學園區台南園區資源再生中心-公司路程圖</a></p>
+                        <p><a href="~/file/ESG/大寧掩埋場-公司路程圖.pdf">大寧掩埋場-公司路程圖</a></p>
+                    </div>
                 }
                 else if (Model is List<WastetransportationViewModel> wastetransportationModel)
                 {
@@ -826,7 +841,85 @@
                         </tbody>
                     </table>
                 }
+                @if (Model is List<Elec_UPViewModel> elec_UPModel)
+                {
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>總用電數(kWh)</th>
+                                <th style="width:150px">係數</th>
+                                <th style="width:150px">計算結果</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in elec_UPModel)
+                            {
+                                <tr>
+                                    <td>@string.Format("{0:N2}", item.SumTotalElectricity)</td>
+                                    <td>
+                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
 
+                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
+                                            <option v-for="option in filteredOptions"
+                                                    :key="option.Id"
+                                                    :value="option.Id">
+                                                {{ option.Label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.SumTotalElectricity)" readonly />
+                                        <span class="input-group-text">tonCo₂e/度</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else if (Model is List<Gas_UPViewModel> Gas_UPModel)
+                {
+                    <!--汽油有關的上游排放-->
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>總用電數(kWh)</th>
+                                <th>
+                                    活動數據
+                                    (kgCO₂e/度)
+                                </th>
+                                <th style="width:150px">
+                                    計算結果
+                                    (tonCO₂e/度)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Gas_UPModel)
+                            {
+                                <tr>
+                                    <td>@item.TotalEmission</td>
+                                    <td>
+                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
+                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
+                                            <option v-for="option in filteredOptions"
+                                                    :key="option.Id"
+                                                    :value="option.Id">
+                                                {{ option.Label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.TotalEmission)" readonly />
+                                        <span class="input-group-text">tonCo₂e/度</span>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                }
             </div>
         </div>
     </div>
