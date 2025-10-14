@@ -90,6 +90,8 @@ namespace CPC02.Models
         public decimal? SumACTIVITYDATA { get; set; }
         public decimal? SumCARBONEMISSIONFACTOR { get; set; }
         public decimal? SumCCARBONDIOXIDE { get; set; }
+
+        public string coefficient { get; set; }
     }
     public class WastetransportationViewModel
     {

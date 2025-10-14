@@ -21,6 +21,7 @@ namespace CPC02.Controllers
                                       join s in _db.SGS_ParameterSetting
                                       on p.PAR000 equals s.PAR001.ToString() into joined
                                       from s in joined.DefaultIfEmpty()
+                                      where p.PAR007 == 0
                                       select new
                                       {
                                           Id = p.PAR000,
@@ -88,8 +89,12 @@ namespace CPC02.Controllers
             }
             else if (search.category == "waste")
             {
-                var query = _db.WASTES
-               .Where(x => x.TREATMENT == search.methods);
+                var query = _db.WASTES.AsQueryable();
+                if (search.methods != "全部")
+                {
+                     query = _db.WASTES.Where(x => x.TREATMENT == search.methods);
+                }
+
                 if (!string.IsNullOrEmpty(search.year))
                 {
                     query = query.Where(x => x.REMOVAL_DATE.Value.Year.ToString() == search.year);
@@ -105,6 +110,13 @@ namespace CPC02.Controllers
                                    SumACTIVITYDATA = g.Sum(x => x.ACTIVITY_DATA),
                                    SumCARBONEMISSIONFACTOR = g.Sum(x => x.CARBON_EMISSION_FACTOR),
                                    SumCCARBONDIOXIDE = g.Sum(x => x.CARBON_DIOXIDE),
+                                   coefficient = (
+                                        from w in _db.WASTES
+                                        join ss in _db.SGS_ParameterSetting on g.Key.TREATMENT equals ss.PAR004
+                                        join s in _db.SGS_Parameter on ss.PAR001.ToString() equals s.PAR000
+                                        where w.TREATMENT == g.Key.TREATMENT
+                                        select s.PAR002
+                                    ).FirstOrDefault()
                                }).ToList();
 
                 return View(result);
@@ -313,7 +325,7 @@ namespace CPC02.Controllers
             }
             else if (search.category == "elec_UP")
             {
-                var query = _db.ELECTRICITY_BILL
+                var query = _db.ELECTRICITY_BILL.Where(x=>x.FACTORY=="南科廠")
                     .AsQueryable();
 
                 if (!string.IsNullOrEmpty(search.year))

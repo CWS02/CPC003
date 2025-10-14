@@ -11,7 +11,7 @@
 {
         new GasCoefficient { GasName = "CO₂", Coefficient = 2.263132872m, Factor = 1m },
         new GasCoefficient { GasName = "CH₄", Coefficient = 0.000816426m, Factor = 27.9m },
-        new GasCoefficient { GasName = "N₂O", Coefficient = 0.0002612563m, Factor = 273m }
+        new GasCoefficient { GasName = "N₂O", Coefficient = 0.000261256m, Factor = 273m }
     };
 }
 
@@ -43,7 +43,7 @@
         <!-- 電費 -->
         <div v-if="category === 'electricity'" class="form-group mr-3">
             <label for="year" class="mr-3">年份:</label>
-            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+            <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" />
             <label for="factory" class="mr-3">選擇廠區:</label>
             <select name="factory" class="form-control" v-model="factory">
                 <option>請選擇</option>
@@ -54,7 +54,7 @@
         <!-- 水費 -->
         <div v-if="category === 'water'" class="form-group mr-3">
             <label for="year" class="mr-3">年份:</label>
-            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+            <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" />
             <label for="factory" class="mr-3">選擇廠區:</label>
             <select name="factory" class="form-control" v-model="factory">
                 <option>請選擇</option>
@@ -73,10 +73,10 @@
         <!-- 廢棄物 -->
         <div v-if="category === 'waste'" class="form-group mr-3">
             <label for="year" class="mr-3">年份:</label>
-            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+            <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" />
             <label for="methods" class="mr-3">處理方式:</label>
             <select name="methods" class="form-control" v-model="methods">
-                <option>請選擇</option>
+                <option value="全部">全部</option>
                 <option value="掩埋">掩埋</option>
                 <option value="焚化處理">焚化處理</option>
             </select>
@@ -84,7 +84,7 @@
         <!-- 廢棄物運輸 -->
         <div v-if="category === 'wastetransportation'" class="form-group mr-3">
             <label for="year" class="mr-3">年份:</label>
-            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+            <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" />
             <label for="methods" class="mr-3">處理方式:</label>
             <select name="methods" class="form-control" v-model="methods">
                 <option>請選擇</option>
@@ -110,7 +110,7 @@
         <!-- WD40 -->
         <div v-if="category === 'wd40'" class="form-group mr-3">
             <label for="year" class="mr-3">年份:</label>
-            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" step="1" />
+            <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" step="1" />
         </div>
         <!--冷媒-->
         <div v-if="category === 'coldcoal'" class="form-group mr-3">
@@ -125,7 +125,7 @@
         <!--通勤-->
         <div v-if="category === 'commuting'" class="form-group mr-3">
             <label for="year" class="mr-3">年份:</label>
-            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" step="1" />
+            <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" step="1" />
         </div>
         <!--交通-->
         <div v-if="category === 'traffic'" class="form-group mr-3">
@@ -142,25 +142,25 @@
             </select>
             <template v-if="methods !== '火車' && methods !== '私車公用-公里' && methods !== '私車公用-公升' ">
                 <label for="year" class="mr-3">年份:</label>
-                <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" step="1" />
+                <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" step="1" />
             </template>
         </div>
         <!--公務車-->
         <div v-if="category === 'officialcar'" class="form-group mr-3">
             <template>
                 <label for="year" class="mr-3">年份:</label>
-                <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" step="1" />
+                <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" step="1" />
             </template>
         </div>
         <!-- 外購電力上游排放(含運輸) -->
         <div v-if="category === 'elec_UP'" class="form-group mr-3">
             <label for="year" class="mr-3">年份:</label>
-            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+            <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" />
         </div>
         <!-- 汽油有關的上游排放 -->
         <div v-if="category === 'gas_UP'" class="form-group mr-3">
             <label for="year" class="mr-3">年份:</label>
-            <input type="number" name="year" class="form-control" v-model="year" min="2020" max="2030" />
+            <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" />
         </div>
 
         <div v-if="category" class="form-group">
@@ -271,11 +271,11 @@
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>廢棄物代碼</th>
-                                <th>中間處理方式</th>
-                                <th>申報重量(公噸)</th>
-                                <th>係數</th>
-                                <th>計算結果</th>
+                                <th style="width: 20%">廢棄物代碼</th>
+                                <th style="width: 20%">中間處理方式</th>
+                                <th style="width: 20%">申報重量(公噸)</th>
+                                <th style="width: 20%">係數</th>
+                                <th style="width: 20%">計算結果</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -286,28 +286,37 @@
                                     <td>@item.methods</td>
                                     <td>@(item.SumDECLAREDWEIGHT?.ToString("G29") ?? "N/A")</td>
 
+                                    <td>@(item.coefficient??"")</td>
                                     <td>
-                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
-                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
-                                            <option v-for="option in filteredOptions"
-                                                    :key="option.Id"
-                                                    :value="option.Id">
-                                                {{ option.Label }}
-                                            </option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.SumDECLAREDWEIGHT)" readonly />
-                                        <span class="input-group-text">tonCo₂e/ton</span>
+                                        @{
+                                            decimal coeff = 0;
+                                            if (decimal.TryParse(item.coefficient, out var temp))
+                                            {
+                                                coeff = temp;
+                                            }
+                                        }
+                                        <input type="text" class="form-control"
+                                               value="@( (coeff * (item.SumDECLAREDWEIGHT ?? 0)/1000).ToString("F4") )" readonly />
+                                        <span class="input-group-text">kgCo₂e/公噸</span>
                                     </td>
                                 </tr>
                             }
+                            @{
+                                decimal totalEmission = 0;
+                                foreach (var item in wasteModel)
+                                {
+                                    if (decimal.TryParse(item.coefficient, out var coeff))
+                                    {
+                                        totalEmission += coeff * (item.SumDECLAREDWEIGHT ?? 0) / 1000;
+                                    }
+                                }
+                            }
+
                             <tr style="background-color:#f5f5f5;">
                                 <td colspan="4" class="text-end"></td>
                                 <td>
-                                    <input type="text" class="form-control" :value="calculateTotalEmission()" readonly />
+                                    <input type="text" class="form-control" value="@(totalEmission.ToString("F4"))" readonly />
                                     <span class="input-group-text">tonCo₂e/ton</span>
-
                                 </td>
                             </tr>
 
@@ -408,19 +417,23 @@
                             }
                         </tbody>
                     </table>
+                    <div>
+                        <p> <a href="~/file/ESG/南部科學園區台南園區資源再生中心-公司路程圖.pdf">南部科學園區台南園區資源再生中心-公司路程圖</a></p>
+                        <p><a href="~/file/ESG/大寧掩埋場-公司路程圖.pdf">大寧掩埋場-公司路程圖</a></p>
+                    </div>
                 }
                 else if (Model is List<FireExtinViewModel> fireextinModel)
                 {
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>廠區</th>
-                                <th>內容物</th>
-                                <th>數量(瓶)</th>
-                                <th>總量(公噸)</th>
-                                <th style="width:150px">係數</th>
-                                <th style="width:150px">計算結果</th>
-                                <th style="width:150px">計算結果</th>
+                                <th style="width: 15%">廠區</th>
+                                <th style="width: 15%">內容物</th>
+                                <th style="width: 15%">數量(瓶)</th>
+                                <th style="width: 15%">總量(公噸)</th>
+                                <th style="width: 15%">係數</th>
+                                <th style="width: 15%">計算結果</th>
+                                <th style="width: 15%">計算結果</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -459,10 +472,10 @@
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>二氧化碳重量(克)</th>
-                                <th style="width:150px">係數</th>
-                                <th style="width:150px">計算結果</th>
-                                <th style="width:150px">計算結果</th>
+                                <th style="width: 25%">二氧化碳重量(克)</th>
+                                <th style="width: 25%">係數</th>
+                                <th style="width: 25%">計算結果</th>
+                                <th style="width: 25%">計算結果</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -504,11 +517,11 @@
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>冷媒</th>
-                                <th>逸散量(公噸)</th>
-                                <th style="width:150px">系數(公噸/公噸)</th>
-                                <th style="width:150px">GWP值</th>
-                                <th style="width:150px">計算結果(tonCO2e/公噸)</th>
+                                <th style="width: 20%">冷媒</th>
+                                <th style="width: 20%">逸散量(公噸)</th>
+                                <th style="width: 20%">系數(公噸/公噸)</th>
+                                <th style="width: 20%">GWP值</th>
+                                <th style="width: 20%">計算結果(tonCO2e/公噸)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -620,17 +633,17 @@
                     <table class="table table-striped table-bordered table-hover" v-if="methods === '私車公用-公里'">
                         <thead>
                             <tr>
-                                <th>類型</th>
-                                <th>總公里數(km)</th>
-                                <th>
+                                <th style="width: 20%">類型</th>
+                                <th style="width: 20%">總公里數(km)</th>
+                                <th style="width: 20%">
                                     活動數據
                                     (kg CO2e/每延人公里)
                                 </th>
-                                <th style="width:150px">
+                                <th style="width: 20%">
                                     計算結果
                                     (kg CO2e/每延人公里)
                                 </th>
-                                <th style="width:150px">
+                                <th style="width: 20%">
                                     計算結果
                                     (ton CO2e/每延人公里)
                                 </th>
@@ -654,24 +667,24 @@
                     <table class="table table-striped table-bordered table-hover" v-if="methods === '私車公用-公升'">
                         <thead>
                             <tr>
-                                <th>類型</th>
-                                <th>總公升數(L)</th>
-                                <th>
+                                <th style="width: 20%">類型</th>
+                                <th style="width: 20%">總公升數(L)</th>
+                                <th style="width: 20%">
                                     溫室氣體
                                     種類
                                 </th>
-                                <th>
+                                <th style="width: 20%">
                                     係數
                                     (kg CO₂e/公升)
                                 </th>
-                                <th>
+                                <th style="width: 20%">
                                     GWP值
                                 </th>
-                                <th>
+                                <th style="width: 20%">
                                     計算結果
                                     (kg CO₂e/公升)
                                 </th>
-                                <th>
+                                <th style="width: 20%">
                                     計算結果
                                     (ton CO₂e/公噸)
                                 </th>
@@ -687,21 +700,21 @@
                                     <td>2.263132872</td>
                                     <td>1</td>
                                     <td>6563.583218	</td>
-                                    <td>6.5636</td>
+                                    <td>6.5635</td>
                                 </tr>
                                 <tr>
                                     <td>CH₄</td>
                                     <td>0.000816426</td>
                                     <td>27.9</td>
-                                    <td>0</td>
-                                    <td>0.0000</td>
+                                    <td>66.0620</td>
+                                    <td>0.0661</td>
                                 </tr>
                                 <tr>
                                     <td>N₂O</td>
                                     <td>0.000261256</td>
                                     <td>273</td>
-                                    <td>0</td>
-                                    <td>0.0000</td>
+                                    <td>206.8523</td>
+                                    <td>0.2069</td>
                                 </tr>
                             }
                         </tbody>
@@ -711,17 +724,17 @@
                     <table class="table table-striped table-bordered table-hover" v-if="methods !== '公務車'  && methods !== '私車公用-公里'&& methods !== '私車公用-公升'">
                         <thead>
                             <tr>
-                                <th>類型</th>
-                                <th>總公里數(km)</th>
-                                <th>
+                                <th style="width: 20%">類型</th>
+                                <th style="width: 20%">總公里數(km)</th>
+                                <th style="width: 20%">
                                     活動數據
                                     (kg CO2e/每延人公里)
                                 </th>
-                                <th style="width:150px">
+                                <th style="width: 20%">
                                     計算結果
                                     (kg CO2e/每延人公里)
                                 </th>
-                                <th style="width:150px">
+                                <th style="width: 20%">
                                     計算結果
                                     (ton CO2e/每延人公里)
                                 </th>
@@ -846,9 +859,9 @@
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>總用電數(kWh)</th>
-                                <th style="width:150px">係數</th>
-                                <th style="width:150px">計算結果</th>
+                                <th style="width: 33%">總用電數(kWh)</th>
+                                <th style="width: 33%">係數</th>
+                                <th style="width: 33%">計算結果</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -882,12 +895,12 @@
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>總用電數(kWh)</th>
-                                <th>
+                                <th style="width: 33%">總公升數(L)</th>
+                                <th style="width: 33%">
                                     活動數據
                                     (kgCO₂e/度)
                                 </th>
-                                <th style="width:150px">
+                                <th style="width: 33%">
                                     計算結果
                                     (tonCO₂e/度)
                                 </th>
@@ -900,6 +913,7 @@
                                     <td>@item.TotalEmission</td>
                                     <td>
                                         <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
 
                                         <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
                                             <option v-for="option in filteredOptions"
@@ -960,7 +974,8 @@
         this.item = urlParams.get('item') || '';
         this.year = urlParams.get('year') || '';
 
-        if (this.category === 'waste' || this.category==='traffic') {
+        if (this.category === 'waste' || this.category === 'traffic') {
+            
             this.Option = this.allParameters.filter(p => p.Category === this.category && p.Category2 === this.methods);
         } else {
             this.Option = this.allParameters.filter(p => p.Category === this.category);
