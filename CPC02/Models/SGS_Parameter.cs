@@ -124,6 +124,7 @@ namespace CPC02.Models
     {
         public string Type { get; set; }
         public decimal TotalEmission { get; set; }
+        public string ParameterValue { get; set; }
     }
     public class OfficialcarViewModel
     {

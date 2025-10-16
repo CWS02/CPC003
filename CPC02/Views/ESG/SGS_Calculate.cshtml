@@ -29,7 +29,7 @@
                 <option value="coldcoal">類別一_冷媒</option>
                 <option value="fireextin">類別一_滅火器</option>
                 <option value="wd40">類別一_WD40</option>
-                <option value="officialcar">類別一_公務車</option>
+                <option value="公務車">類別一_公務車</option>
                 <option value="electricity">類別二_電費</option>
                 <option value="commuting">類別三_員工通勤</option>
                 <option value="traffic">類別三_交通</option>
@@ -146,7 +146,7 @@
             </template>
         </div>
         <!--公務車-->
-        <div v-if="category === 'officialcar'" class="form-group mr-3">
+        <div v-if="category === '公務車'" class="form-group mr-3">
             <template>
                 <label for="year" class="mr-3">年份:</label>
                 <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" step="1" />
@@ -499,7 +499,7 @@
                                         <span class="input-group-text">kgCo₂e/公噸</span>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" :value="calculateCarbonEmission3(@item.SumWD011)" readonly />
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission5(@item.SumWD011)" readonly />
                                         <span class="input-group-text">tonCo₂e/公噸</span>
                                     </td>
                                 </tr>
@@ -654,10 +654,10 @@
                             {
                                 <tr>
                                     <td>私車公用-公里</td>
-                                    <td>9293.3</td>
+                                    <td>11680.69</td>
                                     <td>0.115</td>
-                                    <td>1068.7295</td>
-                                    <td>1.0687295</td>
+                                    <td>1343.27935</td>
+                                    <td>1.3433</td>
                                 </tr>
                             }
                         </tbody>
@@ -670,53 +670,27 @@
                                 <th style="width: 20%">類型</th>
                                 <th style="width: 20%">總公升數(L)</th>
                                 <th style="width: 20%">
-                                    溫室氣體
-                                    種類
-                                </th>
-                                <th style="width: 20%">
                                     係數
                                     (kg CO₂e/公升)
                                 </th>
                                 <th style="width: 20%">
-                                    GWP值
-                                </th>
-                                <th style="width: 20%">
                                     計算結果
                                     (kg CO₂e/公升)
                                 </th>
                                 <th style="width: 20%">
                                     計算結果
-                                    (ton CO₂e/公噸)
+                                    (ton CO₂e/公秉)
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in TrafficModel)
-                            {
-                                <tr>
-                                    <td rowspan="3">私車公用-公里</td>
-                                    <td rowspan="3">2900.22</td>
-                                    <td>CO₂</td>
-                                    <td>2.263132872</td>
-                                    <td>1</td>
-                                    <td>6563.583218	</td>
-                                    <td>6.5635</td>
-                                </tr>
-                                <tr>
-                                    <td>CH₄</td>
-                                    <td>0.000816426</td>
-                                    <td>27.9</td>
-                                    <td>66.0620</td>
-                                    <td>0.0661</td>
-                                </tr>
-                                <tr>
-                                    <td>N₂O</td>
-                                    <td>0.000261256</td>
-                                    <td>273</td>
-                                    <td>206.8523</td>
-                                    <td>0.2069</td>
-                                </tr>
-                            }
+                            <tr>
+                                <td>私車公用-公升</td>
+                                <td>512.79</td>
+                                <td>2.92</td>
+                                <td>1497.3468</td>
+                                <td>1.4973</td>
+                            </tr>
                         </tbody>
                     </table>
                     <!--私車公用-公升end-->
@@ -746,41 +720,60 @@
                                 <tr>
                                     <td>@item.Type</td>
                                     <td>@item.TotalEmission</td>
-                                    <td>
-                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
-                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
-                                            <option v-for="option in filteredOptions"
-                                                    :key="option.Id"
-                                                    :value="option.Id">
-                                                {{ option.Label }}
-                                            </option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" :value="calculateCarbonEmission(@item.TotalEmission)" readonly />
-                                        <span class="input-group-text">kgCo₂e/公噸</span>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.TotalEmission)" readonly />
-                                        <span class="input-group-text">tonCo₂e/公噸</span>
-                                    </td>
+                                    @if (item.ParameterValue != null)
+                                    {
+                                        <td>@item.ParameterValue</td>
+                                        <td>@(decimal.TryParse(item.ParameterValue, out var val) ? Math.Round(item.TotalEmission * val, 4) : 0)</td>
+                                        <td>@(decimal.TryParse(item.ParameterValue, out var val2) ? Math.Round((item.TotalEmission * val2) / 1000, 4) : 0)</td>
+
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+                                            <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
+                                                <option v-for="option in filteredOptions"
+                                                        :key="option.Id"
+                                                        :value="option.Id">
+                                                    {{ option.Label }}
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" :value="calculateCarbonEmission(@item.TotalEmission)" readonly />
+                                            <span class="input-group-text">kgCo₂e/公噸</span>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" :value="calculateCarbonEmission2(@item.TotalEmission)" readonly />
+                                            <span class="input-group-text">tonCo₂e/公噸</span>
+                                        </td>
+                                    }
+
+
                                 </tr>
                             }
                         </tbody>
                         <tbody v-if="methods === '火車'">
                             <tr>
                                 <td>德國火車</td>
-                                <td>3148.6</td>
+                                <td>901.6</td>
                                 <td>0.045</td>
-                                <td>141.687</td>
-                                <td>0.1417</td>
+                                <td>40.572</td>
+                                <td>0.0406</td>
                             </tr>
                             <tr>
                                 <td>台灣火車</td>
                                 <td>491.4</td>
-                                <td>0.054</td>
+                                <td>54</td>
+                                <td>26535.6</td>
                                 <td>26.5356</td>
-                                <td>0.0265</td>
+                            </tr>
+                            <tr>
+                                <td>日本火車</td>
+                                <td>323.2</td>
+                                <td>0.017</td>
+                                <td>5.4944</td>
+                                <td>0.0055</td>
                             </tr>
 
                         </tbody>
@@ -975,7 +968,7 @@
         this.year = urlParams.get('year') || '';
 
         if (this.category === 'waste' || this.category === 'traffic') {
-            
+
             this.Option = this.allParameters.filter(p => p.Category === this.category && p.Category2 === this.methods);
         } else {
             this.Option = this.allParameters.filter(p => p.Category === this.category);
@@ -1008,7 +1001,7 @@
                     return sum + (weight * coefficient/1000);
                 }, 0);
 
-                return totalEmission.toFixed(4); 
+                return totalEmission.toFixed(4);
             },
         updateSelectedCoefficient() {
             const selected = this.filteredOptions.find(opt => opt.Id === this.selectedCoefficient);
@@ -1035,7 +1028,13 @@
                 return (parseFloat(this.selectedCoefficientValue) * parseFloat(co2Value) / 1000000000).toFixed(4);
             }
             return '';
-        },
+            },
+            calculateCarbonEmission5(co2Value) {
+                if (this.selectedCoefficient && co2Value) {
+                    return (parseFloat(this.selectedCoefficientValue) * parseFloat(co2Value) / 1000000).toFixed(4);
+                }
+                return '';
+            },
         calculateCarbonEmission4(co2Value) {
             if (this.selectedCoefficient && co2Value) {
                 const result = parseFloat(this.selectedCoefficientValue) * parseFloat(co2Value);

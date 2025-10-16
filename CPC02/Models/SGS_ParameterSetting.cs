@@ -39,6 +39,10 @@ namespace CPC02.Models
         /// </summary>
         [Required]
         public string PAR004 { get; set; }
+        /// <summary>
+        /// 類別細項
+        /// </summary>
+        public string PAR005 { get; set; }
 
         /// <summary>
         /// 建立時間。
