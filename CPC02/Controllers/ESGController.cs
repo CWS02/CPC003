@@ -228,7 +228,7 @@ namespace CPC02.Controllers
             {
                 var trafficList = new List<TrafficViewModel>();
 
-                if (search.methods == "捷運")
+                if (search.methods == "捷運"|| search.methods == "地鐵")
                 {
                     // ACPTB group by UDF01
                     var acptGroup = (
@@ -260,21 +260,23 @@ namespace CPC02.Controllers
                     ).ToList();
 
                     trafficList = (
-                        from a in acptGroup
-                        join b in pcmtgGroup on a.UDF01 equals b.UDF01
-                        join ss in _db.SGS_ParameterSetting
-                            on a.UDF01 equals ss.PAR005 into ssGroup
-                        from ss in ssGroup.DefaultIfEmpty() // 左 join
-                        join s in _db.SGS_Parameter
-                            on ss != null ? ss.PAR001.ToString() : "" equals s.PAR000 into sGroup
-                        from s in sGroup.DefaultIfEmpty() // 左 join
-                        select new TrafficViewModel
-                        {
-                            Type = a.UDF01,
-                            TotalEmission = a.SumACPTB + b.SumPCMTG,
-                            ParameterValue = s != null ? s.PAR002 : null
-                        }
-                    ).ToList();
+                     from a in acptGroup
+                     join b in pcmtgGroup on a.UDF01 equals b.UDF01 into bGroup
+                     from b in bGroup.DefaultIfEmpty() // 左 join
+                     join ss in _db.SGS_ParameterSetting
+                         on a.UDF01 equals ss.PAR005 into ssGroup
+                     from ss in ssGroup.DefaultIfEmpty()
+                     join s in _db.SGS_Parameter
+                         on ss != null ? ss.PAR001.ToString() : "" equals s.PAR000 into sGroup
+                     from s in sGroup.DefaultIfEmpty()
+                     select new TrafficViewModel
+                     {
+                         Type = a.UDF01,
+                         TotalEmission = a.SumACPTB + (b != null ? b.SumPCMTG : 0), // 若 b 為 null 就給 0
+                         ParameterValue = s != null ? s.PAR002 : null
+                     }
+                 ).ToList();
+
 
                     return View(trafficList);
                 }
