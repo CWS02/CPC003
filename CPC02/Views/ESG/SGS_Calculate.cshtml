@@ -4,6 +4,8 @@
 @{
     Layout = "~/Views/Shared/_LayoutMember2.cshtml";
     ViewBag.Title = "數據統計";
+
+    decimal transport = 0;
     decimal transport1 = 0;
     decimal transport2 = 0;
 
@@ -334,14 +336,12 @@
                             <tr>
                                 <th>廢棄物代碼</th>
                                 <th>中間處理方式</th>
-                                <th>運輸公里(km)</th>
+                                <th>每趟運輸公里</th>
                                 <th>
-                                    係數
-                                    營業大貨車(柴油)
+                                    總噸數
                                 </th>
                                 <th>
                                     係數
-                                    柴油動力垃圾車
                                 </th>
                                 <th>
                                     廢棄物運輸計算結果
@@ -354,8 +354,33 @@
                                 <tr>
                                     <td>@item.code</td>
                                     <td>@item.methods</td>
+                                    <td>
+                                        @{
+                                            transport = 0;
 
-                                    <td>@(item.SumCKILOMETERS?.ToString("G29") ?? "")</td>
+                                            switch (item.code)
+                                            {
+                                                case "D-2406":
+                                                case "D-1801":
+                                                case "D-2399":
+                                                    transport = 2.46m;
+                                                    break;
+
+                                                case "D-2499":
+                                                    transport = 43.6m;
+                                                    break;
+                                            }
+                                        }
+
+                                        @if (transport != 0)
+                                        {
+                                            <div class="text-center">
+                                                <span>@transport.ToString("F2")</span><br />
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td>@(item.SumDECLAREDWEIGHT?.ToString("G29") ?? "")</td>
                                     <td>
                                         @{
                                             transport1 = 0;
@@ -366,52 +391,25 @@
                                                 case "D-2399":
                                                     transport1 = 0.131m;
                                                     break;
+                                                case "D-1801":
+                                                    transport1 = 1.31m;
+                                                    break;
                                             }
                                             if (transport1 != 0)
                                             {
                                                 <div class="text-center">
                                                     <span>@transport1.ToString("F4")</span><br />
-                                                    <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
+                                                    <span class="input-group-text">(kg CO₂e)/延噸公里(mt)</span>
                                                 </div>
                                             }
                                         }
-
-
                                     </td>
                                     <td>
-                                        @{
-                                            transport2 = 0;
-                                            switch (item.code)
-                                            {
-                                                case "D-1801":
-                                                    transport2 = 1.31m;
-                                                    break;
-                                            }
-                                            if (transport2 != 0)
-                                            {
-                                                <div class="text-center">
-                                                    <span>@transport2.ToString("F4")</span><br />
-                                                    <span class="input-group-text">(kg CO2e）/延噸公里(tkm))</span>
-                                                </div>
-                                            }
-                                        }
-
-                                    </td>
-                                    <td>
-                                        @{
-                                            decimal result = 0;
-
-                                            if (transport1 != 0)
-                                            {
-                                                result = item.SumCKILOMETERS.Value * transport1 / 1000;
-                                            }
-                                            else if (transport2 != 0)
-                                            {
-                                                result = item.SumCKILOMETERS.Value * transport2 / 1000;
-                                            }
-                                        }
-                                        @String.Format("{0:F4}", result)<br />
-                                        <span class="input-group-text">ton CO2e/延噸公里(tkm)</span>
+                                        <div class="text-center">
+                                            <span>@((transport * (item.SumDECLAREDWEIGHT ?? 0) * transport1 / 1000).ToString("F4"))</span><br />
+                                            <span class="input-group-text">tonCO₂e/延噸公里(mt)</span>
+                                        </div>
+                                        
                                     </td>
                                 </tr>
                             }
