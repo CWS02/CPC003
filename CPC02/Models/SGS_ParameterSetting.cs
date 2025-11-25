@@ -43,6 +43,10 @@ namespace CPC02.Models
         /// 類別細項
         /// </summary>
         public string PAR005 { get; set; }
+        /// <summary>
+        /// 年份
+        /// </summary>
+        public int Year { get; set; }
 
         /// <summary>
         /// 建立時間。
@@ -61,5 +65,6 @@ namespace CPC02.Models
         /// </summary>
         [StringLength(20)]
         public string IP { get; set; }
+
     }
 }

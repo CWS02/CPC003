@@ -882,9 +882,9 @@
         this.year = urlParams.get('year') || 2024;
 
         if (this.category === 'waste' || this.category === 'traffic') {
-            this.Option = this.allParameters.filter(p => p.Category === this.category && p.Category2 === this.methods);
+            this.Option = this.allParameters.filter(p => p.Category === this.category && p.Category2 === this.methods && p.Year == this.year);
         } else {
-            this.Option = this.allParameters.filter(p => p.Category === this.category);
+            this.Option = this.allParameters.filter(p => p.Category === this.category && p.Year == this.year);
         }
 
         this.selectedCoefficient = this.Option[0]?.Id || null;

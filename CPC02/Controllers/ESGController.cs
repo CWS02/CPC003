@@ -35,6 +35,7 @@ namespace CPC02.Controllers
                 Id = s.PAR001,
                 Category = s.PAR003,
                 Category2 = s.PAR004,
+                Year=s.Year,
             }).ToList();
 
             ViewBag.AllParameters = allParameters;
@@ -114,7 +115,7 @@ namespace CPC02.Controllers
                                         from w in _db.WASTES
                                         join ss in _db.SGS_ParameterSetting on g.Key.TREATMENT equals ss.PAR004
                                         join s in _db.SGS_Parameter on ss.PAR001.ToString() equals s.PAR000
-                                        where w.TREATMENT == g.Key.TREATMENT
+                                        where w.TREATMENT == g.Key.TREATMENT && ss.Year.ToString() == search.year
                                         select s.PAR002
                                     ).FirstOrDefault()
                                }).ToList();
@@ -209,7 +210,7 @@ namespace CPC02.Controllers
                     .Where(b => b.EF_YEAR == search.year)
                 .GroupBy(b => b.EF_NAME)
                 .Select(g => g.FirstOrDefault());
-
+                
                 var result = (from c in _db.CAT_THREE_EMPLOYEE_COMMUTING
                               join g in _db.GHG_MST_COMMUTE on c.USER_ID equals g.USER_ID
                               join b in emissionFactors on g.TRANSPORTATION equals b.EF_NAME
@@ -269,6 +270,7 @@ namespace CPC02.Controllers
                      join s in _db.SGS_Parameter
                          on ss != null ? ss.PAR001.ToString() : "" equals s.PAR000 into sGroup
                      from s in sGroup.DefaultIfEmpty()
+                     where ss.Year.ToString()== search.year
                      select new TrafficViewModel
                      {
                          Type = a.UDF01,
