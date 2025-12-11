@@ -228,9 +228,11 @@
     <Compile Include="Models\ColdCoal.cs" />
     <Compile Include="Models\COPTC.cs" />
     <Compile Include="Models\CPC2Context.cs" />
+    <Compile Include="Models\Diesel.cs" />
     <Compile Include="Models\ESGContext.cs" />
     <Compile Include="Models\ELECTRICITY_BILL.cs" />
     <Compile Include="Models\FireExtin.cs" />
+    <Compile Include="Models\Gas_Parameter.cs" />
     <Compile Include="Models\GHG_MST_COMMUTE.cs" />
     <Compile Include="Models\INTRE.cs" />
     <Compile Include="Models\INTRD.cs" />

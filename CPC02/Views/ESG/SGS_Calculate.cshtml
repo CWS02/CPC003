@@ -4,17 +4,8 @@
 @{
     Layout = "~/Views/Shared/_LayoutMember2.cshtml";
     ViewBag.Title = "數據統計";
-
     decimal transport = 0;
     decimal transport1 = 0;
-    decimal transport2 = 0;
-
-    var gasCoefficients = new List<GasCoefficient>
-{
-        new GasCoefficient { GasName = "CO₂", Coefficient = 2.263132872m, Factor = 1m },
-        new GasCoefficient { GasName = "CH₄", Coefficient = 0.000816426m, Factor = 27.9m },
-        new GasCoefficient { GasName = "N₂O", Coefficient = 0.000261256m, Factor = 273m }
-    };
 }
 
 <head>
@@ -39,6 +30,7 @@
                 <option value="water">類別四_水費</option>
                 <option value="elec_UP">類別四_外購電力上游排放(含運輸)</option>
                 <option value="gas_UP">類別四_汽油有關的上游排放</option>
+                <option value="diesel_UP">類別四_柴油有關的上游排放</option>
                 <option value="waste">類別四_廢棄物</option>
             </select>
         </div>
@@ -161,6 +153,11 @@
         </div>
         <!-- 汽油有關的上游排放 -->
         <div v-if="category === 'gas_UP'" class="form-group mr-3">
+            <label for="year" class="mr-3">年份:</label>
+            <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" />
+        </div>
+        <!-- 柴油有關的上游排放 -->
+        <div v-if="category === 'diesel_UP'" class="form-group mr-3">
             <label for="year" class="mr-3">年份:</label>
             <input type="number" name="year" class="form-control" v-model="year" min="2024" max="2030" />
         </div>
@@ -409,7 +406,7 @@
                                             <span>@((transport * (item.SumDECLAREDWEIGHT ?? 0) * transport1 / 1000).ToString("F4"))</span><br />
                                             <span class="input-group-text">tonCO₂e/延噸公里(mt)</span>
                                         </div>
-                                        
+
                                     </td>
                                 </tr>
                             }
@@ -688,66 +685,47 @@
                 }
                 else if (Model is List<OfficialcarViewModel> OfficialcarViewModel)
                 {
-                    <!--公務車-->
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th>類別</th>
                                 <th>總公升數(L)</th>
-                                <th>
-                                    溫室氣體
-                                    種類
-                                </th>
-                                <th style="width:150px">
-                                    係數
-                                    (kg CO2e/公升)
-                                </th>
-                                <th>
-                                    GWP值
-                                </th>
-                                <th style="width:150px">
-                                    計算結果
-                                    (kg CO2e/公升)
-                                </th>
-                                <th style="width:150px">
-                                    計算結果
-                                    (ton CO2e/公噸)
-                                </th>
-                                <th>
-                                    計算結果
-                                    (ton CO2e/公噸)
-                                </th>
+                                <th>溫室氣體種類</th>
+                                <th style="width:150px">係數 (kg CO2e/公升)</th>
+                                <th>GWP值</th>
+                                <th style="width:150px">計算結果 (kg CO2e)</th>
+                                <th style="width:150px">計算結果 (ton CO2e)</th>
+                                <th>最終總和 (ton CO2e)</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in OfficialcarViewModel)
                             {
-                                var Emission = 0M;
-                                var sumEmission = 0M;
-                                for (int i = 0; i < gasCoefficients.Count; i++)
-                                {
-                                    Emission = item.TotalEmission * gasCoefficients[i].Coefficient * gasCoefficients[i].Factor / 1000;
-                                    sumEmission += Emission;
-                                }
-                                <tr>
-                                    <td rowspan="@gasCoefficients.Count">@item.Type</td>
-                                    <td rowspan="@gasCoefficients.Count">@item.TotalEmission</td>
-                                    <td>@gasCoefficients[0].GasName</td>
-                                    <td>@gasCoefficients[0].Coefficient</td>
-                                    <td>@gasCoefficients[0].Factor</td>
-                                    <td>@(item.TotalEmission * gasCoefficients[0].Coefficient * gasCoefficients[0].Factor)</td>
-                                    <td>@((item.TotalEmission * gasCoefficients[0].Coefficient * gasCoefficients[0].Factor / 1000).ToString("F4"))</td>
-                                    <td rowspan="@gasCoefficients.Count">@sumEmission.ToString("F4")</td>
-                                </tr>
+                                var dynamicCoefficients = item.GasCoefficients;
+                                var sumEmission = item.TotalCO2eEmission;
 
-                                for (int i = 1; i < gasCoefficients.Count; i++)
+                                for (int i = 0; i < dynamicCoefficients.Count; i++)
                                 {
+                                    var coeff = dynamicCoefficients[i];
+                                    var kgCO2e = item.TotalEmission * coeff.Coefficient1 * coeff.Coefficient2;
+                                    var tonCO2e = kgCO2e / 1000M;
+
                                     <tr>
-                                        <td>@gasCoefficients[i].GasName</td>
-                                        <td>@gasCoefficients[i].Coefficient</td>
-                                        <td>@gasCoefficients[i].Factor</td>
-                                        <td>@(item.TotalEmission * gasCoefficients[i].Coefficient * gasCoefficients[i].Factor)</td>
-                                        <td>@((item.TotalEmission * gasCoefficients[i].Coefficient * gasCoefficients[i].Factor / 1000).ToString("F4"))</td>
+                                        @if (i == 0) 
+                                        {
+                                            <td rowspan="@dynamicCoefficients.Count">@item.Type</td>
+                                            <td rowspan="@dynamicCoefficients.Count">@item.TotalEmission</td>
+                                        }
+                                        <td>@coeff.GasName</td>
+                                        <td>@coeff.Coefficient1.ToString("F10")</td> 
+                                        <td>@coeff.Coefficient2.ToString("F4")</td> 
+                                        <td>@kgCO2e.ToString("F4")</td>
+                                        <td>@tonCO2e.ToString("F4")</td>
+
+                                        @if (i == 0) 
+                                        {
+                                            <td rowspan="@dynamicCoefficients.Count">@sumEmission.ToString("F4")</td>
+                                        }
                                     </tr>
                                 }
                             }
@@ -802,7 +780,7 @@
                                 </th>
                                 <th style="width: 25%">
                                     計算結果
-                                    (tonCO₂e/公升)
+                                    (kgCO₂e/公升)
                                 </th>
                                 <th>
                                     計算結果
@@ -817,8 +795,6 @@
                                     <td>@item.TotalEmission</td>
                                     <td>
                                         <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
-
-
                                         <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
                                             <option v-for="option in filteredOptions"
                                                     :key="option.Id"
@@ -829,11 +805,57 @@
                                     </td>
                                     <td>
                                         <input type="text" class="form-control" :value="calculateCarbonEmission(@item.TotalEmission)" readonly />
-                                        <span class="input-group-text">tonCo₂e/度</span>
                                     </td>
                                     <td>
                                         <input type="text" class="form-control" :value="calculateCarbonEmission5(@item.TotalEmission)" readonly />
-                                        <span class="input-group-text">tonCo₂e/度</span>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                }
+                else if (Model is List<Diesel_UPViewModel> Diesel_UPModel)
+                {
+                    <!--汽油有關的上游排放-->
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%">總公升數(L)</th>
+                                <th style="width: 25%">
+                                    活動數據
+                                    (kgCO₂e/公升)
+                                </th>
+                                <th style="width: 25%">
+                                    計算結果
+                                    (kgCO₂e/公升)
+                                </th>
+                                <th>
+                                    計算結果
+                                    (ton CO₂e/公秉)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Diesel_UPModel)
+                            {
+                                <tr>
+                                    <td>@item.Total</td>
+                                    <td>
+                                        <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+                                        <select v-model="selectedCoefficient" class="form-control" v-on:change="updateSelectedCoefficient">
+                                            <option v-for="option in filteredOptions"
+                                                    :key="option.Id"
+                                                    :value="option.Id">
+                                                {{ option.Label }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission(@item.Total)" readonly />
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" :value="calculateCarbonEmission5(@item.Total)" readonly />
                                     </td>
                                 </tr>
                             }

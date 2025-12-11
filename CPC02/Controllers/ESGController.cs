@@ -1,4 +1,5 @@
 ﻿using CPC02.Models;
+using DocumentFormat.OpenXml.Bibliography;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -35,7 +36,7 @@ namespace CPC02.Controllers
                 Id = s.PAR001,
                 Category = s.PAR003,
                 Category2 = s.PAR004,
-                Year=s.Year,
+                Year = s.Year,
             }).ToList();
 
             ViewBag.AllParameters = allParameters;
@@ -210,7 +211,7 @@ namespace CPC02.Controllers
                     .Where(b => b.EF_YEAR == search.year)
                 .GroupBy(b => b.EF_NAME)
                 .Select(g => g.FirstOrDefault());
-                
+
                 var result = (from c in _db.CAT_THREE_EMPLOYEE_COMMUTING
                               join g in _db.GHG_MST_COMMUTE on c.USER_ID equals g.USER_ID
                               join b in emissionFactors on g.TRANSPORTATION equals b.EF_NAME
@@ -229,7 +230,7 @@ namespace CPC02.Controllers
             {
                 var trafficList = new List<TrafficViewModel>();
 
-                if (search.methods == "捷運"|| search.methods == "地鐵")
+                if (search.methods == "捷運" || search.methods == "地鐵")
                 {
                     // ACPTB group by UDF01
                     var acptGroup = (
@@ -263,18 +264,18 @@ namespace CPC02.Controllers
                     trafficList = (
                      from a in acptGroup
                      join b in pcmtgGroup on a.UDF01 equals b.UDF01 into bGroup
-                     from b in bGroup.DefaultIfEmpty() // 左 join
+                     from b in bGroup.DefaultIfEmpty() 
                      join ss in _db.SGS_ParameterSetting
                          on a.UDF01 equals ss.PAR005 into ssGroup
                      from ss in ssGroup.DefaultIfEmpty()
                      join s in _db.SGS_Parameter
                          on ss != null ? ss.PAR001.ToString() : "" equals s.PAR000 into sGroup
                      from s in sGroup.DefaultIfEmpty()
-                     where ss.Year.ToString()== search.year
+                     where ss.Year.ToString() == search.year
                      select new TrafficViewModel
                      {
                          Type = a.UDF01,
-                         TotalEmission = a.SumACPTB + (b != null ? b.SumPCMTG : 0), // 若 b 為 null 就給 0
+                         TotalEmission = a.SumACPTB + (b != null ? b.SumPCMTG : 0), 
                          ParameterValue = s != null ? s.PAR002 : null
                      }
                  ).ToList();
@@ -306,10 +307,21 @@ namespace CPC02.Controllers
 
                 }
                 return View(trafficList);
-
             }
             else if (search.category == "公務車")
             {
+                var gasCoefficientsFromDb = _db.Gas_Parameter
+                    .Where(g => g.GP001 == search.category && g.GP002.ToString() == search.year)
+                    .OrderBy(g => g.GP003) 
+                    .Select(g => new GasCoefficient
+                    {
+                        GasName = g.GP003,
+                        Coefficient1 = g.GP004 ?? 0, 
+                        Coefficient2 = g.GP005 ?? 0  
+                    })
+                    .ToList();
+
+
                 var officialcarList = new List<OfficialcarViewModel>();
 
                 var sumACPTB = (from a in _TWNCPCdb.ACPTA
@@ -343,6 +355,17 @@ namespace CPC02.Controllers
                         TotalEmission = g.Sum(x => x.TotalEmission)
                     }).ToList();
 
+                foreach (var officialCar in officialcarList)
+                {
+                    officialCar.GasCoefficients = gasCoefficientsFromDb; 
+
+                    decimal sumEmission = 0M;
+                    foreach (var coeff in gasCoefficientsFromDb)
+                    {
+                        sumEmission += officialCar.TotalEmission * coeff.Coefficient1 * coeff.Coefficient2 / 1000M;
+                    }
+                    officialCar.TotalCO2eEmission = sumEmission; 
+                }
                 return View(officialcarList);
             }
             else if (search.category == "elec_UP")
@@ -393,20 +416,37 @@ namespace CPC02.Controllers
                     })
                     .ToList();
 
-                // 加總所有公里數成一筆
                 var totalEmission = sumACPTB.Sum(x => x.TotalEmission)
                                   + sumPCMTG.Sum(x => x.TotalEmission);
 
                 var officialcarList = new List<Gas_UPViewModel>
-    {
-        new Gas_UPViewModel
-        {
-            Type = "合計",
-            TotalEmission = totalEmission
-        }
-    };
+                {
+                    new Gas_UPViewModel
+                    {
+                        Type = "合計",
+                        TotalEmission = totalEmission
+                    }
+                };
 
                 return View(officialcarList);
+            }
+            
+            else if (search.category == "diesel_UP")
+            {
+                var query = _db.Diesel.AsQueryable();
+
+                if (!string.IsNullOrEmpty(search.year))
+                {
+                    query = query.Where(x => x.DI001.ToString() == search.year);
+                }
+
+                var result = query.GroupBy(x => x.DI001).Select(g => new Diesel_UPViewModel
+                {
+                    Type="",
+                    Total = g.Sum(x=>x.DI008)
+                }).ToList();
+                
+                return View(result);
             }
             return View();
         }

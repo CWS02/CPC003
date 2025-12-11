@@ -28,6 +28,9 @@ namespace CPC02.Models
         public virtual DbSet<ELECTRICITY_BILL> ELECTRICITY_BILL { get; set; }
         public virtual DbSet<GHG_MST_COMMUTE> GHG_MST_COMMUTE { get; set; }
         public virtual DbSet<CAT_THREE_EMPLOYEE_COMMUTING> CAT_THREE_EMPLOYEE_COMMUTING { get; set; }
+        public virtual DbSet<Diesel> Diesel { get; set; }
+        public virtual DbSet<Gas_Parameter> Gas_Parameter { get; set; }
+        
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
