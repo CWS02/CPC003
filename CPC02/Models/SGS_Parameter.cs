@@ -131,15 +131,11 @@ namespace CPC02.Models
         public string Type { get; set; }
         public decimal TotalEmission { get; set; }
         public List<GasCoefficient> GasCoefficients { get; set; }
-
-        // ⭐ 新增：計算總排放量 (ton CO2e) 的結果 ⭐
         public decimal TotalCO2eEmission { get; set; }
     }
     public class GasCoefficient
     {
         public string GasName { get; set; }
-        public decimal Coefficient { get; set; }
-        public decimal Factor { get; set; }
         public decimal Coefficient1 { get; set; } 
         public decimal Coefficient2 { get; set; }
     }
@@ -153,6 +149,14 @@ namespace CPC02.Models
     {
         public string Type { get; set; }
         public decimal TotalEmission { get; set; }
+    }
+    public class Diesel_ViewModel
+    {
+        public string Type { get; set; }
+        public decimal Total { get; set; }
+        public List<GasCoefficient> GasCoefficients { get; set; }
+        public decimal TotalCO2eEmission { get; set; }
+
     }
     public class Diesel_UPViewModel
     {

@@ -345,7 +345,7 @@ namespace CPC02.Controllers
                     TotalEmission = g.Sum(x => x.UDF06 ?? 0)
                 })
                 .ToList();
-
+                
                 officialcarList = sumACPTB
                     .Concat(sumPCMTG)
                     .GroupBy(x => x.Type)
@@ -430,7 +430,43 @@ namespace CPC02.Controllers
 
                 return View(officialcarList);
             }
-            
+            else if (search.category == "diesel")
+            {
+                var gasCoefficientsFromDb = _db.Gas_Parameter
+                .Where(g => g.GP001 == search.category && g.GP002.ToString() == search.year)
+                .OrderBy(g => g.GP003)
+                .Select(g => new GasCoefficient
+                {
+                    GasName = g.GP003,
+                    Coefficient1 = g.GP004 ?? 0,
+                    Coefficient2 = g.GP005 ?? 0
+                })
+                .ToList();
+
+                var dieselConsumptionList = _db.Diesel
+                    .GroupBy(x => x.DI008) 
+                    .Select(g => new Diesel_ViewModel
+                    {
+                        Type = "緊急發電機（柴油）", 
+                        Total = g.Sum(x => x.DI008)
+                    })
+                    .ToList();
+
+                foreach (var item in dieselConsumptionList)
+                {
+                    item.GasCoefficients = gasCoefficientsFromDb;
+
+                    decimal sumEmission = 0M;
+                    foreach (var coeff in gasCoefficientsFromDb)
+                    {
+                        sumEmission += item.Total * coeff.Coefficient1 * coeff.Coefficient2 / 1000M;
+                    }
+                    item.TotalCO2eEmission = sumEmission;
+                }
+
+                return View(dieselConsumptionList);
+            }
+
             else if (search.category == "diesel_UP")
             {
                 var query = _db.Diesel.AsQueryable();
