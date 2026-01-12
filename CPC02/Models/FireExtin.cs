@@ -55,5 +55,8 @@ namespace CPC02.Models
         [Display(Name = "廠區")]
         [StringLength(50)]
         public string FE010 { get; set; }
+
+        [Display(Name = "年份")]
+        public int? Year { get; set; }
     }
 }

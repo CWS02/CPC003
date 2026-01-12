@@ -149,7 +149,7 @@ namespace CPC02.Controllers
             else if (search.category == "fireextin")
             {
                 var query = _db.FireExtin
-                    .Where(x => x.FE010 == search.factory && x.FE005 == search.content)
+                    .Where(x => x.FE010 == search.factory && x.FE005 == search.content && x.Year.ToString()==search.year)
                     .GroupBy(x => new { x.FE010, x.FE005 })
                     .Select(g => new FireExtinViewModel
                     {
@@ -321,7 +321,6 @@ namespace CPC02.Controllers
                     })
                     .ToList();
 
-
                 var officialcarList = new List<OfficialcarViewModel>();
 
                 var sumACPTB = (from a in _TWNCPCdb.ACPTA
@@ -444,7 +443,8 @@ namespace CPC02.Controllers
                 .ToList();
 
                 var dieselConsumptionList = _db.Diesel
-                    .GroupBy(x => x.DI008) 
+                    .Where(x=>x.DI001.ToString()==search.year)
+                    .GroupBy(x => x.DI001) 
                     .Select(g => new Diesel_ViewModel
                     {
                         Type = "緊急發電機（柴油）", 
