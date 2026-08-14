@@ -198,7 +198,7 @@ namespace CPC02.Controllers
                         .Select(g => new ColdCoalViewModel
                         {
                             Code = g.Key.CC007,
-                            SumCC012 = g.Sum(x => x.CC012),
+                            SumCC012 = Math.Round(g.Sum(x => x.CC012) ?? 0m, 4),
                         })
                         .ToList();
 
