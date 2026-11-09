@@ -1,0 +1,33 @@
+body { background: #f3f7f3; color: #111; }
+.esg-page { max-width: 1600px; margin: 0 auto; padding: 32px 24px; color: #111; }
+.esg-search { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 20px; padding: 24px; margin-bottom: 24px; background: #fff; border: 1px solid #d2e3d2; border-radius: 14px; box-shadow: 0 4px 18px rgba(24, 60, 30, .04); }
+.esg-field { flex: 1 1 160px; min-width: 0; }
+.esg-field-category { flex: 2 1 320px; }
+.esg-field label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #111; }
+.esg-page .form-control { color: #111; border: 1px solid #bbcebb; border-radius: 7px; box-shadow: none; background: #fff; }
+.esg-search .form-control { height: 44px; width: 100%; font-size: 14px; }
+.esg-page .form-control:focus { border-color: #548c5c; box-shadow: 0 0 0 3px rgba(84, 140, 92, .15); }
+.esg-search-button { flex: 0 0 auto; height: 44px; padding: 0 24px; border: 1px solid #8bb48d; border-radius: 7px; background: #c7e5c9; color: #111; font-weight: 600; }
+.esg-search-button:hover { background: #b4d9b7; }
+.esg-search-button:focus-visible { outline: 3px solid #548c5c; outline-offset: 3px; }
+.esg-search-button .glyphicon { margin-right: 6px; }
+.esg-results { padding: 20px; border: 1px solid #d2e3d2; border-radius: 14px; background: #fff; }
+.esg-page .table { margin-bottom: 16px; color: #111; border-color: #bed5bf; }
+.esg-page .table > thead > tr > th { background: #cce7ce; color: #111; border: 1px solid #b3ceb5; padding: 14px 12px; vertical-align: middle; font-weight: 600; line-height: 1.6; }
+.esg-page .table > tbody > tr > td { background: #f1f9f1; color: #111; border: 1px solid #d3e4d4; padding: 12px; vertical-align: middle; }
+.esg-page .table-striped > tbody > tr:nth-of-type(even) > td { background: #e6f3e7; }
+.esg-page .table-hover > tbody > tr:hover > td { background: #d9eddb; }
+.esg-page .table input[readonly] { background: #fafffa; color: #111; }
+.esg-page .table .form-control { min-width: 105px; margin-bottom: 6px; }
+.esg-page .table .input-group-text { color: #111; font-size: 12px; }
+.esg-page .text-muted { color: #465746; padding: 8px 4px; }
+.esg-page .table-responsive { border: 0; }
+@media (max-width: 767px) {
+    .esg-page { padding: 16px 12px; }
+    .esg-search { padding: 18px; gap: 16px; }
+    .esg-field, .esg-field-category { flex-basis: 100%; }
+    .esg-search-button { width: 100%; }
+    .esg-results { padding: 12px; }
+}
+.esg-page .table > tfoot > tr > th,
+.esg-page .table > tfoot > tr > td { padding: 14px 12px; background: #cce7ce; color: #111; border: 1px solid #b3ceb5; font-weight: 600; vertical-align: middle; }

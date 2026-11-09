@@ -1,490 +1,90 @@
 ﻿using CPC02.Models;
-using DocumentFormat.OpenXml.Bibliography;
+using CPC02.Services;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.Globalization;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace CPC02.Controllers
 {
     public class ESGController : Controller
     {
-        ESGContext _db = new ESGContext();
-        TWNCPCContext _TWNCPCdb = new TWNCPCContext();
+        private readonly ESGContext _db = new ESGContext();
+        private readonly TWNCPCContext _accountingDb = new TWNCPCContext();
+
         [HttpGet]
         public ActionResult SGS_Calculate(SGS_Search search)
         {
+            search = search ?? new SGS_Search();
+            var hasSearched = !string.IsNullOrWhiteSpace(search.category);
+            ApplySearchDefaults(search);
+            var model = new EsgCalculationPageViewModel { Search = search, HasSearched = hasSearched };
+            int year;
+            if (!int.TryParse(search.year, out year) || year < 2024 || year > 9998)
+                ModelState.AddModelError("year", "請輸入有效的西元年份（2024～9998）。");
+            else
+                search.year = year.ToString(CultureInfo.InvariantCulture);
 
-            var coefficientOptions = (from p in _db.SGS_Parameter
-                                      join s in _db.SGS_ParameterSetting
-                                      on p.PAR000 equals s.PAR001.ToString() into joined
-                                      from s in joined.DefaultIfEmpty()
-                                      where p.PAR007 == 0
-                                      select new
-                                      {
-                                          Id = p.PAR000,
-                                          Label = p.PAR002 + "-" + p.PAR001 + "-" + p.PAR004,
-                                          Value = p.PAR002
-                                      }).ToList();
+            var categories = new[] { "electricity", "water", "waste", "wastetransportation", "fireextin",
+                "wd40", "coldcoal", "commuting", "traffic", "公務車", "elec_UP", "gas_UP", "diesel", "diesel_UP" };
+            if (search.category.Length > 0 && !categories.Contains(search.category))
+                ModelState.AddModelError("category", "不支援此計算類別。");
+            if (new[] { "electricity", "water", "fireextin", "coldcoal" }.Contains(search.category)
+                && string.IsNullOrWhiteSpace(search.factory))
+                ModelState.AddModelError("factory", "請選擇廠區。");
+            if (new[] { "traffic", "wastetransportation", "waste" }.Contains(search.category)
+                && string.IsNullOrWhiteSpace(search.methods))
+                ModelState.AddModelError("methods", "請選擇處理方式或交通類別。");
+            if (!ModelState.IsValid || !hasSearched)
+                return View(model);
 
-            var allParameters = _db.SGS_ParameterSetting
-            .Select(s => new
-            {
-                Id = s.PAR001,
-                Category = s.PAR003,
-                Category2 = s.PAR004,
-                Year = s.Year,
-            }).ToList();
-
-            ViewBag.AllParameters = allParameters;
-            ViewBag.CoefficientOptions = coefficientOptions;
-
-
-            if (search.category == "electricity")
-            {
-                var query = _db.ELECTRICITY_BILL
-               .Where(x => x.FACTORY == search.factory);
-                if (!string.IsNullOrEmpty(search.year))
+            model.CoefficientOptions = _db.SGS_Parameter.AsNoTracking()
+                .Where(p => p.PAR007 == 0).OrderBy(p => p.PAR001).ThenBy(p => p.PAR000)
+                .Select(p => new EsgCoefficientOption
                 {
-                    query = query.Where(x => x.FROM_BILLING_PERIOD.Value.Year.ToString() == search.year);
-                }
-                var result = query
-                               .GroupBy(x => x.FACTORY)
-                               .Select(g => new ElectricitySummaryViewModel
-                               {
-                                   Factory = g.Key,
-                                   SumPeakElectricity = g.Sum(x => x.PEAK_ELECTRICITY),
-                                   SumHalfSpikePower = g.Sum(x => x.HALF_SPIKE_POWER),
-                                   SumSaturdayHalfPeak = g.Sum(x => x.SATURDAY_HALF_PEAK),
-                                   SumOffPeakElectricity = g.Sum(x => x.OFF_PEAK_ELECTRICITY),
-                                   SumTotalElectricity = g.Sum(x => x.TOTAL_ELECTRICITY),
-                                   SumTotalBillTax = g.Sum(x => x.TOTAL_BILL_TAX),
-                                   SumCarbonPeriod = g.Sum(x => x.CARBON_PERIOD)
-                               }).ToList();
-
-                return View(result);
-            }
-            else if (search.category == "water")
-            {
-                var query = _db.WATER_BILL
-               .Where(x => x.FACTORY == search.factory && x.METER_DIAMETER.ToString() == search.waterdiameter);
-                if (!string.IsNullOrEmpty(search.year))
-                {
-                    query = query.Where(x => x.FROM_BILLING_PERIOD.Value.Year.ToString() == search.year);
-                }
-                var result = query
-                .GroupBy(x => x.FACTORY)
-                .Select(g => new WaterSummaryViewModel
-                {
-                    Factory = g.Key,
-                    Waterdiameter = search.waterdiameter,
-                    SumNUMBERPOINTERS = g.Sum(x => x.NUMBER_POINTERS),
-                    SumTOTALWATER = g.Sum(x => x.TOTAL_WATER),
-                    SumTOTALBILLTAX = g.Sum(x => x.TOTAL_BILL_TAX),
-                    SumCARBONPERIOD = g.Sum(x => x.CARBON_PERIOD),
+                    Id = p.PAR000, Label = p.PAR002 + "-" + p.PAR001 + "-" + p.PAR004, Value = p.PAR002
                 }).ToList();
-
-                return View(result);
-            }
-            else if (search.category == "waste")
-            {
-                var query = _db.WASTES.AsQueryable();
-                if (search.methods != "全部")
+            model.Parameters = _db.SGS_ParameterSetting.AsNoTracking()
+                .Where(p => p.Year == year && p.PAR003 == search.category).OrderBy(p => p.PAR000)
+                .Select(p => new EsgCoefficientSetting
                 {
-                    query = _db.WASTES.Where(x => x.TREATMENT == search.methods);
-                }
-
-                if (!string.IsNullOrEmpty(search.year))
-                {
-                    query = query.Where(x => x.REMOVAL_DATE.Value.Year.ToString() == search.year);
-                }
-                var result = query
-                               .GroupBy(x => new { x.TREATMENT, x.SCRAP_CODE })
-                               .Select(g => new WasteSummaryViewModel
-                               {
-                                   methods = g.Key.TREATMENT,
-                                   code = g.Key.SCRAP_CODE,
-                                   SumDECLAREDWEIGHT = g.Sum(x => x.DECLARED_WEIGHT),
-                                   SumCKILOMETERS = g.Sum(x => x.KILOMETERS),
-                                   SumACTIVITYDATA = g.Sum(x => x.ACTIVITY_DATA),
-                                   SumCARBONEMISSIONFACTOR = g.Sum(x => x.CARBON_EMISSION_FACTOR),
-                                   SumCCARBONDIOXIDE = g.Sum(x => x.CARBON_DIOXIDE),
-                                   coefficient = (
-                                        from w in _db.WASTES
-                                        join ss in _db.SGS_ParameterSetting on g.Key.TREATMENT equals ss.PAR004
-                                        join s in _db.SGS_Parameter on ss.PAR001.ToString() equals s.PAR000
-                                        where w.TREATMENT == g.Key.TREATMENT && ss.Year.ToString() == search.year
-                                        select s.PAR002
-                                    ).FirstOrDefault()
-                               }).ToList();
-
-                return View(result);
-            }
-            else if (search.category == "wastetransportation")
-            {
-                var query = _db.WASTES
-               .Where(x => x.TREATMENT == search.methods);
-                if (!string.IsNullOrEmpty(search.year))
-                {
-                    query = query.Where(x => x.REMOVAL_DATE.Value.Year.ToString() == search.year);
-                }
-                var result = query
-                               .GroupBy(x => new { x.TREATMENT, x.SCRAP_CODE })
-                               .Select(g => new WastetransportationViewModel
-                               {
-                                   methods = g.Key.TREATMENT,
-                                   code = g.Key.SCRAP_CODE,
-                                   SumDECLAREDWEIGHT = g.Sum(x => x.DECLARED_WEIGHT),
-                                   SumCKILOMETERS = g.Sum(x => x.KILOMETERS),
-                                   SumACTIVITYDATA = g.Sum(x => x.ACTIVITY_DATA),
-                                   SumCARBONEMISSIONFACTOR = g.Sum(x => x.CARBON_EMISSION_FACTOR),
-                                   SumCCARBONDIOXIDE = g.Sum(x => x.CARBON_DIOXIDE),
-                               }).ToList();
-
-                return View(result);
-            }
-            else if (search.category == "fireextin")
-            {
-                var query = _db.FireExtin
-                    .Where(x => x.FE010 == search.factory && x.FE005 == search.content && x.Year.ToString()==search.year)
-                    .GroupBy(x => new { x.FE010, x.FE005 })
-                    .Select(g => new FireExtinViewModel
-                    {
-                        Factory = g.Key.FE010,
-                        content = g.Key.FE005,
-                        SumFE002 = g.Sum(x => x.FE002),
-                        Sumton = g.Sum(x =>
-                            (x.FE001 != null && !x.FE001.Contains("乾粉") && x.FE002.HasValue && x.FE006.HasValue)
-                            ? (x.FE002.Value * x.FE006.Value / 1000)
-                            : 0),
-                        Sumkg = g.Sum(x =>
-                            (x.FE001 != null && !x.FE001.Contains("乾粉") && x.FE002.HasValue && x.FE006.HasValue)
-                            ? (x.FE002.Value * x.FE006.Value)
-                            : 0)
-                    })
-                    .ToList();
-
-
-                return View(query);
-            }
-            else if (search.category == "wd40")
-            {
-                if (search.year != null)
-                {
-                    var query = _db.WD40A
-                   .Where(x => x.WD003.Contains(search.year))
-                   .GroupBy(x => x.WD003.Contains(search.year))
-                   .Select(g => new WD40ViewModel
-                   {
-                       SumWD011 = g.Sum(x => x.WD011),
-                   })
-                   .ToList();
-
-                    return View(query);
-                }
-            }
-            else if (search.category == "coldcoal")
-            {
-                if (search.factory != null)
-                {
-                    var validCC007Values = new List<string> { "R-134A", "HFC-134A", "R-407C", "R-410A" };
-
-                    var query = _db.ColdCoal
-                        .Where(x => x.CC010 == search.factory && validCC007Values.Contains(x.CC007))
-                        .GroupBy(x => new { x.CC007, x.CC010 })
-                        .Select(g => new ColdCoalViewModel
-                        {
-                            Code = g.Key.CC007,
-                            SumCC012 = Math.Round(g.Sum(x => x.CC012) ?? 0m, 4),
-                        })
-                        .ToList();
-
-                    return View(query);
-                }
-            }
-            else if (search.category == "commuting")
-            {
-                var emissionFactors = _db.BRM_MST_EMISSION_FACTOR
-                    .Where(b => b.EF_YEAR == search.year)
-                .GroupBy(b => b.EF_NAME)
-                .Select(g => g.FirstOrDefault());
-
-                var result = (from c in _db.CAT_THREE_EMPLOYEE_COMMUTING
-                              join g in _db.GHG_MST_COMMUTE on c.USER_ID equals g.USER_ID
-                              join b in emissionFactors on g.TRANSPORTATION equals b.EF_NAME
-                              where c.WORK_DATE.Substring(0, 4) == search.year
-                              group new { g, b } by g.TRANSPORTATION into grp
-                              select new CommutingViewModel
-                              {
-                                  TRANSPORTATION = grp.Key,
-                                  TotalDoubleKM = grp.Sum(x => x.g.DOUBLE_KM),
-                                  EF_VALUE = grp.Select(x => x.b.EF_VALUE).FirstOrDefault()
-                              }).ToList();
-
-                return View(result);
-            }
-            else if (search.category == "traffic")
-            {
-                var trafficList = new List<TrafficViewModel>();
-
-                if (search.methods == "捷運" || search.methods == "地鐵")
-                {
-                    // ACPTB group by UDF01
-                    var acptGroup = (
-                        from a in _TWNCPCdb.ACPTA
-                        join b in _TWNCPCdb.ACPTB
-                            on new { Key1 = a.TA001.Trim(), Key2 = a.TA002.Trim() }
-                            equals new { Key1 = b.TB001.Trim(), Key2 = b.TB002.Trim() }
-                        where (b.UDF01 ?? "").StartsWith(search.methods)
-                           && (b.TB008 ?? "").Substring(0, 4) == search.year
-                        group b by b.UDF01 into g
-                        select new
-                        {
-                            UDF01 = g.Key,
-                            SumACPTB = g.Sum(x => (decimal?)x.UDF06) ?? 0,
-                        }
-                    ).ToList();
-
-                    // PCMTG group by UDF01
-                    var pcmtgGroup = (
-                        from t in _TWNCPCdb.PCMTG
-                        where t.UDF01.StartsWith(search.methods)
-                           && t.TG013.Substring(0, 4) == search.year
-                        group t by t.UDF01 into g
-                        select new
-                        {
-                            UDF01 = g.Key,
-                            SumPCMTG = g.Sum(x => (decimal?)x.UDF06) ?? 0
-                        }
-                    ).ToList();
-
-                    trafficList = (
-                     from a in acptGroup
-                     join b in pcmtgGroup on a.UDF01 equals b.UDF01 into bGroup
-                     from b in bGroup.DefaultIfEmpty() 
-                     join ss in _db.SGS_ParameterSetting
-                         on a.UDF01 equals ss.PAR005 into ssGroup
-                     from ss in ssGroup.DefaultIfEmpty()
-                     join s in _db.SGS_Parameter
-                         on ss != null ? ss.PAR001.ToString() : "" equals s.PAR000 into sGroup
-                     from s in sGroup.DefaultIfEmpty()
-                     where ss.Year.ToString() == search.year
-                     select new TrafficViewModel
-                     {
-                         Type = a.UDF01,
-                         TotalEmission = a.SumACPTB + (b != null ? b.SumPCMTG : 0), 
-                         ParameterValue = s != null ? s.PAR002 : null
-                     }
-                 ).ToList();
-
-
-                    return View(trafficList);
-                }
-                else
-                {
-                    var sumACPTB = (
-                        from a in _TWNCPCdb.ACPTA
-                        join b in _TWNCPCdb.ACPTB
-                            on new { Key1 = a.TA001.Trim(), Key2 = a.TA002.Trim() }
-                            equals new { Key1 = b.TB001.Trim(), Key2 = b.TB002.Trim() }
-                        where (b.UDF01 ?? "").StartsWith(search.methods)
-                           && (b.TB008 ?? "").Substring(0, 4) == search.year
-                        select (decimal?)b.UDF06
-                    ).Sum() ?? 0;
-
-                    var sumPCMTG = _TWNCPCdb.PCMTG
-                        .Where(x => x.UDF01.StartsWith(search.methods) && x.TG013.Substring(0, 4) == search.year)
-                        .Sum(x => (decimal?)x.UDF06) ?? 0;
-
-                    trafficList.Add(new TrafficViewModel
-                    {
-                        Type = search.methods,
-                        TotalEmission = sumACPTB + sumPCMTG
-                    });
-
-                }
-                return View(trafficList);
-            }
-            else if (search.category == "公務車")
-            {
-                var gasCoefficientsFromDb = _db.Gas_Parameter
-                    .Where(g => g.GP001 == search.category && g.GP002.ToString() == search.year)
-                    .OrderBy(g => g.GP003) 
-                    .Select(g => new GasCoefficient
-                    {
-                        GasName = g.GP003,
-                        Coefficient1 = g.GP004 ?? 0, 
-                        Coefficient2 = g.GP005 ?? 0  
-                    })
-                    .ToList();
-
-                var officialcarList = new List<OfficialcarViewModel>();
-
-                var sumACPTB = (from a in _TWNCPCdb.ACPTA
-                                join b in _TWNCPCdb.ACPTB
-                                on new { Key1 = a.TA001.Trim(), Key2 = a.TA002.Trim() }
-                                   equals new { Key1 = b.TB001.Trim(), Key2 = b.TB002.Trim() }
-                                where b.UDF01.StartsWith(search.category) && b.TB008.Substring(0, 4) == search.year
-                                group b by search.category into g
-                                select new OfficialcarViewModel
-                                {
-                                    Type = g.Key,
-                                    TotalEmission = g.Sum(x => x.UDF06 ?? 0)
-                                }).ToList();
-
-                var sumPCMTG = _TWNCPCdb.PCMTG
-                .Where(x => x.UDF01.StartsWith(search.category) && x.TG013.Substring(0, 4) == search.year)
-                .GroupBy(x => search.category)
-                .Select(g => new OfficialcarViewModel
-                {
-                    Type = g.Key,
-                    TotalEmission = g.Sum(x => x.UDF06 ?? 0)
-                })
-                .ToList();
-                
-                officialcarList = sumACPTB
-                    .Concat(sumPCMTG)
-                    .GroupBy(x => x.Type)
-                    .Select(g => new OfficialcarViewModel
-                    {
-                        Type = g.Key,
-                        TotalEmission = g.Sum(x => x.TotalEmission)
-                    }).ToList();
-
-                foreach (var officialCar in officialcarList)
-                {
-                    officialCar.GasCoefficients = gasCoefficientsFromDb; 
-
-                    decimal sumEmission = 0M;
-                    foreach (var coeff in gasCoefficientsFromDb)
-                    {
-                        sumEmission += officialCar.TotalEmission * coeff.Coefficient1 * coeff.Coefficient2 / 1000M;
-                    }
-                    officialCar.TotalCO2eEmission = sumEmission; 
-                }
-                return View(officialcarList);
-            }
-            else if (search.category == "elec_UP")
-            {
-                var query = _db.ELECTRICITY_BILL.Where(x => x.FACTORY == "南科廠")
-                    .AsQueryable();
-
-                if (!string.IsNullOrEmpty(search.year))
-                {
-                    query = query.Where(x => x.FROM_BILLING_PERIOD.Value.Year.ToString() == search.year);
-                }
-
-                // 總加總
-                var totalElectricity = query.Sum(x => x.TOTAL_ELECTRICITY);
-
-                var result = new List<Elec_UPViewModel>
-                {
-                    new Elec_UPViewModel
-                    {
-                        SumTotalElectricity = totalElectricity
-                    }
-                };
-
-                return View(result);
-            }
-            else if (search.category == "gas_UP")
-            {
-                var sumACPTB = (from a in _TWNCPCdb.ACPTA
-                                join b in _TWNCPCdb.ACPTB
-                                on new { Key1 = a.TA001.Trim(), Key2 = a.TA002.Trim() }
-                                  equals new { Key1 = b.TB001.Trim(), Key2 = b.TB002.Trim() }
-                                where b.UDF01.StartsWith("公務") && b.TB008.Substring(0, 4) == search.year
-                                group b by b.UDF01.Contains("小貨車") ? "小貨車" : "公務車" into g
-                                select new Gas_UPViewModel
-                                {
-                                    Type = g.Key,
-                                    TotalEmission = g.Sum(x => x.UDF06 ?? 0)
-                                }).ToList();
-
-                // 從 PCMTG 計算
-                var sumPCMTG = _TWNCPCdb.PCMTG
-                    .Where(x => x.UDF01.StartsWith("公務") && x.TG013.Substring(0, 4) == search.year)
-                    .GroupBy(x => x.UDF01.Contains("小貨車") ? "小貨車" : "公務車")
-                    .Select(g => new Gas_UPViewModel
-                    {
-                        Type = g.Key,
-                        TotalEmission = g.Sum(x => x.UDF06 ?? 0)
-                    })
-                    .ToList();
-
-                var totalEmission = sumACPTB.Sum(x => x.TotalEmission)
-                                  + sumPCMTG.Sum(x => x.TotalEmission);
-
-                var officialcarList = new List<Gas_UPViewModel>
-                {
-                    new Gas_UPViewModel
-                    {
-                        Type = "合計",
-                        TotalEmission = totalEmission
-                    }
-                };
-
-                return View(officialcarList);
-            }
-            else if (search.category == "diesel")
-            {
-                var gasCoefficientsFromDb = _db.Gas_Parameter
-                .Where(g => g.GP001 == search.category && g.GP002.ToString() == search.year)
-                .OrderBy(g => g.GP003)
-                .Select(g => new GasCoefficient
-                {
-                    GasName = g.GP003,
-                    Coefficient1 = g.GP004 ?? 0,
-                    Coefficient2 = g.GP005 ?? 0
-                })
-                .ToList();
-
-                var dieselConsumptionList = _db.Diesel
-                    .Where(x=>x.DI001.ToString()==search.year)
-                    .GroupBy(x => x.DI001) 
-                    .Select(g => new Diesel_ViewModel
-                    {
-                        Type = "緊急發電機（柴油）", 
-                        Total = g.Sum(x => x.DI008)
-                    })
-                    .ToList();
-
-                foreach (var item in dieselConsumptionList)
-                {
-                    item.GasCoefficients = gasCoefficientsFromDb;
-
-                    decimal sumEmission = 0M;
-                    foreach (var coeff in gasCoefficientsFromDb)
-                    {
-                        sumEmission += item.Total * coeff.Coefficient1 * coeff.Coefficient2 / 1000M;
-                    }
-                    item.TotalCO2eEmission = sumEmission;
-                }
-
-                return View(dieselConsumptionList);
-            }
-
-            else if (search.category == "diesel_UP")
-            {
-                var query = _db.Diesel.AsQueryable();
-
-                if (!string.IsNullOrEmpty(search.year))
-                {
-                    query = query.Where(x => x.DI001.ToString() == search.year);
-                }
-
-                var result = query.GroupBy(x => x.DI001).Select(g => new Diesel_UPViewModel
-                {
-                    Type="",
-                    Total = g.Sum(x=>x.DI008)
+                    Id = p.PAR001.ToString(), Category = p.PAR003, Category2 = p.PAR004, Year = p.Year
                 }).ToList();
-                
-                return View(result);
+            try
+            {
+                model.Results = new EsgCalculationService(_db, _accountingDb).Calculate(search);
             }
-            return View();
+            catch (EsgConfigurationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            return View(model);
+        }
+
+        private static void ApplySearchDefaults(SGS_Search search)
+        {
+            search.category = string.IsNullOrWhiteSpace(search.category) ? "coldcoal" : search.category.Trim();
+            search.year = string.IsNullOrWhiteSpace(search.year)
+                ? Math.Max(2024, DateTime.Today.Year - 1).ToString(CultureInfo.InvariantCulture) : search.year.Trim();
+            if (string.IsNullOrWhiteSpace(search.factory))
+                search.factory = "全部";
+            if (string.IsNullOrWhiteSpace(search.methods))
+                search.methods = "全部";
+            // These fields are no longer search filters, including in older bookmarked URLs.
+            search.content = null;
+            search.waterdiameter = null;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _db.Dispose();
+                _accountingDb.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

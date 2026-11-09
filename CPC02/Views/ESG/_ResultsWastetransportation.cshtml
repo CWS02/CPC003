@@ -1,0 +1,94 @@
+﻿@model List<WastetransportationViewModel>
+@using CPC02.Models
+@using Newtonsoft.Json
+@{ decimal transport = 0; decimal transport1 = 0; decimal totalEmission = 0; }
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>廢棄物代碼</th>
+            <th>中間處理方式</th>
+            <th>每趟運輸公里</th>
+            <th>
+                總噸數
+            </th>
+            <th>
+                係數
+            </th>
+            <th>
+                廢棄物運輸計算結果
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.code</td>
+                <td>@item.methods</td>
+                <td>
+                    @{
+                        transport = 0;
+
+                        switch (item.code)
+                        {
+                            case "D-2406":
+                            case "D-1801":
+                            case "D-2399":
+                                transport = 2.46m;
+                                break;
+
+                            case "D-2499":
+                                transport = 43.6m;
+                                break;
+                        }
+                    }
+
+                    @if (transport != 0)
+                    {
+                        <div class="text-center">
+                            <span>@transport.ToString("F2")</span><br />
+                        </div>
+                    }
+                </td>
+
+                <td>@(item.SumDECLAREDWEIGHT?.ToString("G29") ?? "")</td>
+                <td>
+                    @{
+                        transport1 = 0;
+                        switch (item.code)
+                        {
+                            case "D-2499":
+                            case "D-2406":
+                            case "D-2399":
+                                transport1 = 0.131m;
+                                break;
+                            case "D-1801":
+                                transport1 = 1.31m;
+                                break;
+                        }
+                        totalEmission += transport * (item.SumDECLAREDWEIGHT ?? 0m) * transport1 / 1000m;
+                        if (transport1 != 0)
+                        {
+                            <div class="text-center">
+                                <span>@transport1.ToString("F4")</span><br />
+                                <span class="input-group-text">(kg CO₂e)/延噸公里(mt)</span>
+                            </div>
+                        }
+                    }
+                </td>
+                <td>
+                    <div class="text-center">
+                        <span>@((transport * (item.SumDECLAREDWEIGHT ?? 0) * transport1 / 1000).ToString("F4"))</span><br />
+                        <span class="input-group-text">tonCO₂e</span>
+                    </div>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot><tr><th colspan="3">合計</th><td>@((Model.Sum(x => x.SumDECLAREDWEIGHT) ?? 0m).ToString("N4"))</td><td>—</td><td>@totalEmission.ToString("F4") tonCO₂e</td></tr></tfoot>
+</table>
+<div>
+    <p> <a href="~/file/ESG/南部科學園區台南園區資源再生中心-公司路程圖.pdf" target="_blank" rel="noopener noreferrer">南部科學園區台南園區資源再生中心-公司路程圖</a></p>
+    <p><a href="~/file/ESG/大寧掩埋場-公司路程圖.pdf" target="_blank" rel="noopener noreferrer">大寧掩埋場-公司路程圖</a></p>
+</div>

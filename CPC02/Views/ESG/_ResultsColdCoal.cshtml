@@ -1,0 +1,35 @@
+﻿@model List<ColdCoalViewModel>
+@using CPC02.Models
+@using Newtonsoft.Json
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>廠區</th><th>冷媒</th>
+            <th style="width: 20%">逸散量(公噸)</th>
+            <th style="width: 20%">系數(公噸/公噸)</th>
+            <th style="width: 20%">GWP值</th>
+            <th style="width: 20%">計算結果(tonCO2e/公噸)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Factory</td><td>@item.Code</td>
+                <td>@item.SumCC012.Value.ToString("N4")</td>
+                <td>1</td>
+                <td>
+                    @item.GWP
+                </td>
+                <td>
+                    <input type="text" class="form-control" value="@( (item.GWP * (item.SumCC012 ?? 0m)).ToString("N4") )" readonly />
+                    <span class="input-group-text">tonCo₂e/公噸</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot><tr><th colspan="2">合計</th><td>@((Model.Sum(x => x.SumCC012) ?? 0m).ToString("N4"))</td><td>—</td><td>—</td><td>@Model.Sum(x => x.GWP * (x.SumCC012 ?? 0m)).ToString("N4") tonCO₂e</td></tr></tfoot>
+</table>
+<div>參考來源：2006 IPCC Guidelines for National Greenhouse Gas Inventories, volume 3, chapter7, table 7.9 及環境部氣候變遷署溫室氣體排放係數管理表6.0.4版 預設參考係數。年逸散量計算採公噸單位，並依環境部建議採小數點後四位。</div>
+<div>冷媒(R600a、R22等等)屬於蒙特婁公約管制氣體，環保署未公告其GWP 值，本盤查不列入計算。</div>
+<div>全球暖化潛勢(GWP)：敍述一單位的特定溫室氣體相對於一單位的二氧化碳之輻射效能衝擊的係數。</div>

@@ -1,0 +1,47 @@
+﻿@model List<WaterSummaryViewModel>
+@using CPC02.Models
+@using Newtonsoft.Json
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>廠區</th>
+            <th>水表口徑(mm)</th>
+            <th>本期指針數</th>
+            <th>總水費(含稅)</th>
+            <th>本期碳排量</th>
+            <th>總用度數(m³)</th>
+            <th style="width:150px">係數</th>
+            <th style="width:150px">計算結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Factory</td>
+                <td>@item.Waterdiameter</td>
+                <td>@string.Format("{0:N2}", item.SumNUMBERPOINTERS)</td>
+                <td>@string.Format("{0:N2}", item.SumTOTALBILLTAX)</td>
+                <td>@string.Format("{0:N2}", item.SumCARBONPERIOD)</td>
+                <td>@string.Format("{0:N2}", item.SumTOTALWATER)</td>
+                <td>
+                    <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
+                    <select v-model="selectedCoefficient" class="form-control" >
+                        <option value="">請選擇係數</option>
+                            <option v-for="option in filteredOptions"
+                                :key="option.Id"
+                                :value="option.Id">
+                            {{ option.Label }}
+                        </option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control" :value="calculateCarbonEmission2(@(JsonConvert.SerializeObject(item.SumTOTALWATER)))" readonly />
+                    <span class="input-group-text">tonCo₂e/度</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot><tr><th colspan="2">合計</th><td>@((Model.Sum(x => x.SumNUMBERPOINTERS) ?? 0m).ToString("N2"))</td><td>@((Model.Sum(x => x.SumTOTALBILLTAX) ?? 0m).ToString("N2"))</td><td>@((Model.Sum(x => x.SumCARBONPERIOD) ?? 0m).ToString("N2"))</td><td>@((Model.Sum(x => x.SumTOTALWATER) ?? 0m).ToString("N2"))</td><td>—</td><td><input class="form-control" :value="calculateCarbonEmission2(@(JsonConvert.SerializeObject(Model.Sum(x => x.SumTOTALWATER))))" readonly /></td></tr></tfoot>
+</table>

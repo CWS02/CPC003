@@ -1,0 +1,36 @@
+﻿@model List<Elec_UPViewModel>
+@using CPC02.Models
+@using Newtonsoft.Json
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th style="width: 33%">總用電數(kWh)</th>
+            <th style="width: 33%">係數</th>
+            <th style="width: 33%">計算結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@string.Format("{0:N2}", item.SumTotalElectricity)</td>
+                <td>
+                    <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
+                    <select v-model="selectedCoefficient" class="form-control" >
+                        <option value="">請選擇係數</option>
+                            <option v-for="option in filteredOptions"
+                                :key="option.Id"
+                                :value="option.Id">
+                            {{ option.Label }}
+                        </option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control" :value="calculateCarbonEmission2(@(JsonConvert.SerializeObject(item.SumTotalElectricity)))" readonly />
+                    <span class="input-group-text">tonCo₂e/度</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

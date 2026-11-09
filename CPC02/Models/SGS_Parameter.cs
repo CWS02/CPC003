@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -65,6 +66,7 @@ namespace CPC02.Models
     }
     public class ColdCoalViewModel
     {
+        public string Factory { get; set; }
         public string Code { get; set; }
         public decimal? SumCC012 { get; set; }
         public int GWP { get; set; }
@@ -92,6 +94,16 @@ namespace CPC02.Models
         public decimal? SumCCARBONDIOXIDE { get; set; }
 
         public string coefficient { get; set; }
+        public decimal? EmissionTon
+        {
+            get
+            {
+                decimal factor;
+                return SumDECLAREDWEIGHT.HasValue && decimal.TryParse(coefficient, NumberStyles.Float,
+                    CultureInfo.InvariantCulture, out factor)
+                    ? factor * SumDECLAREDWEIGHT.Value / 1000m : (decimal?)null;
+            }
+        }
     }
     public class WastetransportationViewModel
     {

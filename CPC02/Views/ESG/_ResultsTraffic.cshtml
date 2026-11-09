@@ -1,0 +1,34 @@
+﻿@model List<TrafficViewModel>
+@using CPC02.Models
+@using Newtonsoft.Json
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr><th>交通方式</th><th>總公里數 (km)</th><th>係數 (kgCO₂e / 人公里)</th><th>排放量 (kgCO₂e)</th><th>排放量 (tonCO₂e)</th></tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>@Model[i].Type</td>
+                <td>@Model[i].TotalEmission.ToString("N4")</td>
+                <td>
+                    <select class="form-control" v-model="trafficCoefficients[@i]" aria-label="@(Model[i].Type + "排放係數")">
+                        <option value="">請選擇係數</option>
+                        @if (Model[i].ParameterValue != null)
+                        {
+                            <option value="@Model[i].ParameterValue">@(Model[i].ParameterValue)（年度設定）</option>
+                        }
+                        <option v-for="option in coefficientOptions" :key="option.Id" :value="option.Value">{{ option.Label }}</option>
+                    </select>
+                </td>
+                <td><input class="form-control" :value="trafficEmission(@i, 1)" readonly /></td>
+                <td><input class="form-control" :value="trafficEmission(@i, 1000)" readonly /></td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr><th>合計</th><td>@Model.Sum(x => x.TotalEmission).ToString("N4")</td><td>依各交通方式計算</td>
+            <td><input class="form-control" :value="trafficTotalEmission(1)" readonly /></td>
+            <td><input class="form-control" :value="trafficTotalEmission(1000)" readonly /></td></tr>
+    </tfoot>
+</table>

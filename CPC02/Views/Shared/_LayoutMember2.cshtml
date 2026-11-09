@@ -11,31 +11,12 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="~/Scripts/vue/vue.min.js"></script>
 
+    @RenderSection("styles", required: false)
 </head>
 
 <body>
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container-fluid body-content">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-
-                <a href="http://192.168.253.1:8891/" class="navbar-brand">ESG System</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="@Url.Action("SGS_Calculate","ESG")">數據統計</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
     <div class="">
         @RenderBody()
-        <hr />
     </div>
     @RenderSection("scripts", required: false)
 </body>

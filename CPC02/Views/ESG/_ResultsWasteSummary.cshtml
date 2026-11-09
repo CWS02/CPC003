@@ -1,0 +1,47 @@
+﻿@model List<WasteSummaryViewModel>
+@using CPC02.Models
+@using Newtonsoft.Json
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th style="width: 20%">廢棄物代碼</th>
+            <th style="width: 20%">中間處理方式</th>
+            <th style="width: 20%">申報重量(公噸)</th>
+            <th style="width: 20%">係數</th>
+            <th style="width: 20%">計算結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.code</td>
+                <td>@item.methods</td>
+                <td>@(item.SumDECLAREDWEIGHT?.ToString("G29") ?? "N/A")</td>
+
+                <td>@(item.coefficient??"")</td>
+                <td>
+                    <input type="text" class="form-control" value="@(item.EmissionTon?.ToString("F4") ?? "缺少有效係數或活動數據")" readonly />
+                    <span class="input-group-text">tonCO₂e</span>
+                </td>
+            </tr>
+        }
+        @{
+            decimal? totalEmission = Model.All(x => x.EmissionTon.HasValue)
+                ? Model.Sum(x => x.EmissionTon.Value) : (decimal?)null;
+        }
+
+        <tr style="background-color:#f5f5f5;">
+            <th colspan="2">合計</th><td>@((Model.Sum(x => x.SumDECLAREDWEIGHT) ?? 0m).ToString("N4"))</td><td>—</td>
+            <td>
+                <input type="text" class="form-control" value="@(totalEmission?.ToString("F4") ?? "資料不完整")" readonly />
+                <span class="input-group-text">tonCO₂e</span>
+            </td>
+        </tr>
+
+    </tbody>
+</table>
+<div>
+    <p> <a href="~/file/ESG/南部科學園區台南園區資源再生中心-公司路程圖.pdf" target="_blank" rel="noopener noreferrer">南部科學園區台南園區資源再生中心-公司路程圖</a></p>
+    <p><a href="~/file/ESG/大寧掩埋場-公司路程圖.pdf" target="_blank" rel="noopener noreferrer">大寧掩埋場-公司路程圖</a></p>
+</div>

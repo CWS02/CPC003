@@ -1,0 +1,51 @@
+﻿@model List<ElectricitySummaryViewModel>
+@using CPC02.Models
+@using Newtonsoft.Json
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>廠區</th>
+            <th>尖峰<br />用電度數(kWh)</th>
+            <th>半尖峰<br />用電度數(kWh)</th>
+            <th>週六半尖峰<br />用電度數(kWh)</th>
+            <th>離峰<br />用電度數(kWh)</th>
+            <th>總費用(含稅)</th>
+            <th>本期碳排量</th>
+            <th>總用電數(kWh)</th>
+            <th style="width:150px">係數</th>
+            <th style="width:150px">計算結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Factory</td>
+                <td>@string.Format("{0:N2}", item.SumPeakElectricity)</td>
+                <td>@string.Format("{0:N2}", item.SumHalfSpikePower)</td>
+                <td>@string.Format("{0:N2}", item.SumSaturdayHalfPeak)</td>
+                <td>@string.Format("{0:N2}", item.SumOffPeakElectricity)</td>
+                <td>@string.Format("{0:N2}", item.SumTotalBillTax)</td>
+                <td>@string.Format("{0:N2}", item.SumCarbonPeriod)</td>
+                <td>@string.Format("{0:N2}", item.SumTotalElectricity)</td>
+                <td>
+                    <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
+                    <select v-model="selectedCoefficient" class="form-control" >
+                        <option value="">請選擇係數</option>
+                            <option v-for="option in filteredOptions"
+                                :key="option.Id"
+                                :value="option.Id">
+                            {{ option.Label }}
+                        </option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control" :value="calculateCarbonEmission2(@(JsonConvert.SerializeObject(item.SumTotalElectricity)))" readonly />
+                    <span class="input-group-text">tonCo₂e/度</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot><tr><th>合計</th><td>@((Model.Sum(x => x.SumPeakElectricity) ?? 0m).ToString("N2"))</td><td>@((Model.Sum(x => x.SumHalfSpikePower) ?? 0m).ToString("N2"))</td><td>@((Model.Sum(x => x.SumSaturdayHalfPeak) ?? 0m).ToString("N2"))</td><td>@((Model.Sum(x => x.SumOffPeakElectricity) ?? 0m).ToString("N2"))</td><td>@((Model.Sum(x => x.SumTotalBillTax) ?? 0m).ToString("N2"))</td><td>@((Model.Sum(x => x.SumCarbonPeriod) ?? 0m).ToString("N2"))</td><td>@((Model.Sum(x => x.SumTotalElectricity) ?? 0m).ToString("N2"))</td><td>—</td><td><input class="form-control" :value="calculateCarbonEmission2(@(JsonConvert.SerializeObject(Model.Sum(x => x.SumTotalElectricity))))" readonly /></td></tr></tfoot>
+</table>

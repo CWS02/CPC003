@@ -1,0 +1,49 @@
+﻿@model List<Diesel_UPViewModel>
+@using CPC02.Models
+@using Newtonsoft.Json
+<!--汽油有關的上游排放-->
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th style="width: 25%">總公升數(L)</th>
+            <th style="width: 25%">
+                活動數據
+                (kgCO₂e/公升)
+            </th>
+            <th style="width: 25%">
+                計算結果
+                (kgCO₂e/公升)
+            </th>
+            <th>
+                計算結果
+                (ton CO₂e/公秉)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Total</td>
+                <td>
+                    <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+                    <select v-model="selectedCoefficient" class="form-control" >
+                        <option value="">請選擇係數</option>
+                            <option v-for="option in filteredOptions"
+                                :key="option.Id"
+                                :value="option.Id">
+                            {{ option.Label }}
+                        </option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control" :value="calculateCarbonEmission(@(JsonConvert.SerializeObject(item.Total)))" readonly />
+                </td>
+                <td>
+                    <input type="text" class="form-control" :value="calculateCarbonEmission2(@(JsonConvert.SerializeObject(item.Total)))" readonly />
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>

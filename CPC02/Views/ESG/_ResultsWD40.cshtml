@@ -1,0 +1,46 @@
+﻿@model List<WD40ViewModel>
+@using CPC02.Models
+@using Newtonsoft.Json
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th style="width: 25%">二氧化碳重量(克)</th>
+            <th style="width: 25%">係數</th>
+            <th style="width: 25%">計算結果</th>
+            <th style="width: 25%">計算結果</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@(item.SumWD011?.ToString("G29") ?? "")</td>
+                <td>
+                    <input type="text" v-model="searchQuery" class="form-control mb-3" placeholder="輸入搜尋詞..." />
+
+                    <select v-model="selectedCoefficient" class="form-control" >
+                        <option value="">請選擇係數</option>
+                            <option v-for="option in filteredOptions"
+                                :key="option.Id"
+                                :value="option.Id">
+                            {{ option.Label }}
+                        </option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control" :value="calculateCarbonEmission2(@(JsonConvert.SerializeObject(item.SumWD011)))" readonly />
+                    <span class="input-group-text">kgCo₂e/公噸</span>
+                </td>
+                <td>
+                    <input type="text" class="form-control" :value="calculateCarbonEmission5(@(JsonConvert.SerializeObject(item.SumWD011)))" readonly />
+                    <span class="input-group-text">tonCo₂e/公噸</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <p>資料來源：採購單查詢系統</p>
+    <p>WD-40 多功能除鏽潤滑劑 11.2oz = 333ml</p>
+    <p>WD-40 多功能除鏽潤滑劑 11.2oz = 412ml</p>
+</div>

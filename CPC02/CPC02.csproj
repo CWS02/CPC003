@@ -215,6 +215,8 @@
     <Compile Include="Controllers\BusinessController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\ESGController.cs" />
+    <Compile Include="Services\EsgCalculationService.cs" />
+    <Compile Include="Models\EsgCalculationPageViewModel.cs" />
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\WordRender.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
@@ -281,6 +283,7 @@
     <Content Include="css\style4.css" />
     <Content Include="css\style3.css" />
     <Content Include="css\style2.css" />
+    <Content Include="css\esg-calculation.css" />
     <Content Include="css\style1.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -305,6 +308,7 @@
     <Content Include="image\Icons\setting.png" />
     <Content Include="image\Icons\square.png" />
     <Content Include="image\Icons\warning.png" />
+    <Content Include="Scripts\esg-calculation.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -369,6 +373,20 @@
     <Content Include="Views\Common\ProjectEdit.cshtml" />
     <Content Include="Views\Business\ExRecordList.cshtml" />
     <Content Include="Views\Business\ExRecordEdit.cshtml" />
+    <Content Include="Views\ESG\_ResultsColdCoal.cshtml" />
+    <Content Include="Views\ESG\_ResultsCommuting.cshtml" />
+    <Content Include="Views\ESG\_ResultsDiesel_.cshtml" />
+    <Content Include="Views\ESG\_ResultsDiesel_UP.cshtml" />
+    <Content Include="Views\ESG\_ResultsElec_UP.cshtml" />
+    <Content Include="Views\ESG\_ResultsElectricitySummary.cshtml" />
+    <Content Include="Views\ESG\_ResultsFireExtin.cshtml" />
+    <Content Include="Views\ESG\_ResultsGas_UP.cshtml" />
+    <Content Include="Views\ESG\_ResultsOfficialcar.cshtml" />
+    <Content Include="Views\ESG\_ResultsTraffic.cshtml" />
+    <Content Include="Views\ESG\_ResultsWD40.cshtml" />
+    <Content Include="Views\ESG\_ResultsWasteSummary.cshtml" />
+    <Content Include="Views\ESG\_ResultsWastetransportation.cshtml" />
+    <Content Include="Views\ESG\_ResultsWaterSummary.cshtml" />
     <Content Include="Views\ESG\SGS_Calculate.cshtml" />
     <Content Include="Views\Shared\_LayoutMember2.cshtml" />
   </ItemGroup>
