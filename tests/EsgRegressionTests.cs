@@ -63,6 +63,7 @@ internal static class EsgRegressionTests
         WasteQueryTranslationTests.Run();
         TrafficQueryTests.Run();
         CommutingFactorTests.Run();
+        RefrigerantQueryTests.Run();
         Console.WriteLine("ESG backend regression checks passed.");
     }
 }

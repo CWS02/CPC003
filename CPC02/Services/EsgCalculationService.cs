@@ -214,16 +214,8 @@ namespace CPC02.Services
         // coldcoal
         private IEnumerable<object> CalculateRefrigerants(SGS_Search search)
         {
-            var refrigerants = new[] { "R-134A", "HFC-134A", "R-407C", "R-410A" };
-            var result = _db.ColdCoal.AsNoTracking()
-                .Where(x => (search.factory == "全部" || x.CC010 == search.factory) && refrigerants.Contains(x.CC007))
-                .GroupBy(x => new { x.CC010, x.CC007 })
-                .Select(g => new ColdCoalViewModel
-            {
-                Factory = g.Key.CC010,
-                Code = g.Key.CC007,
-                SumCC012 = Math.Round(g.Sum(x => x.CC012) ?? 0m, 4)
-            }).ToList();
+            var result = BuildRefrigerantQuery(_db.ColdCoal.AsNoTracking(), search.factory,
+                int.Parse(search.year, CultureInfo.InvariantCulture)).ToList();
             // Preserve the GWP values used in the existing report.
             var gwp = new Dictionary<string, int>
             {
@@ -231,6 +223,22 @@ namespace CPC02.Services
             };
             foreach (var item in result) item.GWP = gwp[item.Code.Trim()];
             return result;
+        }
+
+        private static IQueryable<ColdCoalViewModel> BuildRefrigerantQuery(
+            IQueryable<ColdCoal> source, string factory, int year)
+        {
+            var refrigerants = new[] { "R-134A", "HFC-134A", "R-407C", "R-410A" };
+            return source
+                .Where(x => x.Year == year && x.Status == 0 && (factory == "全部" || x.CC010 == factory)
+                    && refrigerants.Contains(x.CC007))
+                .GroupBy(x => new { x.CC010, x.CC007 })
+                .Select(g => new ColdCoalViewModel
+                {
+                    Factory = g.Key.CC010,
+                    Code = g.Key.CC007,
+                    SumCC012 = Math.Round(g.Sum(x => x.CC012) ?? 0m, 4)
+                });
         }
 
         // commuting
@@ -374,7 +382,7 @@ namespace CPC02.Services
         {
             var year = int.Parse(search.year);
             var coefficients = GetGasCoefficients(search.category, year);
-            var result = _db.Diesel.AsNoTracking().Where(x => x.DI001 == year)
+            var result = _db.Diesel.AsNoTracking().Where(x => x.DI001 == year && x.Status == 0)
                 .GroupBy(x => x.DI001)
                 .Select(g => new Diesel_ViewModel
             {
@@ -392,7 +400,7 @@ namespace CPC02.Services
         // diesel_UP
         private IEnumerable<object> CalculateDieselUpstream(SGS_Search search)
         {
-            var query = _db.Diesel.AsNoTracking().AsQueryable();
+            var query = _db.Diesel.AsNoTracking().Where(x => x.Status == 0);
 
             if (!string.IsNullOrEmpty(search.year))
             {
@@ -411,7 +419,7 @@ namespace CPC02.Services
         private List<GasCoefficient> GetGasCoefficients(string category, int year)
         {
             var coefficients = _db.Gas_Parameter.AsNoTracking()
-                .Where(x => x.GP001 == category && x.GP002 == year).OrderBy(x => x.GP003)
+                .Where(x => x.GP001 == category && x.GP002 == year && x.Status == 0).OrderBy(x => x.GP003)
                 .Select(x => new GasCoefficient
             {
                 GasName = x.GP003,

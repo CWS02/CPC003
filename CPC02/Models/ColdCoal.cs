@@ -51,6 +51,12 @@ namespace CPC02.Models
         [Display(Name = "採用之年逸散率（%）")]
         [StringLength(20)]
         public string CC011 { get; set; }
+        [Display(Name = "年份")]
+        public int? Year { get; set; }
+
+        [Display(Name = "狀態")]
+        public int Status { get; set; }
+
         [Display(Name = "逸散量(公噸)")]
         public decimal? CC012 { get; set; }
     }
